@@ -1,0 +1,35 @@
+defmodule Werewolf.PlayerRules do
+
+  def host_check(players, user) do
+    case Map.has_key?(players, user.username) && is_host?(players[user.username]) do
+      true -> :ok
+      false -> {:error, :unauthorized}
+    end
+  end
+
+  def player_check(players, user) do
+    case alive?(players, user) do
+      true ->{:ok, players[user.username]}
+      false -> {:error, :not_in_game}
+    end
+  end
+
+  def unique_check(players, user) do
+    case !Map.has_key?(players, user.username) do
+      true -> {:ok, players}
+      false -> {:error, :user_already_joined}
+    end
+  end
+
+  defp alive?(players, user) do
+    Map.has_key?(players, user.username) && players[user.username].alive
+  end
+
+  defp is_host?(player) do
+    player.host
+  end
+
+  defp is_user?(player, user) do
+    player.name == user.username
+  end
+end
