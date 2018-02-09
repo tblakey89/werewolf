@@ -5,16 +5,19 @@ defmodule Werewolf.Game do
   defstruct [:players, :phase_length, phases: 0]
 
   def new(user, phase_length) do
-    host_player = Player.new(:host, user)
-    {:ok, %Game{players: %{user.name => host_player}, phase_length: phase_length}}
+    {:ok, host_player} = Player.new(:host, user)
+    case Enum.member?(phase_lengths(), phase_length) do
+      true -> {:ok, %Game{players: %{user.username => host_player}, phase_length: phase_length}}
+      false -> {:error, :invalid_phase_length}
+    end
   end
 
   def add_player(game, user, rules) do
     with {:ok, rules} <- Rules.check(rules, {:add_player, game}),
          {:ok, players} <- PlayerRules.unique_check(game.players, user)
     do
-      new_player = Player.new(:player, user)
-      put_in(game, [:players, user.name], new_player)
+      {:ok, new_player} = Player.new(:player, user)
+      {:ok, put_in(game.players[user.username], new_player)}
     else
       {:error, reason} -> {:error, reason}
     end
@@ -22,11 +25,10 @@ defmodule Werewolf.Game do
 
   def set_game_ready(game, user, rules) do
     with :ok <- PlayerRules.host_check(game.players, user),
-         {:ok, rules} <- Rules.check(rules, {:set_as_ready, game}),
-         {:ok, players} <- Player.assign_roles(game.players)
+         {:ok, rules} <- Rules.check(rules, {:set_as_ready, game})
     do
-      # rules also needs to be passed to state_data...
-      Map.put(game, :players, players)
+      game = Map.put(game, :players, Player.assign_roles(game.players))
+      {:ok, game, rules}
     else
       {:error, reason} -> {:error, reason}
     end
@@ -36,7 +38,7 @@ defmodule Werewolf.Game do
     with :ok <- PlayerRules.host_check(game.players, user),
          {:ok, rules} <- Rules.check(rules, :launch)
     do
-      Map.put(game, :phases, 1)
+      {:ok, %{game | phases: 1}, rules}
     else
       {:error, reason} -> {:error, reason}
     end
@@ -49,10 +51,10 @@ defmodule Werewolf.Game do
     # the action target must be a player struct
     # the target of the action, has to be a player struct
     with {:ok, player} <- PlayerRules.player_check(game.players, user),
-         {:ok, action} <- ActionRules.valid(rules, player, action),
+         {:ok, action} <- ActionRules.valid(rules, player, action, game.players),
          {:ok, player} <- Player.add_action(player, game.phases, action)
     do
-      put_in(game, [:players, player.name], player)
+      {:ok, put_in(game.players[player.name], player)}
     else
       {:error, reason} -> {:error, reason}
     end
@@ -76,12 +78,12 @@ defmodule Werewolf.Game do
     # {:ok, :day/:night, :user_dead/:none}
     # :user_dead could in the future be replaced by list of tuples
     # [{:user_dead, :werewolf}, {:user_dead, :vigilante}], etc
-    with {:ok, target} <- Votes.count_from_actions(phase_actions(game)),
+    with {:ok, votes, target} <- Votes.count_from_actions(phase_actions(game)),
          {:ok, players, win_status} <- Player.kill_player(game.players, target),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status})
     do
-      Map.put(game, :players, players)
-      # update state
+      game = %{game | phases: game.phases + 1, players: players}
+      {:ok, game, rules, target, win_status}
     else
       {:error, reason} -> {:error, reason}
     end
@@ -92,8 +94,9 @@ defmodule Werewolf.Game do
   end
 
   defp phase_actions(game) do
-    Enum.map(game.players, fn(player) -> player.actions end)
+    Enum.map(game.players, fn({_, player}) -> player.actions end)
     |> Enum.map(fn(actions) -> actions[game.phases] end)
+    |> Enum.reject(fn(action) -> is_nil(action) end)
   end
 end
 
@@ -114,7 +117,6 @@ end
 # count votes, and win check.
 
 # TODO
-# add gen_server functionality to game
 # implement timer gen_server
 # supervisors for gen_servers
 # add ets backup, other db backup

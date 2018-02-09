@@ -18,6 +18,10 @@ defmodule Werewolf.Player do
     [:villager, :werewolf]
   end
 
+  def alive?(players, key) do
+    players[key].alive
+  end
+
   def add_action(player, phase_number, action) do
     cond do
       Map.has_key?(player.actions, phase_number) &&
@@ -32,9 +36,9 @@ defmodule Werewolf.Player do
   end
 
   def assign_roles(players) do
-    length(players)
+    map_size(players)
     |> generate_role_list()
-    |> Enum.zip(players)
+    |> Enum.zip(Map.values(players))
     |> Enum.reduce(%{}, fn({role, player}, acc) ->
       Map.put(acc, player.name, Map.put(player, :role, role))
     end)
@@ -42,7 +46,7 @@ defmodule Werewolf.Player do
 
   def kill_player(players, :none), do: {:ok, players, win_check(players)}
   def kill_player(players, target) do
-    players = put_in(players[target.name].alive, false)
+    players = put_in(players[target].alive, false)
     {:ok, players, win_check(players)}
   end
 

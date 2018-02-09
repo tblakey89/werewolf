@@ -19,15 +19,13 @@ defmodule Werewolf.PlayerTest do
 
   describe "assign_roles/1" do
     test "when 8 players, 2 werewolves, 6 villagers" do
-      players = for n <- 1..8, do: %Player{name: "test#{n}", host: false}
-      assigned_players = Map.values(Player.assign_roles(players))
+      assigned_players = Map.values(Player.assign_roles(generate_players(8)))
       assert Enum.count(assigned_players, fn(player) -> player.role == :werewolf end) == 2
       assert Enum.count(assigned_players, fn(player) -> player.role == :villager end) == 6
     end
 
     test "when 18 players, 4 werewolves, 14 villagers" do
-      players = for n <- 1..18, do: %Player{name: "test#{n}", host: false}
-      assigned_players = Map.values(Player.assign_roles(players))
+      assigned_players = Map.values(Player.assign_roles(generate_players(18)))
       assert Enum.count(assigned_players, fn(player) -> player.role == :werewolf end) == 4
       assert Enum.count(assigned_players, fn(player) -> player.role == :villager end) == 14
     end
@@ -62,8 +60,7 @@ defmodule Werewolf.PlayerTest do
     setup [:player_map]
 
     test "sets player to alive false, and calculates correct win", context do
-      target = context[:player_map]["villager"]
-      {:ok, players, win} = Player.kill_player(context[:player_map], target)
+      {:ok, players, win} = Player.kill_player(context[:player_map], "villager")
       assert players["villager"].alive == false
       assert win == :werewolf_win
     end
@@ -74,12 +71,12 @@ defmodule Werewolf.PlayerTest do
     end
 
     test "calculates a villager win when no more werewolves", context do
-      {:ok, _, win} = Player.kill_player(context[:player_map], context[:player_map]["werewolf"])
+      {:ok, _, win} = Player.kill_player(context[:player_map], "werewolf")
       assert win == :village_win
     end
 
     test "calculates a werewolf win when no more villagers", context do
-      {:ok, _, win} = Player.kill_player(context[:player_map], context[:player_map]["villager"])
+      {:ok, _, win} = Player.kill_player(context[:player_map], "villager")
       assert win == :werewolf_win
     end
 
@@ -87,5 +84,11 @@ defmodule Werewolf.PlayerTest do
       {:ok, _, win} = Player.kill_player(context[:player_map], :none)
       assert win == :no_win
     end
+  end
+
+  defp generate_players(player_number) do
+    Enum.reduce((for n <- 1..player_number, do: %Player{name: "test#{n}", host: false}), %{}, fn(player, acc) ->
+      put_in(acc[player.name], player)
+    end)
   end
 end

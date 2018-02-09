@@ -39,10 +39,10 @@ defmodule Werewolf.Rules do
   def check(_state, _action), do: {:error, :invalid_action}
 
   defp able_to_add_new_player?(game) do
-    length(game.players) + 1 <= @max_players
+    Enum.count(game.players) + 1 <= @max_players
   end
 
   defp ready_to_start?(game) do
-    length(game.players) >= @min_players && length(game.players) <= @max_players
+    Enum.count(game.players) >= @min_players && Enum.count(game.players) <= @max_players
   end
 end

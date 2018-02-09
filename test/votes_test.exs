@@ -18,6 +18,11 @@ defmodule Werewolf.VotesTest do
       assert vote_count["user2"] == 1
       assert winner == :none
     end
+
+    test "no votes" do
+      {:ok, vote_count, winner} = Votes.count_from_actions([])
+      assert winner == :none
+    end
   end
 
   defp inspect_player(target), do: %Action{type: :inspect, target: target}
