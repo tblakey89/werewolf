@@ -1,8 +1,8 @@
 defmodule Werewolf.Game do
-  alias Werewolf.{Game, Player, PlayerRules, Rules, ActionRules, Action, Votes}
+  alias Werewolf.{Game, Player, PlayerRules, Rules, ActionRules, Action, Votes, Phase}
 
   @enforce_keys [:players, :phase_length]
-  defstruct [:players, :phase_length, phases: 0]
+  defstruct [:players, :phase_length, :end_phase_unix_time, phases: 0]
 
   def new(user, phase_length) do
     {:ok, host_player} = Player.new(:host, user)
@@ -38,7 +38,7 @@ defmodule Werewolf.Game do
     with :ok <- PlayerRules.host_check(game.players, user),
          {:ok, rules} <- Rules.check(rules, :launch)
     do
-      {:ok, %{game | phases: 1}, rules}
+      {:ok, %{game | phases: 1, end_phase_unix_time: Phase.calculate_end_of_phase_unix(game.phase_length)}, rules}
     else
       {:error, reason} -> {:error, reason}
     end
@@ -82,7 +82,7 @@ defmodule Werewolf.Game do
          {:ok, players, win_status} <- Player.kill_player(game.players, target),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status})
     do
-      game = %{game | phases: game.phases + 1, players: players}
+      game = %{game | phases: game.phases + 1, players: players, end_phase_unix_time: Phase.calculate_end_of_phase_unix(game.phase_length)}
       {:ok, game, rules, target, win_status}
     else
       {:error, reason} -> {:error, reason}
@@ -90,7 +90,7 @@ defmodule Werewolf.Game do
   end
 
   def phase_lengths() do
-    [:day]
+    [:millisecond, :second, :hour, :day]
   end
 
   defp phase_actions(game) do
@@ -100,23 +100,14 @@ defmodule Werewolf.Game do
   end
 end
 
-# 1) launch game
-# 2) add players, repeat
-# 3) set game as ready, assign roles
-# 4) launch game, create first phase
-# 5) timer till new phase begins, whilst collecting votes and actions
-# 6) switch to new phase, or end game if all werewolves are gone, or werewolves equal villagers
-# 7) Mark game as complete
-
-# The timer could use Process.send_after, but that relies on the process itself being alive
-# which is something we can't guarantee. Instead we will have a second gen server whose job
-# it is to send the message to the game (or reboot the game if necessary) after a set time is
-# complete. The message will then trigger a phase change from day to night, or vice versa.
-# The timer process needs a one to one superviser as well. Every minute it will read from the
-# database, or ETS store, tbd, and send a message to all games that are ready to change phase,
-# count votes, and win check.
+# an alternative way of looking at it, is to save a time in the game server, then if the
+# process crashes, then redo the timer using the time we set for next phase to begin
+# set timer on lauch phase and end_phase
+# cancel timer on end phase if not cancelled
+# set end_phase time on game struct when launch or end phase is called
+# restart timer if process dies, when recreating from ETS
+# only do timer if game state not game_over (or only day/night)
 
 # TODO
-# implement timer gen_server
 # supervisors for gen_servers
 # add ets backup, other db backup

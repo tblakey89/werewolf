@@ -1,6 +1,6 @@
 defmodule Werewolf.GameServer do
   use GenServer, start: {__MODULE__, :start_link, []}, restart: :transient
-  alias Werewolf.{Action, Game, Rules}
+  alias Werewolf.{Action, Game, Rules, Phase}
 
   @timeout 1000 * 60 * 60 * 24
 
@@ -62,6 +62,7 @@ defmodule Werewolf.GameServer do
       state_data
       |> update_game(game)
       |> update_rules(rules)
+      |> update_timer(start_phase_countdown(game, rules))
       |> reply_success(:ok)
     else
       {:error, reason} -> reply_failure(state_data, reason)
@@ -80,15 +81,14 @@ defmodule Werewolf.GameServer do
   end
 
   def handle_call(:end_phase, _from, state_data) do
-    with {:ok, game, rules, target, win_status} <- Game.end_phase(state_data.game, state_data.rules)
-    do
-      state_data
-      |> update_game(game)
-      |> update_rules(rules)
-      |> reply_success({win_status, target})
-    else
-      {:error, reason} -> reply_failure(state_data, reason)
-    end
+    # in case end_phase not called from timer, cancel timer
+    cancel_phase_countdown(state_data.timer)
+    trigger_end_phase(state_data, &reply_success/2)
+  end
+
+  def handle_info(:end_phase, state_data) do
+    # will have to broadcast to all users both in handle info and call
+    trigger_end_phase(state_data, &noreply_success/2)
   end
 
   def handle_info({:set_state, user, phase_length}, _state_data) do
@@ -106,6 +106,27 @@ defmodule Werewolf.GameServer do
   end
   def terminate(_reason, _state), do: :ok
 
+  defp trigger_end_phase(state_data, success_fn) do
+    with {:ok, game, rules, target, win_status} <- Game.end_phase(state_data.game, state_data.rules)
+    do
+      state_data
+      |> update_game(game)
+      |> update_rules(rules)
+      |> update_timer(start_phase_countdown(game, rules))
+      |> success_fn.({win_status, target, game.phases})
+    else
+      {:error, reason} -> reply_failure(state_data, reason)
+    end
+  end
+
+  defp start_phase_countdown(game, %Rules{state: state}) when state == :day_phase or state == :night_phase do
+    Process.send_after(self(), :end_phase, Phase.milliseconds_till_end_of_phase(game.end_phase_unix_time))
+  end
+  defp start_phase_countdown(_, _), do: nil
+
+  defp cancel_phase_countdown(nil), do: nil
+  defp cancel_phase_countdown(timer), do: Process.cancel_timer(timer)
+
   defp new_state(user, phase_length) do
     # need to think how we can handle an invalid phase length properly
     with {:ok, game} <- Game.new(user, phase_length)
@@ -114,6 +135,10 @@ defmodule Werewolf.GameServer do
     else
       {:error, reason} -> {:error, reason}
     end
+  end
+
+  defp noreply_success(state_data, _) do
+    {:noreply, state_data, @timeout}
   end
 
   defp reply_failure(state_data, reason) do
@@ -131,5 +156,9 @@ defmodule Werewolf.GameServer do
 
   defp update_rules(state_data, rules) do
     put_in(state_data.rules, rules)
+  end
+
+  defp update_timer(state_data, timer) do
+    put_in(state_data, [:timer], timer)
   end
 end
