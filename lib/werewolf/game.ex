@@ -1,13 +1,13 @@
 defmodule Werewolf.Game do
   alias Werewolf.{Game, Player, PlayerRules, Rules, ActionRules, Action, Votes, Phase}
 
-  @enforce_keys [:players, :phase_length]
-  defstruct [:players, :phase_length, :end_phase_unix_time, phases: 0]
+  @enforce_keys [:id, :players, :phase_length]
+  defstruct [:id, :players, :phase_length, :end_phase_unix_time, phases: 0]
 
   def new(user, phase_length) do
     {:ok, host_player} = Player.new(:host, user)
     case Enum.member?(phase_lengths(), phase_length) do
-      true -> {:ok, %Game{players: %{user.username => host_player}, phase_length: phase_length}}
+      true -> {:ok, %Game{id: user.id, players: %{user.id => host_player}, phase_length: phase_length}}
       false -> {:error, :invalid_phase_length}
     end
   end
@@ -17,7 +17,7 @@ defmodule Werewolf.Game do
          {:ok, players} <- PlayerRules.unique_check(game.players, user)
     do
       {:ok, new_player} = Player.new(:player, user)
-      {:ok, put_in(game.players[user.username], new_player)}
+      {:ok, put_in(game.players[user.id], new_player)}
     else
       {:error, reason} -> {:error, reason}
     end
@@ -54,7 +54,7 @@ defmodule Werewolf.Game do
          {:ok, action} <- ActionRules.valid(rules, player, action, game.players),
          {:ok, player} <- Player.add_action(player, game.phases, action)
     do
-      {:ok, put_in(game.players[player.name], player)}
+      {:ok, put_in(game.players[player.id], player)}
     else
       {:error, reason} -> {:error, reason}
     end

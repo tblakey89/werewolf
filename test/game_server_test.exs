@@ -2,12 +2,11 @@ defmodule Werewolf.GameServerTest do
   use ExUnit.Case
   alias Werewolf.GameServer
 
-  # don't forget to test ETS back up, and database backup, think of others too
-
   describe "max players are added, assigns roles, launches game, village win" do
     test "successfully goes through game" do
       {game, players} = setup_game(:day)
       assert_village_win_when_werewolves_killed(game, players)
+      clear_ets()
     end
   end
 
@@ -15,6 +14,7 @@ defmodule Werewolf.GameServerTest do
     test "successfully goes through game" do
       {game, players} = setup_game(:day)
       assert_werewolf_win_when_villagers_killed(game, players)
+      clear_ets()
     end
   end
 
@@ -23,11 +23,22 @@ defmodule Werewolf.GameServerTest do
       {game, players} = setup_game(:millisecond)
       :timer.sleep(1)
       {_, _, 3} = GameServer.end_phase(game)
+      clear_ets()
+    end
+  end
+
+  describe "ensure ets is able to maintain state if GenServer shuts down" do
+    test "maintains state after shutdown" do
+      {game, players} = setup_game(:day)
+      GameServer.stop(game)
+      {:ok, game} = GameServer.start_link(host(), :day)
+      assert {:no_win, :none, 2} == GameServer.end_phase(game)
+      clear_ets()
     end
   end
 
   defp add_users(game, player_count) do
-    for n <- 2..player_count, do: GameServer.add_player(game, %{username: "test#{n}"})
+    for n <- 2..player_count, do: :ok = GameServer.add_player(game, %{username: "test#{n}", id: "test#{n}"})
   end
 
   defp assert_all_players_have_roles(players) do
@@ -65,7 +76,7 @@ defmodule Werewolf.GameServerTest do
 
   defp assert_able_to_add_users(game, host) do
     add_users(game, 18)
-    assert {:error, :game_full} = GameServer.add_player(game, %{username: "too_many"})
+    assert {:error, :game_full} = GameServer.add_player(game, %{username: "too_many", id: "too_many"})
   end
 
   defp assign_roles_by_making_game_ready(game, host) do
@@ -73,13 +84,16 @@ defmodule Werewolf.GameServerTest do
     players
   end
 
+  defp host() do
+    %{username: "test1", id: "test1"}
+  end
+
   defp setup_game(phase_length) do
-    host = %{username: "test1"}
-    {:ok, game} = GameServer.start_link(host, phase_length)
-    assert_able_to_add_users(game, host)
-    players = assign_roles_by_making_game_ready(game, host)
+    {:ok, game} = GameServer.start_link(host(), phase_length)
+    assert_able_to_add_users(game, host())
+    players = assign_roles_by_making_game_ready(game, host())
     assert_all_players_have_roles(players)
-    assert_game_launches(game, host)
+    assert_game_launches(game, host())
     {game, players}
   end
 
@@ -91,14 +105,18 @@ defmodule Werewolf.GameServerTest do
 
   defp vote_for_target_and_end_phase(game, players, target) do
     Enum.each(players, fn({_, player}) ->
-      GameServer.action(game, user(player.name), target.name, :vote)
+      GameServer.action(game, user(player.id), target.id, :vote)
     end)
     {win_status, killed_player, _} = GameServer.end_phase(game)
-    assert target.name == killed_player
+    assert target.id == killed_player
     win_status
   end
 
   defp user(username) do
-    %{username: username}
+    %{username: username, id: username}
+  end
+
+  defp clear_ets() do
+    :ets.delete(:game_state, "test1")
   end
 end

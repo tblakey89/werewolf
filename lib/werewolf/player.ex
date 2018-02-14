@@ -1,8 +1,8 @@
 defmodule Werewolf.Player do
   alias Werewolf.Player
   
-  @enforce_keys [:name, :host]
-  defstruct [:name,
+  @enforce_keys [:id, :host]
+  defstruct [:id,
             host: false,
             role: :none,
             alive: true,
@@ -11,7 +11,7 @@ defmodule Werewolf.Player do
   @villager_to_werewolf 6
 
   def new(type, user) do
-    {:ok, %Player{name: user.username, host: type == :host}}
+    {:ok, %Player{id: user.id, host: type == :host}}
   end
 
   def roles() do
@@ -40,7 +40,7 @@ defmodule Werewolf.Player do
     |> generate_role_list()
     |> Enum.zip(Map.values(players))
     |> Enum.reduce(%{}, fn({role, player}, acc) ->
-      Map.put(acc, player.name, Map.put(player, :role, role))
+      Map.put(acc, player.id, Map.put(player, :role, role))
     end)
   end
 

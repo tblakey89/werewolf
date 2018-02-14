@@ -8,12 +8,12 @@ defmodule Werewolf.PlayerTest do
 
     test "returns Player struct set to host when host", context do
       {:ok, player} = Player.new(:host, context[:user])
-      assert player == %Player{name: context[:user].username, host: true}
+      assert player == %Player{id: context[:user].id, host: true}
     end
 
     test "returns Player struct set not to host when normal player", context do
       {:ok, player} = Player.new(:player, context[:user])
-      assert player == %Player{name: context[:user].username, host: false}
+      assert player == %Player{id: context[:user].id, host: false}
     end
   end
 
@@ -87,8 +87,8 @@ defmodule Werewolf.PlayerTest do
   end
 
   defp generate_players(player_number) do
-    Enum.reduce((for n <- 1..player_number, do: %Player{name: "test#{n}", host: false}), %{}, fn(player, acc) ->
-      put_in(acc[player.name], player)
+    Enum.reduce((for n <- 1..player_number, do: %Player{id: "test#{n}", host: false}), %{}, fn(player, acc) ->
+      put_in(acc[player.id], player)
     end)
   end
 end

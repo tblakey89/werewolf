@@ -7,7 +7,7 @@ defmodule Werewolf.GameTest do
 
     test "returns a game struct when given user and valid phase length", context do
       {:ok, game} = Game.new(context[:user], :day)
-      assert game.players[context[:user].username].name == context[:user].username
+      assert game.players[context[:user].id].id == context[:user].id
       assert game.phase_length == :day
     end
 
@@ -40,7 +40,7 @@ defmodule Werewolf.GameTest do
     test "when game has enough players, successfully set as ready", context do
       {:ok, game, rules} = Game.set_game_ready(context[:full_game], context[:user], context[:rules])
       assert rules.state == :ready
-      assert game.players[context[:user].username].role != :none
+      assert game.players[context[:user].id].role != :none
     end
 
     test "when game does not have enough players", context do
@@ -76,7 +76,7 @@ defmodule Werewolf.GameTest do
     test "successfully performs action, and adds to player", context do
       game = put_in(context[:full_game].phases, 1)
       {:ok, game} = Game.action(context[:full_game], context[:user], context[:day_rules], context[:vote_action])
-      assert game.players[context[:user].username].actions[game.phases].vote == context[:vote_action]
+      assert game.players[context[:user].id].actions[game.phases].vote == context[:vote_action]
     end
 
     test "when not a valid action for the state", context do
@@ -112,23 +112,24 @@ defmodule Werewolf.GameTest do
   end
 
   defp full_game(_context) do
-    [full_game: %Game{players: generate_players(), phase_length: :day, phases: 0}]
+    [full_game: %Game{id: 0, players: generate_players(), phase_length: :day, phases: 0}]
   end
-  defp game(_context), do: [game: create_game(%{username: "test1"}, :day)]
-  defp other_user(_context), do: [other_user: %{username: "test2"}]
+  defp game(_context), do: [game: create_game(%{username: "test1", id: "test1"}, :day)]
+  defp other_user(_context), do: [other_user: %{username: "test2", id: "test2"}]
   defp rules(_context), do: [rules: Rules.new()]
   defp ready_rules(_context), do: [ready_rules: %Rules{state: :ready}]
   defp day_rules(_context), do: [day_rules: %Rules{state: :day_phase}]
   defp night_rules(_context), do: [night_rules: %Rules{state: :night_phase}]
-  defp user(_context), do: [user: %{username: "test1"}]
+  defp user(_context), do: [user: %{username: "test1", id: "test1"}]
   defp vote_action(_context), do: [vote_action: %Action{type: :vote, target: "test2"}]
   defp finished_game(_context) do
     [finished_game: %Game{
+      id: 1,
       phases: 1,
       phase_length: :day,
       players: %{
         "test1" => %Player{
-          name: "test1",
+          id: "test1",
           alive: true,
           host: true,
           role: :villager,
@@ -142,7 +143,7 @@ defmodule Werewolf.GameTest do
           }
         },
         "test2" => %Player{
-          name: "test2",
+          id: "test2",
           alive: true,
           host: false,
           role: :werewolf,
@@ -165,10 +166,10 @@ defmodule Werewolf.GameTest do
   end
 
   defp generate_players() do
-    players = %{"test1" => %Player{name: "test1", host: true}}
-    users = for n <- 2..8, do: %Player{name: "test#{n}", host: false}
+    players = %{"test1" => %Player{id: "test1", host: true}}
+    users = for n <- 2..8, do: %Player{id: "test#{n}", host: false}
     Enum.reduce(users, players, fn(player, acc) ->
-      put_in(acc[player.name], player)
+      put_in(acc[player.id], player)
     end)
   end
 end
