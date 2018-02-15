@@ -27,7 +27,8 @@ defmodule Werewolf.VotesTest do
 
   defp inspect_player(target), do: %Action{type: :inspect, target: target}
 
-  defp not_all_votes(_context), do: [not_all_votes: [vote("user"), inspect_player("user"), vote("user2")]]
+  defp not_all_votes(_context),
+    do: [not_all_votes: [vote("user"), inspect_player("user"), vote("user2")]]
 
   defp votes(_context), do: [votes: [vote("user"), vote("user"), vote("user2")]]
 

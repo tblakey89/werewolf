@@ -11,11 +11,13 @@ defmodule Werewolf.PlayerRulesTest do
     end
 
     test "when user is not a player, returns error tuple", context do
-      assert {:error, :unauthorized} = PlayerRules.host_check(context[:regular_player_map], context[:user])
+      assert {:error, :unauthorized} =
+               PlayerRules.host_check(context[:regular_player_map], context[:user])
     end
 
     test "when user is a player but not host, returns error tuple", context do
-      assert {:error, :unauthorized} = PlayerRules.host_check(context[:regular_player_map], context[:alt_user])
+      assert {:error, :unauthorized} =
+               PlayerRules.host_check(context[:regular_player_map], context[:alt_user])
     end
   end
 
@@ -23,7 +25,8 @@ defmodule Werewolf.PlayerRulesTest do
     setup [:regular_player_map, :alt_user]
 
     test "when player in game, returns ok tuple", context do
-      assert {:ok, _player} = PlayerRules.player_check(context[:regular_player_map], context[:alt_user])
+      assert {:ok, _player} =
+               PlayerRules.player_check(context[:regular_player_map], context[:alt_user])
     end
 
     test "when user is not a player, returns error tuple", context do
@@ -40,7 +43,8 @@ defmodule Werewolf.PlayerRulesTest do
     end
 
     test "when user is in game, returns error tuple", context do
-      assert {:error, :user_already_joined} = PlayerRules.unique_check(context[:regular_player_map], context[:alt_user])
+      assert {:error, :user_already_joined} =
+               PlayerRules.unique_check(context[:regular_player_map], context[:alt_user])
     end
   end
 end

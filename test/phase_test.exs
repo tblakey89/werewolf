@@ -6,7 +6,7 @@ defmodule Werewolf.PhaseTest do
 
   describe "calculate_end_of_phase_unix/1" do
     test "successfully calculates", context do
-      time_now = DateTime.to_unix(DateTime.utc_now)
+      time_now = DateTime.to_unix(DateTime.utc_now())
       end_of_phase = Phase.calculate_end_of_phase_unix(:hour)
       assert time_now < end_of_phase
     end

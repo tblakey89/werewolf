@@ -1,5 +1,4 @@
 defmodule Werewolf.PlayerRules do
-
   def host_check(players, user) do
     case Map.has_key?(players, user.id) && is_host?(players[user.id]) do
       true -> :ok
@@ -9,7 +8,7 @@ defmodule Werewolf.PlayerRules do
 
   def player_check(players, user) do
     case alive?(players, user) do
-      true ->{:ok, players[user.id]}
+      true -> {:ok, players[user.id]}
       false -> {:error, :not_in_game}
     end
   end

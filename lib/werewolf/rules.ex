@@ -1,7 +1,7 @@
 defmodule Werewolf.Rules do
   alias __MODULE__
 
-  defstruct [state: :initialized]
+  defstruct state: :initialized
 
   @min_players 8
   @max_players 18
@@ -29,10 +29,13 @@ defmodule Werewolf.Rules do
   def check(%Rules{state: :night_phase} = rules, {:end_phase, :no_win}) do
     {:ok, %Rules{rules | state: :day_phase}}
   end
+
   def check(%Rules{state: :day_phase} = rules, {:end_phase, :no_win}) do
     {:ok, %Rules{rules | state: :night_phase}}
   end
-  def check(%Rules{state: state} = rules, {:end_phase, _}) when state == :day_phase or state == :night_phase do
+
+  def check(%Rules{state: state} = rules, {:end_phase, _})
+      when state == :day_phase or state == :night_phase do
     {:ok, %Rules{rules | state: :game_over}}
   end
 

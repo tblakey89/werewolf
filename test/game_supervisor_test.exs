@@ -4,6 +4,7 @@ defmodule Werewolf.GameSupervisorTest do
 
   describe "ensure supervisor restarts GameServer" do
     setup [:host]
+
     test "successfully restarts", context do
       {:ok, game} = GameSupervisor.start_game(context[:host], :day)
       Werewolf.GameServer.add_player(game, %{id: "test2"})

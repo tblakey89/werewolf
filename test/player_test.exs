@@ -20,14 +20,14 @@ defmodule Werewolf.PlayerTest do
   describe "assign_roles/1" do
     test "when 8 players, 2 werewolves, 6 villagers" do
       assigned_players = Map.values(Player.assign_roles(generate_players(8)))
-      assert Enum.count(assigned_players, fn(player) -> player.role == :werewolf end) == 2
-      assert Enum.count(assigned_players, fn(player) -> player.role == :villager end) == 6
+      assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 2
+      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 6
     end
 
     test "when 18 players, 4 werewolves, 14 villagers" do
       assigned_players = Map.values(Player.assign_roles(generate_players(18)))
-      assert Enum.count(assigned_players, fn(player) -> player.role == :werewolf end) == 4
-      assert Enum.count(assigned_players, fn(player) -> player.role == :villager end) == 14
+      assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 4
+      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 14
     end
   end
 
@@ -87,8 +87,12 @@ defmodule Werewolf.PlayerTest do
   end
 
   defp generate_players(player_number) do
-    Enum.reduce((for n <- 1..player_number, do: %Player{id: "test#{n}", host: false}), %{}, fn(player, acc) ->
-      put_in(acc[player.id], player)
-    end)
+    Enum.reduce(
+      for(n <- 1..player_number, do: %Player{id: "test#{n}", host: false}),
+      %{},
+      fn player, acc ->
+        put_in(acc[player.id], player)
+      end
+    )
   end
 end

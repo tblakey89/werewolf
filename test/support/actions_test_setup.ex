@@ -9,15 +9,19 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def dead_player(_context), do: [dead_player: %Player{host: false, alive: false, id: "test"}]
 
-  def werewolf(_context), do: [werewolf: %Player{host: false, alive: true, id: "test", role: :werewolf}]
+  def werewolf(_context),
+    do: [werewolf: %Player{host: false, alive: true, id: "test", role: :werewolf}]
 
-  def dead_werewolf(_context), do: [dead_werewolf: %Player{host: false, alive: false, id: "test", role: :werewolf}]
+  def dead_werewolf(_context),
+    do: [dead_werewolf: %Player{host: false, alive: false, id: "test", role: :werewolf}]
 
   def day_state(_context), do: [day_state: %Rules{state: :day_phase}]
 
   def night_state(_context), do: [night_state: %Rules{state: :night_phase}]
 
-  def players(_context), do: [players: %{"target" => %Player{id: "target", host: false, alive: true}}]
+  def players(_context),
+    do: [players: %{"target" => %Player{id: "target", host: false, alive: true}}]
 
-  def dead_players(_context), do: [dead_players: %{"target" => %Player{id: "target", host: false, alive: false}}]
+  def dead_players(_context),
+    do: [dead_players: %{"target" => %Player{id: "target", host: false, alive: false}}]
 end

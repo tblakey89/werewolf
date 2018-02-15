@@ -38,8 +38,7 @@ defmodule Werewolf.GameServer do
   end
 
   def handle_call({:add_player, user}, _from, state_data) do
-    with {:ok, game} <- Game.add_player(state_data.game, user, state_data.rules)
-    do
+    with {:ok, game} <- Game.add_player(state_data.game, user, state_data.rules) do
       state_data
       |> update_game(game)
       |> reply_success(:ok)
@@ -49,8 +48,7 @@ defmodule Werewolf.GameServer do
   end
 
   def handle_call({:game_ready, user}, _from, state_data) do
-    with {:ok, game, rules} <- Game.set_game_ready(state_data.game, user, state_data.rules)
-    do
+    with {:ok, game, rules} <- Game.set_game_ready(state_data.game, user, state_data.rules) do
       state_data
       |> update_game(game)
       |> update_rules(rules)
@@ -61,8 +59,7 @@ defmodule Werewolf.GameServer do
   end
 
   def handle_call({:launch_game, user}, _from, state_data) do
-    with {:ok, game, rules} <- Game.launch_game(state_data.game, user, state_data.rules)
-    do
+    with {:ok, game, rules} <- Game.launch_game(state_data.game, user, state_data.rules) do
       state_data
       |> update_game(game)
       |> update_rules(rules)
@@ -74,8 +71,8 @@ defmodule Werewolf.GameServer do
   end
 
   def handle_call({:action, user, target, action_type}, _from, state_data) do
-    with {:ok, game} <- Game.action(state_data.game, user, state_data.rules, Action.new(action_type, target))
-    do
+    with {:ok, game} <-
+           Game.action(state_data.game, user, state_data.rules, Action.new(action_type, target)) do
       state_data
       |> update_game(game)
       |> reply_success(:ok)
@@ -98,10 +95,11 @@ defmodule Werewolf.GameServer do
 
   def handle_info({:set_state, user, phase_length}, _state_data) do
     state_data =
-    case :ets.lookup(:game_state, user.id) do
-      [] -> new_state(user, phase_length)
-      [{_key, state}] -> state
-    end
+      case :ets.lookup(:game_state, user.id) do
+        [] -> new_state(user, phase_length)
+        [{_key, state}] -> state
+      end
+
     :ets.insert(:game_state, {user.id, state_data})
     {:noreply, state_data, @timeout}
   end
@@ -114,13 +112,14 @@ defmodule Werewolf.GameServer do
     :ets.delete(:game_state, state_data.game.id)
     :ok
   end
+
   def terminate(_reason, _state), do: :ok
 
   def via_tuple(id), do: {:via, Registry, {Registry.GameServer, id}}
 
   defp trigger_end_phase(state_data, success_fn) do
-    with {:ok, game, rules, target, win_status} <- Game.end_phase(state_data.game, state_data.rules)
-    do
+    with {:ok, game, rules, target, win_status} <-
+           Game.end_phase(state_data.game, state_data.rules) do
       state_data
       |> update_game(game)
       |> update_rules(rules)
@@ -131,9 +130,15 @@ defmodule Werewolf.GameServer do
     end
   end
 
-  defp start_phase_countdown(game, %Rules{state: state}) when state == :day_phase or state == :night_phase do
-    Process.send_after(self(), :end_phase, Phase.milliseconds_till_end_of_phase(game.end_phase_unix_time))
+  defp start_phase_countdown(game, %Rules{state: state})
+       when state == :day_phase or state == :night_phase do
+    Process.send_after(
+      self(),
+      :end_phase,
+      Phase.milliseconds_till_end_of_phase(game.end_phase_unix_time)
+    )
   end
+
   defp start_phase_countdown(_, _), do: nil
 
   defp cancel_phase_countdown(nil), do: nil
@@ -141,8 +146,7 @@ defmodule Werewolf.GameServer do
 
   defp new_state(user, phase_length) do
     # need to think how we can handle an invalid phase length properly
-    with {:ok, game} <- Game.new(user, phase_length)
-    do
+    with {:ok, game} <- Game.new(user, phase_length) do
       %{game: game, rules: Rules.new()}
     else
       {:error, reason} -> {:error, reason}

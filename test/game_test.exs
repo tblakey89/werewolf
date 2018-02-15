@@ -26,11 +26,14 @@ defmodule Werewolf.GameTest do
 
     test "fails to add user if wrong state", context do
       day_phase_rules = %{context[:rules] | state: :day_phase}
-      assert {:error, :invalid_action} == Game.add_player(context[:game], context[:other_user], day_phase_rules)
+
+      assert {:error, :invalid_action} ==
+               Game.add_player(context[:game], context[:other_user], day_phase_rules)
     end
 
     test "fails to add user if user exists", context do
-      assert {:error, :user_already_joined} == Game.add_player(context[:game], context[:user], context[:rules])
+      assert {:error, :user_already_joined} ==
+               Game.add_player(context[:game], context[:user], context[:rules])
     end
   end
 
@@ -38,17 +41,21 @@ defmodule Werewolf.GameTest do
     setup [:full_game, :rules, :user, :game, :other_user]
 
     test "when game has enough players, successfully set as ready", context do
-      {:ok, game, rules} = Game.set_game_ready(context[:full_game], context[:user], context[:rules])
+      {:ok, game, rules} =
+        Game.set_game_ready(context[:full_game], context[:user], context[:rules])
+
       assert rules.state == :ready
       assert game.players[context[:user].id].role != :none
     end
 
     test "when game does not have enough players", context do
-      assert {:error, :game_not_ready} == Game.set_game_ready(context[:game], context[:user], context[:rules])
+      assert {:error, :game_not_ready} ==
+               Game.set_game_ready(context[:game], context[:user], context[:rules])
     end
 
     test "when non-host sets game as ready", context do
-      assert {:error, :unauthorized} == Game.set_game_ready(context[:full_game], context[:other_user], context[:rules])
+      assert {:error, :unauthorized} ==
+               Game.set_game_ready(context[:full_game], context[:other_user], context[:rules])
     end
   end
 
@@ -56,17 +63,21 @@ defmodule Werewolf.GameTest do
     setup [:full_game, :ready_rules, :rules, :user, :game, :other_user]
 
     test "when state is ready, able to launch game", context do
-      {:ok, game, rules} = Game.launch_game(context[:full_game], context[:user], context[:ready_rules])
+      {:ok, game, rules} =
+        Game.launch_game(context[:full_game], context[:user], context[:ready_rules])
+
       assert rules.state == :night_phase
       assert game.phases == 1
     end
 
     test "when game is in the wrong state", context do
-      {:error, :invalid_action} = Game.launch_game(context[:full_game], context[:user], context[:rules])
+      {:error, :invalid_action} =
+        Game.launch_game(context[:full_game], context[:user], context[:rules])
     end
 
     test "when not-host tries to launch game", context do
-      {:error, :unauthorized} = Game.launch_game(context[:full_game], context[:other_user], context[:ready_rules])
+      {:error, :unauthorized} =
+        Game.launch_game(context[:full_game], context[:other_user], context[:ready_rules])
     end
   end
 
@@ -75,12 +86,26 @@ defmodule Werewolf.GameTest do
 
     test "successfully performs action, and adds to player", context do
       game = put_in(context[:full_game].phases, 1)
-      {:ok, game} = Game.action(context[:full_game], context[:user], context[:day_rules], context[:vote_action])
+
+      {:ok, game} =
+        Game.action(
+          context[:full_game],
+          context[:user],
+          context[:day_rules],
+          context[:vote_action]
+        )
+
       assert game.players[context[:user].id].actions[game.phases].vote == context[:vote_action]
     end
 
     test "when not a valid action for the state", context do
-      {:error, :invalid_action} = Game.action(context[:full_game], context[:user], context[:night_rules], context[:vote_action])
+      {:error, :invalid_action} =
+        Game.action(
+          context[:full_game],
+          context[:user],
+          context[:night_rules],
+          context[:vote_action]
+        )
     end
   end
 
@@ -88,7 +113,9 @@ defmodule Werewolf.GameTest do
     setup [:night_rules, :day_rules, :finished_game, :rules]
 
     test "when game won, sends win atom, and updates state", context do
-      {:ok, game, rules, target, win_status} = Game.end_phase(context[:finished_game], context[:day_rules])
+      {:ok, game, rules, target, win_status} =
+        Game.end_phase(context[:finished_game], context[:day_rules])
+
       assert game.players["test2"].alive == false
       assert rules.state == :game_over
       assert target == "test2"
@@ -114,6 +141,7 @@ defmodule Werewolf.GameTest do
   defp full_game(_context) do
     [full_game: %Game{id: 0, players: generate_players(), phase_length: :day, phases: 0}]
   end
+
   defp game(_context), do: [game: create_game(%{username: "test1", id: "test1"}, :day)]
   defp other_user(_context), do: [other_user: %{username: "test2", id: "test2"}]
   defp rules(_context), do: [rules: Rules.new()]
@@ -122,42 +150,45 @@ defmodule Werewolf.GameTest do
   defp night_rules(_context), do: [night_rules: %Rules{state: :night_phase}]
   defp user(_context), do: [user: %{username: "test1", id: "test1"}]
   defp vote_action(_context), do: [vote_action: %Action{type: :vote, target: "test2"}]
+
   defp finished_game(_context) do
-    [finished_game: %Game{
-      id: 1,
-      phases: 1,
-      phase_length: :day,
-      players: %{
-        "test1" => %Player{
-          id: "test1",
-          alive: true,
-          host: true,
-          role: :villager,
-          actions: %{
-            1 => %{
-              vote: %Action{
-                type: :vote,
-                target: "test2"
+    [
+      finished_game: %Game{
+        id: 1,
+        phases: 1,
+        phase_length: :day,
+        players: %{
+          "test1" => %Player{
+            id: "test1",
+            alive: true,
+            host: true,
+            role: :villager,
+            actions: %{
+              1 => %{
+                vote: %Action{
+                  type: :vote,
+                  target: "test2"
+                }
               }
             }
-          }
-        },
-        "test2" => %Player{
-          id: "test2",
-          alive: true,
-          host: false,
-          role: :werewolf,
-          actions: %{
-            1 => %{
-              vote: %Action{
-                type: :vote,
-                target: "test2"
+          },
+          "test2" => %Player{
+            id: "test2",
+            alive: true,
+            host: false,
+            role: :werewolf,
+            actions: %{
+              1 => %{
+                vote: %Action{
+                  type: :vote,
+                  target: "test2"
+                }
               }
             }
           }
         }
       }
-    }]
+    ]
   end
 
   defp create_game(user, phase_length) do
@@ -168,7 +199,8 @@ defmodule Werewolf.GameTest do
   defp generate_players() do
     players = %{"test1" => %Player{id: "test1", host: true}}
     users = for n <- 2..8, do: %Player{id: "test#{n}", host: false}
-    Enum.reduce(users, players, fn(player, acc) ->
+
+    Enum.reduce(users, players, fn player, acc ->
       put_in(acc[player.id], player)
     end)
   end
