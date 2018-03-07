@@ -6,13 +6,13 @@ defmodule Werewolf.GameTest do
     setup [:user]
 
     test "returns a game struct when given user and valid phase length", context do
-      {:ok, game} = Game.new(context[:user], :day)
+      {:ok, game} = Game.new(context[:user], context[:user].id, :day)
       assert game.players[context[:user].id].id == context[:user].id
       assert game.phase_length == :day
     end
 
     test "returns an error when given an invalid phase length", context do
-      assert {:error, :invalid_phase_length} == Game.new(context[:user], :year)
+      assert {:error, :invalid_phase_length} == Game.new(context[:user], context[:user], :year)
     end
   end
 
@@ -192,7 +192,7 @@ defmodule Werewolf.GameTest do
   end
 
   defp create_game(user, phase_length) do
-    {:ok, game} = Game.new(user, phase_length)
+    {:ok, game} = Game.new(user, user.id, phase_length)
     game
   end
 

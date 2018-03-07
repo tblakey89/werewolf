@@ -1,3 +1,5 @@
+require IEx
+
 defmodule Werewolf.GameServerTest do
   use ExUnit.Case
   alias Werewolf.GameServer
@@ -31,7 +33,7 @@ defmodule Werewolf.GameServerTest do
     test "maintains state after shutdown" do
       {game, players} = setup_game(:day)
       GameServer.stop(game)
-      {:ok, game} = GameServer.start_link(host(), :day)
+      {:ok, game} = GameServer.start_link(host(), name(), :day)
       assert {:no_win, :none, 2} == GameServer.end_phase(game)
       clear_ets()
     end
@@ -92,7 +94,7 @@ defmodule Werewolf.GameServerTest do
   end
 
   defp setup_game(phase_length) do
-    {:ok, game} = GameServer.start_link(host(), phase_length)
+    {:ok, game} = GameServer.start_link(host(), name(), phase_length)
     assert_able_to_add_users(game, host())
     players = assign_roles_by_making_game_ready(game, host())
     assert_all_players_have_roles(players)
@@ -120,7 +122,11 @@ defmodule Werewolf.GameServerTest do
     %{username: username, id: username}
   end
 
+  defp name() do
+    "test game"
+  end
+
   defp clear_ets() do
-    :ets.delete(:game_state, "test1")
+    :ets.delete(:game_state, name())
   end
 end

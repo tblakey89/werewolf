@@ -6,7 +6,7 @@ defmodule Werewolf.GameSupervisorTest do
     setup [:host]
 
     test "successfully restarts", context do
-      {:ok, game} = GameSupervisor.start_game(context[:host], :day)
+      {:ok, game} = GameSupervisor.start_game(context[:host], context[:host].id, :day)
       Werewolf.GameServer.add_player(game, %{id: "test2"})
       Process.exit(game, :boom)
       :timer.sleep(1)

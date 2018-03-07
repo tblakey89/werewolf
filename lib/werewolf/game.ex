@@ -4,12 +4,12 @@ defmodule Werewolf.Game do
   @enforce_keys [:id, :players, :phase_length]
   defstruct [:id, :players, :phase_length, :end_phase_unix_time, phases: 0]
 
-  def new(user, phase_length) do
+  def new(user, name, phase_length) do
     {:ok, host_player} = Player.new(:host, user)
 
     case Enum.member?(phase_lengths(), phase_length) do
       true ->
-        {:ok, %Game{id: user.id, players: %{user.id => host_player}, phase_length: phase_length}}
+        {:ok, %Game{id: name, players: %{user.id => host_player}, phase_length: phase_length}}
 
       false ->
         {:error, :invalid_phase_length}
