@@ -4,13 +4,17 @@ defmodule Werewolf.GameServer do
 
   @timeout 1000 * 60 * 60 * 24
 
-  def start_link(user, name, phase_length) do
-    GenServer.start_link(__MODULE__, {user, name, phase_length}, name: via_tuple(name))
+  def start_link(user, name, phase_length, state) do
+    GenServer.start_link(__MODULE__, {user, name, phase_length, state}, name: via_tuple(name))
   end
 
-  def init({user, name, phase_length}) do
-    send(self(), {:set_state, user, name, phase_length})
-    {:ok, new_state(user, name, phase_length)}
+  def init({user, name, phase_length, state}) do
+    send(self(), {:set_state, user, name, phase_length, state})
+    {:ok, state || new_state(user, name, phase_length)}
+  end
+
+  def get_state(game) do
+    GenServer.call(game, :get_state)
   end
 
   def add_player(game, user) do
@@ -37,11 +41,15 @@ defmodule Werewolf.GameServer do
     GenServer.stop(game)
   end
 
+  def handle_call(:get_state, _from, state_data) do
+    {:reply, {:ok, state_data}, state_data, @timeout}
+  end
+
   def handle_call({:add_player, user}, _from, state_data) do
     with {:ok, game} <- Game.add_player(state_data.game, user, state_data.rules) do
       state_data
       |> update_game(game)
-      |> reply_success(:ok)
+      |> reply_success({:ok})
     else
       {:error, reason} -> reply_failure(state_data, reason)
     end
@@ -52,7 +60,7 @@ defmodule Werewolf.GameServer do
       state_data
       |> update_game(game)
       |> update_rules(rules)
-      |> reply_success({:ok, game.players})
+      |> reply_success({:ok})
     else
       {:error, reason} -> reply_failure(state_data, reason)
     end
@@ -64,7 +72,7 @@ defmodule Werewolf.GameServer do
       |> update_game(game)
       |> update_rules(rules)
       |> update_timer(start_phase_countdown(game, rules))
-      |> reply_success(:ok)
+      |> reply_success({:ok})
     else
       {:error, reason} -> reply_failure(state_data, reason)
     end
@@ -75,7 +83,7 @@ defmodule Werewolf.GameServer do
            Game.action(state_data.game, user, state_data.rules, Action.new(action_type, target)) do
       state_data
       |> update_game(game)
-      |> reply_success(:ok)
+      |> reply_success({:ok})
     else
       {:error, reason} -> reply_failure(state_data, reason)
     end
@@ -93,10 +101,10 @@ defmodule Werewolf.GameServer do
     trigger_end_phase(state_data, &noreply_success/2)
   end
 
-  def handle_info({:set_state, user, name, phase_length}, _state_data) do
+  def handle_info({:set_state, user, name, phase_length, state}, _state_data) do
     state_data =
       case :ets.lookup(:game_state, name) do
-        [] -> new_state(user, name, phase_length)
+        [] -> Werewolf.GameFromBackup.convert(state) || new_state(user, name, phase_length)
         [{_key, state}] -> state
       end
 
@@ -116,6 +124,10 @@ defmodule Werewolf.GameServer do
   def terminate(_reason, _state), do: :ok
 
   def via_tuple(name), do: {:via, Registry, {Registry.GameServer, name}}
+
+  def whereis_name(name) do
+    GenServer.call(:registry, {:whereis_name, name})
+  end
 
   defp trigger_end_phase(state_data, success_fn) do
     with {:ok, game, rules, target, win_status} <-
@@ -163,7 +175,7 @@ defmodule Werewolf.GameServer do
 
   defp reply_success(state_data, reply) do
     :ets.insert(:game_state, {state_data.game.id, state_data})
-    {:reply, reply, state_data, @timeout}
+    {:reply, Tuple.append(reply, state_data), state_data, @timeout}
   end
 
   defp update_game(state_data, game) do

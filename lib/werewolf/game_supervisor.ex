@@ -10,8 +10,8 @@ defmodule Werewolf.GameSupervisor do
     Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
-  def start_game(user, name, phase_length) do
-    Supervisor.start_child(__MODULE__, [user, name, phase_length])
+  def start_game(user, name, phase_length, state \\ nil) do
+    Supervisor.start_child(__MODULE__, [user, name, phase_length, state])
   end
 
   def stop_game(name) do

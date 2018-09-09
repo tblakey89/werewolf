@@ -1,5 +1,3 @@
-require IEx
-
 defmodule Werewolf.GameServerTest do
   use ExUnit.Case
   alias Werewolf.GameServer
@@ -24,7 +22,7 @@ defmodule Werewolf.GameServerTest do
     test "successfully transitions phase" do
       {game, players} = setup_game(:millisecond)
       :timer.sleep(1)
-      {_, _, 3} = GameServer.end_phase(game)
+      {_, _, 3, _} = GameServer.end_phase(game)
       clear_ets()
     end
   end
@@ -33,15 +31,15 @@ defmodule Werewolf.GameServerTest do
     test "maintains state after shutdown" do
       {game, players} = setup_game(:day)
       GameServer.stop(game)
-      {:ok, game} = GameServer.start_link(host(), name(), :day)
-      assert {:no_win, :none, 2} == GameServer.end_phase(game)
+      {:ok, game} = GameServer.start_link(host(), name(), :day, nil)
+      assert {:no_win, :none, 2, _} = GameServer.end_phase(game)
       clear_ets()
     end
   end
 
   defp add_users(game, player_count) do
     for n <- 2..player_count,
-        do: :ok = GameServer.add_player(game, %{username: "test#{n}", id: "test#{n}"})
+        do: {:ok, _} = GameServer.add_player(game, %{username: "test#{n}", id: "test#{n}"})
   end
 
   defp assert_all_players_have_roles(players) do
@@ -74,7 +72,7 @@ defmodule Werewolf.GameServerTest do
   end
 
   defp assert_game_launches(game, host) do
-    assert :ok == GameServer.launch_game(game, host)
+    assert {:ok, _} = GameServer.launch_game(game, host)
   end
 
   defp assert_able_to_add_users(game, host) do
@@ -85,8 +83,8 @@ defmodule Werewolf.GameServerTest do
   end
 
   defp assign_roles_by_making_game_ready(game, host) do
-    {:ok, players} = GameServer.game_ready(game, host)
-    players
+    {:ok, state} = GameServer.game_ready(game, host)
+    state.game.players
   end
 
   defp host() do
@@ -94,7 +92,7 @@ defmodule Werewolf.GameServerTest do
   end
 
   defp setup_game(phase_length) do
-    {:ok, game} = GameServer.start_link(host(), name(), phase_length)
+    {:ok, game} = GameServer.start_link(host(), name(), phase_length, nil)
     assert_able_to_add_users(game, host())
     players = assign_roles_by_making_game_ready(game, host())
     assert_all_players_have_roles(players)
@@ -113,7 +111,7 @@ defmodule Werewolf.GameServerTest do
       GameServer.action(game, user(player.id), target.id, :vote)
     end)
 
-    {win_status, killed_player, _} = GameServer.end_phase(game)
+    {win_status, killed_player, _, _} = GameServer.end_phase(game)
     assert target.id == killed_player
     win_status
   end

@@ -109,15 +109,3 @@ defmodule Werewolf.Game do
     |> Enum.reject(fn action -> is_nil(action) end)
   end
 end
-
-# an alternative way of looking at it, is to save a time in the game server, then if the
-# process crashes, then redo the timer using the time we set for next phase to begin
-# set timer on lauch phase and end_phase
-# cancel timer on end phase if not cancelled
-# set end_phase time on game struct when launch or end phase is called
-# restart timer if process dies, when recreating from ETS
-# only do timer if game state not game_over (or only day/night)
-
-# TODO
-# supervisors for gen_servers
-# add ets backup, other db backup
