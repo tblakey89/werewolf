@@ -46,17 +46,7 @@ defmodule Werewolf.GameServer do
   end
 
   def handle_call({:add_player, user}, _from, state_data) do
-    with {:ok, game} <- Game.add_player(state_data.game, user, state_data.rules) do
-      state_data
-      |> update_game(game)
-      |> reply_success({:ok})
-    else
-      {:error, reason} -> reply_failure(state_data, reason)
-    end
-  end
-
-  def handle_call({:game_ready, user}, _from, state_data) do
-    with {:ok, game, rules} <- Game.set_game_ready(state_data.game, user, state_data.rules) do
+    with {:ok, game, rules} <- Game.add_player(state_data.game, user, state_data.rules) do
       state_data
       |> update_game(game)
       |> update_rules(rules)

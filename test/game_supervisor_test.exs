@@ -32,28 +32,30 @@ defmodule Werewolf.GameSupervisorTest do
   defp host(_context), do: [host: %{username: "test1", id: 1}]
 
   defp state_from_db(_context) do
-    [state_from_db: %{
-      "game" => %{
-        "end_phase_unix_time" => nil,
-        "id" => 178,
-        "phase_length" => "day",
-        "phases" => 0,
-        "players" => %{
-          "1" => %{
-            "actions" => %{
-              "1" => %{
-                "type" => "vote",
-                "target" => 2
-              }
-            },
-            "alive" => true,
-            "host" => true,
-            "id" => 1,
-            "role" => "none"
+    [
+      state_from_db: %{
+        "game" => %{
+          "end_phase_unix_time" => nil,
+          "id" => 178,
+          "phase_length" => "day",
+          "phases" => 0,
+          "players" => %{
+            "1" => %{
+              "actions" => %{
+                "1" => %{
+                  "type" => "vote",
+                  "target" => 2
+                }
+              },
+              "alive" => true,
+              "host" => true,
+              "id" => 1,
+              "role" => "none"
+            }
           }
-        }
-      },
-      "rules" => %{"state" => "initialized"}
-    }]
+        },
+        "rules" => %{"state" => "initialized"}
+      }
+    ]
   end
 end

@@ -17,11 +17,18 @@ defmodule Werewolf.GameTest do
   end
 
   describe "add_player/3" do
-    setup [:game, :rules, :other_user, :user]
+    setup [:game, :ready_game, :rules, :other_user, :user]
 
     test "adds the user to the game player list", context do
-      {:ok, game} = Game.add_player(context[:game], context[:other_user], context[:rules])
+      {:ok, game, rules} = Game.add_player(context[:game], context[:other_user], context[:rules])
       assert Enum.count(game.players) == 2
+    end
+
+    test "returns updated rules when enough players", context do
+      {:ok, game, rules} =
+        Game.add_player(context[:ready_game], context[:other_user], context[:rules])
+
+      assert rules.state != context[:rules].state
     end
 
     test "fails to add user if wrong state", context do
@@ -37,59 +44,38 @@ defmodule Werewolf.GameTest do
     end
   end
 
-  describe "set_game_ready/3" do
-    setup [:full_game, :rules, :user, :game, :other_user]
-
-    test "when game has enough players, successfully set as ready", context do
-      {:ok, game, rules} =
-        Game.set_game_ready(context[:full_game], context[:user], context[:rules])
-
-      assert rules.state == :ready
-      assert game.players[context[:user].id].role != :none
-    end
-
-    test "when game does not have enough players", context do
-      assert {:error, :game_not_ready} ==
-               Game.set_game_ready(context[:game], context[:user], context[:rules])
-    end
-
-    test "when non-host sets game as ready", context do
-      assert {:error, :unauthorized} ==
-               Game.set_game_ready(context[:full_game], context[:other_user], context[:rules])
-    end
-  end
-
   describe "launch_game/3" do
-    setup [:full_game, :ready_rules, :rules, :user, :game, :other_user]
+    setup [:ready_game, :ready_rules, :rules, :user, :game, :other_user]
 
     test "when state is ready, able to launch game", context do
       {:ok, game, rules} =
-        Game.launch_game(context[:full_game], context[:user], context[:ready_rules])
+        Game.launch_game(context[:ready_game], context[:user], context[:ready_rules])
 
       assert rules.state == :night_phase
       assert game.phases == 1
+      assert game.players[context[:user].id].role != :none
     end
 
     test "when game is in the wrong state", context do
       {:error, :invalid_action} =
-        Game.launch_game(context[:full_game], context[:user], context[:rules])
+        Game.launch_game(context[:ready_game], context[:user], context[:rules])
     end
 
     test "when not-host tries to launch game", context do
       {:error, :unauthorized} =
-        Game.launch_game(context[:full_game], context[:other_user], context[:ready_rules])
+        Game.launch_game(context[:ready_game], context[:other_user], context[:ready_rules])
     end
   end
 
   describe "action/4" do
-    setup [:full_game, :day_rules, :night_rules, :rules, :user, :vote_action]
+    setup [:ready_game, :day_rules, :night_rules, :rules, :user, :vote_action]
 
     test "successfully performs action, and adds to player", context do
-      game = put_in(context[:full_game].phases, 1)
+      game = put_in(context[:ready_game].phases, 1)
 
       {:ok, game} =
         Game.action(
-          context[:full_game],
+          context[:ready_game],
           context[:user],
           context[:day_rules],
           context[:vote_action]
@@ -101,7 +87,7 @@ defmodule Werewolf.GameTest do
     test "when not a valid action for the state", context do
       {:error, :invalid_action} =
         Game.action(
-          context[:full_game],
+          context[:ready_game],
           context[:user],
           context[:night_rules],
           context[:vote_action]
@@ -138,12 +124,12 @@ defmodule Werewolf.GameTest do
     end
   end
 
-  defp full_game(_context) do
-    [full_game: %Game{id: 0, players: generate_players(), phase_length: :day, phases: 0}]
+  defp ready_game(_context) do
+    [ready_game: %Game{id: 0, players: generate_players(), phase_length: :day, phases: 0}]
   end
 
   defp game(_context), do: [game: create_game(%{username: "test1", id: "test1"}, :day)]
-  defp other_user(_context), do: [other_user: %{username: "test2", id: "test2"}]
+  defp other_user(_context), do: [other_user: %{username: "test99", id: "test99"}]
   defp rules(_context), do: [rules: Rules.new()]
   defp ready_rules(_context), do: [ready_rules: %Rules{state: :ready}]
   defp day_rules(_context), do: [day_rules: %Rules{state: :day_phase}]

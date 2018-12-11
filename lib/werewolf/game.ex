@@ -20,17 +20,12 @@ defmodule Werewolf.Game do
     with {:ok, rules} <- Rules.check(rules, {:add_player, game}),
          {:ok, players} <- PlayerRules.unique_check(game.players, user) do
       {:ok, new_player} = Player.new(:player, user)
-      {:ok, put_in(game.players[user.id], new_player)}
-    else
-      {:error, reason} -> {:error, reason}
-    end
-  end
 
-  def set_game_ready(game, user, rules) do
-    with :ok <- PlayerRules.host_check(game.players, user),
-         {:ok, rules} <- Rules.check(rules, {:set_as_ready, game}) do
-      game = Map.put(game, :players, Player.assign_roles(game.players))
-      {:ok, game, rules}
+      {:ok,
+       %{
+         game
+         | players: Map.put(game.players, user.id, new_player)
+       }, rules}
     else
       {:error, reason} -> {:error, reason}
     end
@@ -43,7 +38,8 @@ defmodule Werewolf.Game do
        %{
          game
          | phases: 1,
-           end_phase_unix_time: Phase.calculate_end_of_phase_unix(game.phase_length)
+           end_phase_unix_time: Phase.calculate_end_of_phase_unix(game.phase_length),
+           players: Player.assign_roles(game.players)
        }, rules}
     else
       {:error, reason} -> {:error, reason}

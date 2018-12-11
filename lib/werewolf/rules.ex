@@ -10,15 +10,21 @@ defmodule Werewolf.Rules do
 
   def check(%Rules{state: :initialized} = rules, {:add_player, game}) do
     case able_to_add_new_player?(game) do
-      true -> {:ok, rules}
-      false -> {:error, :game_full}
+      true ->
+        case ready_to_start_with_new_player?(game) do
+          true -> {:ok, %Rules{rules | state: :ready}}
+          false -> {:ok, rules}
+        end
+
+      false ->
+        {:error, :game_full}
     end
   end
 
-  def check(%Rules{state: :initialized} = rules, {:set_as_ready, game}) do
-    case ready_to_start?(game) do
-      true -> {:ok, %Rules{rules | state: :ready}}
-      false -> {:error, :game_not_ready}
+  def check(%Rules{state: :ready} = rules, {:add_player, game}) do
+    case able_to_add_new_player?(game) do
+      true -> {:ok, rules}
+      false -> {:error, :game_full}
     end
   end
 
@@ -42,10 +48,10 @@ defmodule Werewolf.Rules do
   def check(_state, _action), do: {:error, :invalid_action}
 
   defp able_to_add_new_player?(game) do
-    Enum.count(game.players) + 1 <= @max_players
+    Enum.count(game.players) < @max_players
   end
 
-  defp ready_to_start?(game) do
-    Enum.count(game.players) >= @min_players && Enum.count(game.players) <= @max_players
+  defp ready_to_start_with_new_player?(game) do
+    Enum.count(game.players) >= @min_players - 1 && Enum.count(game.players) < @max_players
   end
 end

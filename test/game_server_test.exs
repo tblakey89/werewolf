@@ -72,7 +72,8 @@ defmodule Werewolf.GameServerTest do
   end
 
   defp assert_game_launches(game, host) do
-    assert {:ok, _} = GameServer.launch_game(game, host)
+    assert {:ok, state} = GameServer.launch_game(game, host)
+    state
   end
 
   defp assert_able_to_add_users(game, host) do
@@ -94,10 +95,9 @@ defmodule Werewolf.GameServerTest do
   defp setup_game(phase_length) do
     {:ok, game} = GameServer.start_link(host(), name(), phase_length, nil)
     assert_able_to_add_users(game, host())
-    players = assign_roles_by_making_game_ready(game, host())
-    assert_all_players_have_roles(players)
-    assert_game_launches(game, host())
-    {game, players}
+    assert {:ok, state} = GameServer.launch_game(game, host)
+    assert_all_players_have_roles(state.game.players)
+    {game, state.game.players}
   end
 
   defp players_by_type(players, type) do
