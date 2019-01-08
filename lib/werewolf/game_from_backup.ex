@@ -27,12 +27,18 @@ defmodule Werewolf.GameFromBackup do
     player = struct(Werewolf.Player, map_keys_to_atoms(player_as_map))
 
     Map.put(player, :role, String.to_atom(player.role))
-    |> Map.put(:actions, convert_actions_from_map(player.actions))
+    |> Map.put(:actions, convert_phase_actions_from_map(player.actions))
+  end
+
+  defp convert_phase_actions_from_map(phase_actions_as_map) do
+    Enum.reduce(phase_actions_as_map, %{}, fn {key, value}, accumulator ->
+      Map.put(accumulator, String.to_integer(key), convert_actions_from_map(value))
+    end)
   end
 
   defp convert_actions_from_map(actions_as_map) do
     Enum.reduce(actions_as_map, %{}, fn {key, value}, accumulator ->
-      Map.put(accumulator, String.to_integer(key), convert_action_from_map(value))
+      Map.put(accumulator, String.to_atom(key), convert_action_from_map(value))
     end)
   end
 

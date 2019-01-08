@@ -58,10 +58,10 @@ defmodule Werewolf.GameServer do
 
   def handle_call({:launch_game, user}, _from, state_data) do
     with {:ok, game, rules} <- Game.launch_game(state_data.game, user, state_data.rules) do
+      start_phase_countdown(game, rules)
       state_data
       |> update_game(game)
       |> update_rules(rules)
-      |> update_timer(start_phase_countdown(game, rules))
       |> reply_success({:ok})
     else
       {:error, reason} -> reply_failure(state_data, reason)
@@ -80,8 +80,6 @@ defmodule Werewolf.GameServer do
   end
 
   def handle_call(:end_phase, _from, state_data) do
-    # in case end_phase not called from timer, cancel timer
-    cancel_phase_countdown(state_data.timer)
     trigger_end_phase(state_data, &reply_success/2)
   end
 
@@ -122,10 +120,10 @@ defmodule Werewolf.GameServer do
   defp trigger_end_phase(state_data, success_fn) do
     with {:ok, game, rules, target, win_status} <-
            Game.end_phase(state_data.game, state_data.rules) do
+      start_phase_countdown(game, rules)
       state_data
       |> update_game(game)
       |> update_rules(rules)
-      |> update_timer(start_phase_countdown(game, rules))
       |> success_fn.({win_status, target, game.phases})
     else
       {:error, reason} -> reply_failure(state_data, reason)
@@ -174,9 +172,5 @@ defmodule Werewolf.GameServer do
 
   defp update_rules(state_data, rules) do
     put_in(state_data.rules, rules)
-  end
-
-  defp update_timer(state_data, timer) do
-    put_in(state_data, [:timer], timer)
   end
 end

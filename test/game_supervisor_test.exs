@@ -41,10 +41,12 @@ defmodule Werewolf.GameSupervisorTest do
           "phases" => 0,
           "players" => %{
             "1" => %{
-              "actions" => %{
-                "1" => %{
-                  "type" => "vote",
-                  "target" => 2
+              "vote" => %{
+                "actions" => %{
+                  "1" => %{
+                    "type" => "vote",
+                    "target" => 2
+                  }
                 }
               },
               "alive" => true,

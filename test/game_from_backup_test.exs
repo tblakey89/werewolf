@@ -26,8 +26,10 @@ defmodule Werewolf.GameFromBackupTest do
             "1" => %{
               "actions" => %{
                 "1" => %{
-                  "type" => "vote",
-                  "target" => 2
+                  "vote" => %{
+                    "type" => "vote",
+                    "target" => 2
+                  }
                 }
               },
               "alive" => true,
@@ -53,9 +55,12 @@ defmodule Werewolf.GameFromBackupTest do
           players: %{
             1 => %Werewolf.Player{
               actions: %{
-                1 => %Werewolf.Action{
-                  type: :vote,
-                  target: 2
+                1 => %{
+                  vote:
+                    %Werewolf.Action{
+                    type: :vote,
+                    target: 2
+                  }
                 }
               },
               alive: true,
