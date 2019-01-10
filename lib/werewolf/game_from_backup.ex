@@ -45,6 +45,7 @@ defmodule Werewolf.GameFromBackup do
   defp convert_action_from_map(action_as_map) do
     action = struct(Werewolf.Action, map_keys_to_atoms(action_as_map))
     Map.put(action, :type, String.to_atom(action.type))
+    |> Map.put(:option, String.to_atom(action.option))
   end
 
   defp convert_rules_from_map(nil), do: nil

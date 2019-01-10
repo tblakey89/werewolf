@@ -45,7 +45,8 @@ defmodule Werewolf.GameSupervisorTest do
                 "actions" => %{
                   "1" => %{
                     "type" => "vote",
-                    "target" => 2
+                    "target" => 2,
+                    "option" => "none"
                   }
                 }
               },

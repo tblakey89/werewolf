@@ -28,7 +28,8 @@ defmodule Werewolf.GameFromBackupTest do
                 "1" => %{
                   "vote" => %{
                     "type" => "vote",
-                    "target" => 2
+                    "target" => 2,
+                    "option" => "none"
                   }
                 }
               },
