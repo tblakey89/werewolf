@@ -4,6 +4,8 @@ defmodule Werewolf.Phase do
       phase_lengths_in_milliseconds()[phase_length]
   end
 
+  def milliseconds_till_end_of_phase(nil), do: nil
+
   def milliseconds_till_end_of_phase(end_time) do
     DateTime.from_unix!(end_time, :millisecond)
     |> DateTime.diff(DateTime.utc_now(), :millisecond)

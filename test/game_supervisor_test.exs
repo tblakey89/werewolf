@@ -6,12 +6,17 @@ defmodule Werewolf.GameSupervisorTest do
     setup [:host]
 
     test "successfully restarts", context do
-      {:ok, game} = GameSupervisor.start_game(context[:host], context[:host].id, :day)
+      {:ok, game} =
+        GameSupervisor.start_game(context[:host], context[:host].id, :day, nil, fn _a, _b ->
+          nil
+        end)
+
       Werewolf.GameServer.add_player(game, %{id: 2})
       Process.exit(game, :boom)
       :timer.sleep(1)
       via = GameServer.via_tuple(context[:host].id)
       assert :sys.get_state(via).game.players[2].id == 2
+      assert :sys.get_state(via).broadcast_func
       GameSupervisor.stop_game(context[:host].id)
     end
   end
@@ -20,9 +25,16 @@ defmodule Werewolf.GameSupervisorTest do
     setup [:host, :state_from_db]
 
     test "starts new game with old state", context do
-      GameSupervisor.start_game(context[:host], context[:host].id, :day, context[:state_from_db])
+      GameSupervisor.start_game(
+        context[:host],
+        context[:host].id,
+        :day,
+        context[:state_from_db],
+        fn _a, _b -> nil end
+      )
+
       via = GameServer.via_tuple(context[:host].id)
-      {:ok, state} = Werewolf.GameServer.add_player(via, %{id: 3})
+      {:ok, :add_player, _, state} = Werewolf.GameServer.add_player(via, %{id: 3})
       assert :sys.get_state(via).game.players[1].id == 1
       assert :sys.get_state(via).game.players[3].id == 3
       GameSupervisor.stop_game(context[:host].id)

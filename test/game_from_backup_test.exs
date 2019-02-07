@@ -57,8 +57,7 @@ defmodule Werewolf.GameFromBackupTest do
             1 => %Werewolf.Player{
               actions: %{
                 1 => %{
-                  vote:
-                    %Werewolf.Action{
+                  vote: %Werewolf.Action{
                     type: :vote,
                     target: 2
                   }
