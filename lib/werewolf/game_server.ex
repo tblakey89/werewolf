@@ -132,8 +132,6 @@ defmodule Werewolf.GameServer do
   defp trigger_end_phase(state_data, success_fn) do
     with {:ok, game, rules, target, win_status} <-
            Game.end_phase(state_data.game, state_data.rules) do
-      start_phase_countdown(game, rules)
-
       state_data
       |> update_game(game)
       |> update_rules(rules)
@@ -167,7 +165,8 @@ defmodule Werewolf.GameServer do
     end
   end
 
-  defp noreply_success(state_data, _) do
+  defp noreply_success(state_data, reply) do
+    state_data.broadcast_func.(state_data, reply)
     {:noreply, state_data, @timeout}
   end
 

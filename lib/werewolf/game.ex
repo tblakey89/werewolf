@@ -96,7 +96,7 @@ defmodule Werewolf.Game do
   end
 
   def phase_lengths() do
-    [:millisecond, :second, :hour, :day]
+    [:millisecond, :second, :five_minute, :thirty_minute, :hour, :day]
   end
 
   defp phase_actions(game) do

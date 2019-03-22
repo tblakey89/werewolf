@@ -16,6 +16,8 @@ defmodule Werewolf.Phase do
     %{
       millisecond: 1,
       second: 1000,
+      five_minute: 5 * 60 * 1000,
+      thirty_minute: 30 * 60 * 1000,
       hour: 60 * 60 * 1000,
       day: 24 * 60 * 60 * 1000
     }
