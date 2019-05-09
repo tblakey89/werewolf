@@ -62,8 +62,6 @@ defmodule Werewolf.GameServer do
 
   def handle_call({:launch_game, user}, _from, state_data) do
     with {:ok, game, rules} <- Game.launch_game(state_data.game, user, state_data.rules) do
-      start_phase_countdown(game, rules)
-
       state_data
       |> update_game(game)
       |> update_rules(rules)
