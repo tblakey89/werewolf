@@ -35,7 +35,7 @@ defmodule Werewolf.Votes do
   defp winner(votes) when map_size(votes) == 0, do: :none
 
   defp winner(votes) do
-    Enum.max_by(votes, fn {_, value} -> value end, {:none, 0})
+    Enum.max_by(votes, fn {_, value} -> value end, fn -> {:none, 0} end)
     |> tie_check(votes)
   end
 end
