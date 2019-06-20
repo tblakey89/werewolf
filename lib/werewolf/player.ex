@@ -2,6 +2,7 @@ defmodule Werewolf.Player do
   alias Werewolf.Player
 
   @enforce_keys [:id, :host]
+  @derive Jason.Encoder
   defstruct [:id, host: false, role: :none, alive: true, actions: %{}]
 
   @villager_to_werewolf 6

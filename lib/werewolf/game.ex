@@ -2,6 +2,7 @@ defmodule Werewolf.Game do
   alias Werewolf.{Game, Player, PlayerRules, Rules, ActionRules, Action, Votes, Phase}
 
   @enforce_keys [:id, :players, :phase_length]
+  @derive Jason.Encoder
   defstruct [:id, :players, :phase_length, :end_phase_unix_time, phases: 0]
 
   def new(user, name, phase_length) do

@@ -1,6 +1,7 @@
 defmodule Werewolf.Rules do
   alias __MODULE__
 
+  @derive Jason.Encoder
   defstruct state: :initialized
 
   @min_players 8
