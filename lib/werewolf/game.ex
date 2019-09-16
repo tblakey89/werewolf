@@ -68,14 +68,14 @@ defmodule Werewolf.Game do
     # kill player, or not if tie
     # win check
     # if win change to gameover, declare winner,
-    # :werewolf_win, :villager_win, otherwise
+    # :werewolf_win, :village_win, otherwise
     # go to next day/night phase
     # don't need to worry about alternate paths,
     # should be same win or continue,
     # all we need to do is send the messages, let phoenix
     # handle how to broadcast the actual text
     # like:
-    # {:ok, :villager_win, 'player_id'} ('player_id' is player who was killed)
+    # {:ok, :village_win, 'player_id'} ('player_id' is player who was killed)
     # {:ok, :werewolf_win, :user_dead}
     # {:ok, :day/:night, :user_dead/:none}
     # :user_dead could in the future be replaced by list of tuples
