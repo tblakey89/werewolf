@@ -52,7 +52,9 @@ defmodule Werewolf.PlayerTest do
       player = context[:regular_player]
       player = put_in(player.actions["1"], %{vote: %{}})
       new_action = %Action{type: :vote, target: "user"}
-      {:error, :action_already_exists} = Player.add_action(player, "1", new_action)
+      assert player.actions["1"][:vote] == %{}
+      {:ok, player} = Player.add_action(player, "1", new_action)
+      assert player.actions["1"][:vote] == new_action
     end
   end
 

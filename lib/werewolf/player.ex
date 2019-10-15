@@ -21,12 +21,8 @@ defmodule Werewolf.Player do
 
   def add_action(player, phase_number, action) do
     cond do
-      Map.has_key?(player.actions, phase_number) &&
-          Map.has_key?(player.actions[phase_number], action.type) ->
-        {:error, :action_already_exists}
-
       Map.has_key?(player.actions, phase_number) ->
-        actions = Map.merge(%{action.type => action}, player.actions[phase_number])
+        actions = Map.merge(player.actions[phase_number], %{action.type => action})
         {:ok, put_in(player.actions[phase_number], actions)}
 
       true ->
