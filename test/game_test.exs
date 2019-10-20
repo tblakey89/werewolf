@@ -124,6 +124,15 @@ defmodule Werewolf.GameTest do
     end
   end
 
+  describe "current_vote_count/1" do
+    setup [:finished_game]
+
+    test "returns correct vote count", context do
+      finished_game = context[:finished_game]
+      assert Game.current_vote_count(finished_game) == {2, "test2"}
+    end
+  end
+
   defp ready_game(_context) do
     [ready_game: %Game{id: 0, players: generate_players(), phase_length: :day, phases: 0}]
   end

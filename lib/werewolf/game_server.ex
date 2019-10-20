@@ -77,7 +77,7 @@ defmodule Werewolf.GameServer do
            Game.action(state_data.game, user, state_data.rules, Action.new(action_type, target)) do
       state_data
       |> update_game(game)
-      |> reply_success({:ok})
+      |> reply_success({:ok, :action, state_data.rules.state, action_type, user, target, Game.current_vote_count(game)})
     else
       {:error, reason} -> reply_failure(state_data, reason)
     end

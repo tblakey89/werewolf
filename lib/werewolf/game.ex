@@ -100,6 +100,11 @@ defmodule Werewolf.Game do
     [:millisecond, :second, :two_minute, :five_minute, :thirty_minute, :hour, :day]
   end
 
+  def current_vote_count(game) do
+    {:ok, votes, target} = Votes.count_from_actions(phase_actions(game))
+    {Enum.max(Map.values(votes)), target}
+  end
+
   defp phase_actions(game) do
     Enum.map(game.players, fn {_, player} -> player.actions end)
     |> Enum.map(fn actions -> actions[game.phases] end)
