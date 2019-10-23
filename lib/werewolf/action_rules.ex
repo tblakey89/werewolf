@@ -7,10 +7,7 @@ defmodule Werewolf.ActionRules do
         %Action{type: :vote} = action,
         players
       ) do
-    case valid_target?(action.target, players) do
-      true -> {:ok, action}
-      false -> {:error, :invalid_target}
-    end
+    response(action, players)
   end
 
   def valid(
@@ -19,10 +16,25 @@ defmodule Werewolf.ActionRules do
         %Action{type: :vote} = action,
         players
       ) do
-    case valid_target?(action.target, players) do
-      true -> {:ok, action}
-      false -> {:error, :invalid_target}
-    end
+    response(action, players)
+  end
+
+  def valid(
+        %Rules{state: :night_phase},
+        %Player{alive: true, role: :doctor},
+        %Action{type: :heal} = action,
+        players
+      ) do
+    response(action, players)
+  end
+
+  def valid(
+        %Rules{state: :night_phase},
+        %Player{alive: true, role: :detective},
+        %Action{type: :inspect} = action,
+        players
+      ) do
+    response(action, players)
   end
 
   def valid(_rules, _player, _action, _players) do
@@ -31,5 +43,12 @@ defmodule Werewolf.ActionRules do
 
   defp valid_target?(target, players) do
     Player.alive?(players, target)
+  end
+
+  defp response(action, players) do
+    case valid_target?(action.target, players) do
+      true -> {:ok, action}
+      false -> {:error, :invalid_target}
+    end
   end
 end

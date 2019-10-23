@@ -81,7 +81,9 @@ defmodule Werewolf.Game do
     # :user_dead could in the future be replaced by list of tuples
     # [{:user_dead, :werewolf}, {:user_dead, :vigilante}], etc
     with {:ok, votes, target} <- Votes.count_from_actions(phase_actions(game)),
-         {:ok, players, win_status} <- Player.kill_player(game.players, target),
+         {:ok, heal_target} <- Action.resolve_heal_action(game.players, game.phases),
+         {:ok, players, win_status} <- Player.kill_player(game.players, target, heal_target),
+         {:ok, players} <- Action.resolve_inspect_action(players, game.phases),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status}) do
       game = %{
         game

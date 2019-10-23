@@ -108,9 +108,10 @@ defmodule Werewolf.GameTest do
       assert win_status == :village_win
     end
 
-    test "when game tie, sends no_win atom, and updates state", context do
+    test "when votes tie, sends no_win atom, and updates state", context do
       finished_game = context[:finished_game]
       finished_game = put_in(finished_game.players["test2"].actions[1].vote.target, "test1")
+      finished_game = put_in(finished_game.players["test3"].actions[1], nil)
       {:ok, game, rules, target, win_status} = Game.end_phase(finished_game, context[:day_rules])
       assert game.players["test2"].alive == true
       assert rules.state == :night_phase
@@ -129,7 +130,7 @@ defmodule Werewolf.GameTest do
 
     test "returns correct vote count", context do
       finished_game = context[:finished_game]
-      assert Game.current_vote_count(finished_game) == {2, "test2"}
+      assert Game.current_vote_count(finished_game) == {3, "test2"}
     end
   end
 
@@ -172,6 +173,20 @@ defmodule Werewolf.GameTest do
             alive: true,
             host: false,
             role: :werewolf,
+            actions: %{
+              1 => %{
+                vote: %Action{
+                  type: :vote,
+                  target: "test2"
+                }
+              }
+            }
+          },
+          "test3" => %Player{
+            id: "test3",
+            alive: true,
+            host: false,
+            role: :villager,
             actions: %{
               1 => %{
                 vote: %Action{

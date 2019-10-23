@@ -11,7 +11,9 @@ defmodule Werewolf.Support.PlayerTestSetup do
     do: [
       player_map: %{
         "villager" => %Player{id: "villager", host: false, role: :villager},
-        "werewolf" => %Player{id: "werewolf", host: false, role: :werewolf}
+        "werewolf" => %Player{id: "werewolf", host: false, role: :werewolf},
+        "doctor" => %Player{id: "doctor", host: false, role: :doctor},
+        "detective" => %Player{id: "detective", host: false, role: :detective}
       }
     ]
 

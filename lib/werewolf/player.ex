@@ -15,6 +15,19 @@ defmodule Werewolf.Player do
     [:villager, :werewolf]
   end
 
+  def roles_by_team() do
+    %{
+      werewolf: :werewolf,
+      villager: :villager,
+      detective: :villager,
+      doctor: :villager
+    }
+  end
+
+  def player_team(role) do
+    roles_by_team()[role]
+  end
+
   def alive?(players, key) do
     players[key].alive
   end
@@ -39,17 +52,23 @@ defmodule Werewolf.Player do
     end)
   end
 
-  def kill_player(players, :none), do: {:ok, players, win_check(players)}
+  def kill_player(players, target, heal_target \\ :none)
 
-  def kill_player(players, target) do
+  def kill_player(players, :none, _), do: {:ok, players, win_check(players)}
+
+  def kill_player(players, target, heal_target) when target == heal_target do
+    {:ok, players, win_check(players)}
+  end
+
+  def kill_player(players, target, _heal_target) do
     players = put_in(players[target].alive, false)
     {:ok, players, win_check(players)}
   end
 
-  defp by_role(players) do
+  defp by_team(players) do
     Enum.filter(players, fn {_, player} -> player.alive end)
     |> Enum.reduce(%{villager: 0, werewolf: 0}, fn {_key, %{role: role}}, acc ->
-      Map.update!(acc, role, &(&1 + 1))
+      Map.update!(acc, player_team(role), &(&1 + 1))
     end)
   end
 
@@ -62,17 +81,17 @@ defmodule Werewolf.Player do
 
   defp role_numbers(player_count) do
     werewolf_count = round(Float.floor(player_count / @villager_to_werewolf) + 1)
-    villager_count = round(player_count - werewolf_count)
-    %{werewolf: werewolf_count, villager: villager_count}
+    villager_count = round(player_count - werewolf_count - 2)
+    %{werewolf: werewolf_count, villager: villager_count, doctor: 1, detective: 1}
   end
 
   defp win_check(players) do
-    role_count = by_role(players)
+    team_count = by_team(players)
 
     cond do
-      role_count[:werewolf] == 0 && role_count[:villager] == 0 -> :tie
-      role_count[:werewolf] == 0 -> :village_win
-      role_count[:villager] == 0 -> :werewolf_win
+      team_count[:werewolf] == 0 && team_count[:villager] == 0 -> :tie
+      team_count[:werewolf] == 0 -> :village_win
+      team_count[:werewolf] >= team_count[:villager] -> :werewolf_win
       true -> :no_win
     end
   end

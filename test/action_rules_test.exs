@@ -108,4 +108,136 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
   end
+
+  describe "valid/3 doctor" do
+    setup [
+      :heal_action,
+      :player,
+      :doctor,
+      :dead_doctor,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to heal, returns ok tuple", context do
+      action = context[:heal_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:doctor],
+                 action,
+                 context[:players]
+               )
+    end
+
+    test "unable to heal for dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:doctor],
+                 context[:heal_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to heal when doctor is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_doctor],
+                 context[:heal_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to heal in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:doctor],
+                 context[:heal_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to heal when wrong role", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf],
+                 context[:heal_action],
+                 context[:players]
+               )
+    end
+  end
+
+  describe "valid/3 detective" do
+    setup [
+      :inspect_action,
+      :player,
+      :detective,
+      :dead_detective,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to inspect, returns ok tuple", context do
+      action = context[:inspect_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:detective],
+                 action,
+                 context[:players]
+               )
+    end
+
+    test "unable to inspect for dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:detective],
+                 context[:inspect_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to inspect when detective is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_detective],
+                 context[:inspect_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to inspect in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:detective],
+                 context[:inspect_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to inspect when wrong role", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf],
+                 context[:inspect_action],
+                 context[:players]
+               )
+    end
+  end
 end

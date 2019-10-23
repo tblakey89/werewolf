@@ -52,7 +52,7 @@ defmodule Werewolf.GameServerTest do
   end
 
   defp assert_village_win_when_werewolves_killed(game, players) do
-    players_by_type(players, :werewolf)
+    players_by_team(players, :werewolf)
     |> Enum.map(fn {_, werewolf} ->
       # switch to day phase
       GameServer.end_phase(game)
@@ -62,9 +62,11 @@ defmodule Werewolf.GameServerTest do
   end
 
   defp assert_werewolf_win_when_villagers_killed(game, players) do
-    players_by_type(players, :villager)
-    |> Enum.map(fn {_, villager} ->
-      vote_for_target_and_end_phase(game, players, villager)
+    players_by_team(players, :villager)
+    |> Enum.reduce_while([], fn {_, villager}, acc ->
+      win_status = vote_for_target_and_end_phase(game, players, villager)
+      acc = acc ++ [win_status]
+      if win_status != :werewolf_win, do: {:cont, acc}, else: {:halt, acc}
     end)
     |> assert_correct_win(:werewolf_win)
   end
@@ -104,9 +106,9 @@ defmodule Werewolf.GameServerTest do
     {game, state.game.players}
   end
 
-  defp players_by_type(players, type) do
+  defp players_by_team(players, type) do
     Enum.filter(players, fn {_, player} ->
-      player.role == type && player.alive
+      Werewolf.Player.player_team(player.role) == type && player.alive
     end)
   end
 
