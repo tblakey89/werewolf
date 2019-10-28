@@ -22,6 +22,15 @@ defmodule Werewolf.GameFromBackupTest do
           "id" => 178,
           "phase_length" => "day",
           "phases" => 0,
+          "win_status" => "werewolf_win",
+          "targets" => %{
+            "1" => [
+              %{
+                "type" => "werewolf",
+                "target" => 2,
+              }
+            ]
+          },
           "players" => %{
             "1" => %{
               "actions" => %{
@@ -29,7 +38,8 @@ defmodule Werewolf.GameFromBackupTest do
                   "vote" => %{
                     "type" => "vote",
                     "target" => 2,
-                    "option" => "none"
+                    "option" => "none",
+                    "result" => "villager"
                   }
                 }
               },
@@ -53,13 +63,23 @@ defmodule Werewolf.GameFromBackupTest do
           id: 178,
           phase_length: :day,
           phases: 0,
+          win_status: :werewolf_win,
+          targets: %{
+            1 => [
+              %Werewolf.KillTarget{
+                type: :werewolf,
+                target: 2,
+              }
+            ]
+          },
           players: %{
             1 => %Werewolf.Player{
               actions: %{
                 1 => %{
                   vote: %Werewolf.Action{
                     type: :vote,
-                    target: 2
+                    target: 2,
+                    result: :villager
                   }
                 }
               },

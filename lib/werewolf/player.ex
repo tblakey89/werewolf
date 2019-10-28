@@ -1,5 +1,6 @@
 defmodule Werewolf.Player do
   alias Werewolf.Player
+  alias Werewolf.KillTarget
 
   @enforce_keys [:id, :host]
   @derive Jason.Encoder
@@ -54,15 +55,15 @@ defmodule Werewolf.Player do
 
   def kill_player(players, target, heal_target \\ :none)
 
-  def kill_player(players, :none, _), do: {:ok, players, win_check(players)}
+  def kill_player(players, :none, _), do: {:ok, players, win_check(players), []}
 
   def kill_player(players, target, heal_target) when target == heal_target do
-    {:ok, players, win_check(players)}
+    {:ok, players, win_check(players), []}
   end
 
   def kill_player(players, target, _heal_target) do
     players = put_in(players[target].alive, false)
-    {:ok, players, win_check(players)}
+    {:ok, players, win_check(players), [KillTarget.new(:werewolf, target)]}
   end
 
   defp by_team(players) do

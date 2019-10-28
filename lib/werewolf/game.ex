@@ -3,7 +3,7 @@ defmodule Werewolf.Game do
 
   @enforce_keys [:id, :players, :phase_length]
   @derive Jason.Encoder
-  defstruct [:id, :players, :phase_length, :end_phase_unix_time, phases: 0]
+  defstruct [:id, :players, :phase_length, :end_phase_unix_time, win_status: :no_win, phases: 0, targets: %{}]
 
   def new(user, name, phase_length) do
     {:ok, host_player} = Player.new(:host, user)
@@ -82,13 +82,16 @@ defmodule Werewolf.Game do
     # [{:user_dead, :werewolf}, {:user_dead, :vigilante}], etc
     with {:ok, votes, target} <- Votes.count_from_actions(phase_actions(game)),
          {:ok, heal_target} <- Action.resolve_heal_action(game.players, game.phases),
-         {:ok, players, win_status} <- Player.kill_player(game.players, target, heal_target),
+         {:ok, players, win_status, targets} <- Player.kill_player(game.players, target, heal_target),
          {:ok, players} <- Action.resolve_inspect_action(players, game.phases),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status}) do
+           game_targets = Map.put(game.targets, game.phases, targets)
       game = %{
         game
         | phases: game.phases + 1,
           players: players,
+          win_status: win_status,
+          targets: game_targets,
           end_phase_unix_time: Phase.calculate_end_of_phase_unix(game.phase_length)
       }
 

@@ -51,6 +51,7 @@ defmodule Werewolf.GameSupervisorTest do
           "id" => 178,
           "phase_length" => "day",
           "phases" => 0,
+          "win_status" => "no_win",
           "players" => %{
             "1" => %{
               "vote" => %{
