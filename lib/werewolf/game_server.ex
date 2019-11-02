@@ -72,7 +72,7 @@ defmodule Werewolf.GameServer do
     end
   end
 
-  def handle_call({:action, user, target, action_type}, _from, state_data) do
+  def handle_call({:action, user, target, action_type = :vote}, _from, state_data) do
     with {:ok, game} <-
            Game.action(state_data.game, user, state_data.rules, Action.new(action_type, target)) do
       state_data
@@ -81,6 +81,17 @@ defmodule Werewolf.GameServer do
         {:ok, :action, state_data.rules.state, action_type, user, target,
          Game.current_vote_count(game)}
       )
+    else
+      {:error, reason} -> reply_failure(state_data, reason)
+    end
+  end
+
+  def handle_call({:action, user, target, action_type}, _from, state_data) do
+    with {:ok, game} <-
+           Game.action(state_data.game, user, state_data.rules, Action.new(action_type, target)) do
+      state_data
+      |> update_game(game)
+      |> reply_success({:ok, :action})
     else
       {:error, reason} -> reply_failure(state_data, reason)
     end
