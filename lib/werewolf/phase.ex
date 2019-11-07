@@ -20,6 +20,8 @@ defmodule Werewolf.Phase do
       five_minute: 5 * 60 * 1000,
       thirty_minute: 30 * 60 * 1000,
       hour: 60 * 60 * 1000,
+      hours: 60 * 60 * 1000,
+      twelve_hour: 12 * 60 * 60 * 1000,
       day: 24 * 60 * 60 * 1000
     }
   end
