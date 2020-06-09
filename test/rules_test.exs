@@ -53,6 +53,42 @@ defmodule Werewolf.RulesTest do
     end
   end
 
+  describe "check/2 :remove_player when :initialised" do
+    setup [:new_game, :initialized_rules]
+
+    test "returns :ok tuple when able to remove player", context do
+      rules = context[:rules]
+      assert {:ok, rules} == Rules.check(context[:rules], {:remove_player, context[:game]})
+    end
+  end
+
+  describe "check/2 :remove_player when :ready with 8 players" do
+    setup [:ready_game, :ready_rules, :initialized_rules]
+
+    test "returns :ok tuple and initialised rules", context do
+      rules = context[:rules]
+      assert {:ok, rules} == Rules.check(context[:ready_rules], {:remove_player, context[:game]})
+    end
+  end
+
+  describe "check/2 :remove_player when :ready with full game" do
+    setup [:full_game, :ready_rules]
+
+    test "returns :ok tuple and ready rules", context do
+      rules = context[:ready_rules]
+      assert {:ok, rules} == Rules.check(context[:ready_rules], {:remove_player, context[:game]})
+    end
+  end
+
+  describe "check/2 :remove_player from launched game" do
+    setup [:day_rules]
+
+    test "returns error, invalid action", context do
+      assert {:error, :invalid_action} ==
+               Rules.check(context[:day_rules], {:remove_player, context[:game]})
+    end
+  end
+
   describe "check/2 :launch when state is :ready" do
     setup [:full_game, :ready_rules]
 

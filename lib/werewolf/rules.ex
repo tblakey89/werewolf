@@ -29,6 +29,17 @@ defmodule Werewolf.Rules do
     end
   end
 
+  def check(%Rules{state: :initialized} = rules, {:remove_player, game}) do
+    {:ok, rules}
+  end
+
+  def check(%Rules{state: :ready} = rules, {:remove_player, game}) do
+    case not_ready_to_start_with_new_player?(game) do
+      true -> {:ok, %Rules{rules | state: :initialized}}
+      false -> {:ok, rules}
+    end
+  end
+
   def check(%Rules{state: :ready} = rules, :launch) do
     {:ok, %Rules{rules | state: :night_phase}}
   end
@@ -54,5 +65,9 @@ defmodule Werewolf.Rules do
 
   defp ready_to_start_with_new_player?(game) do
     Enum.count(game.players) >= @min_players - 1 && Enum.count(game.players) < @max_players
+  end
+
+  defp not_ready_to_start_with_new_player?(game) do
+    Enum.count(game.players) == @min_players
   end
 end

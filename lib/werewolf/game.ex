@@ -3,7 +3,15 @@ defmodule Werewolf.Game do
 
   @enforce_keys [:id, :players, :phase_length]
   @derive Jason.Encoder
-  defstruct [:id, :players, :phase_length, :end_phase_unix_time, win_status: :no_win, phases: 0, targets: %{}]
+  defstruct [
+    :id,
+    :players,
+    :phase_length,
+    :end_phase_unix_time,
+    win_status: :no_win,
+    phases: 0,
+    targets: %{}
+  ]
 
   def new(user, name, phase_length) do
     {:ok, host_player} = Player.new(:host, user)
@@ -26,6 +34,19 @@ defmodule Werewolf.Game do
        %{
          game
          | players: Map.put(game.players, user.id, new_player)
+       }, rules}
+    else
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def remove_player(game, user, rules) do
+    with :ok <- PlayerRules.standard_player_check(game.players, user),
+         {:ok, rules} <- Rules.check(rules, {:remove_player, game}) do
+      {:ok,
+       %{
+         game
+         | players: Map.delete(game.players, user.id)
        }, rules}
     else
       {:error, reason} -> {:error, reason}
@@ -82,10 +103,12 @@ defmodule Werewolf.Game do
     # [{:user_dead, :werewolf}, {:user_dead, :vigilante}], etc
     with {:ok, votes, target} <- Votes.count_from_actions(phase_actions(game)),
          {:ok, heal_target} <- Action.resolve_heal_action(game.players, game.phases),
-         {:ok, players, win_status, targets} <- Player.kill_player(game.players, target, heal_target),
+         {:ok, players, win_status, targets} <-
+           Player.kill_player(game.players, target, heal_target),
          {:ok, players} <- Action.resolve_inspect_action(players, game.phases),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status}) do
-           game_targets = Map.put(game.targets, game.phases, targets)
+      game_targets = Map.put(game.targets, game.phases, targets)
+
       game = %{
         game
         | phases: game.phases + 1,
@@ -102,7 +125,17 @@ defmodule Werewolf.Game do
   end
 
   def phase_lengths() do
-    [:millisecond, :second, :two_minute, :five_minute, :thirty_minute, :hour, :hours, :twelve_hour, :day]
+    [
+      :millisecond,
+      :second,
+      :two_minute,
+      :five_minute,
+      :thirty_minute,
+      :hour,
+      :hours,
+      :twelve_hour,
+      :day
+    ]
   end
 
   def current_vote_count(game) do

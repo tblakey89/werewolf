@@ -44,6 +44,33 @@ defmodule Werewolf.GameTest do
     end
   end
 
+  describe "remove_player/3" do
+    setup [:game, :ready_game, :rules, :other_user, :user, :second_user]
+
+    test "removes user from the game player list", context do
+      {:ok, game, rules} =
+        Game.remove_player(context[:ready_game], context[:second_user], context[:rules])
+
+      assert Enum.count(game.players) == 7
+    end
+
+    test "does not remove the host from the game player list", context do
+      {:error, :forbidden} = Game.remove_player(context[:game], context[:user], context[:rules])
+    end
+
+    test "ignores user not in the game player list", context do
+      {:error, :forbidden} =
+        Game.remove_player(context[:game], context[:other_user], context[:rules])
+    end
+
+    test "fails to remove user if wrong state", context do
+      day_phase_rules = %{context[:rules] | state: :day_phase}
+
+      assert {:error, :invalid_action} ==
+               Game.remove_player(context[:ready_game], context[:second_user], day_phase_rules)
+    end
+  end
+
   describe "launch_game/3" do
     setup [:ready_game, :ready_rules, :rules, :user, :game, :other_user]
 
@@ -140,6 +167,7 @@ defmodule Werewolf.GameTest do
 
   defp game(_context), do: [game: create_game(%{username: "test1", id: "test1"}, :day)]
   defp other_user(_context), do: [other_user: %{username: "test99", id: "test99"}]
+  defp second_user(_context), do: [second_user: %{username: "test2", id: "test2"}]
   defp rules(_context), do: [rules: Rules.new()]
   defp ready_rules(_context), do: [ready_rules: %Rules{state: :ready}]
   defp day_rules(_context), do: [day_rules: %Rules{state: :day_phase}]

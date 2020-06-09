@@ -25,6 +25,10 @@ defmodule Werewolf.GameServer do
     GenServer.call(game, {:add_player, user})
   end
 
+  def remove_player(game, user) do
+    GenServer.call(game, {:remove_player, user})
+  end
+
   def game_ready(game, user) do
     GenServer.call(game, {:game_ready, user})
   end
@@ -55,6 +59,17 @@ defmodule Werewolf.GameServer do
       |> update_game(game)
       |> update_rules(rules)
       |> reply_success({:ok, :add_player, user})
+    else
+      {:error, reason} -> reply_failure(state_data, reason)
+    end
+  end
+
+  def handle_call({:remove_player, user}, _from, state_data) do
+    with {:ok, game, rules} <- Game.remove_player(state_data.game, user, state_data.rules) do
+      state_data
+      |> update_game(game)
+      |> update_rules(rules)
+      |> reply_success({:ok, :remove_player, user})
     else
       {:error, reason} -> reply_failure(state_data, reason)
     end

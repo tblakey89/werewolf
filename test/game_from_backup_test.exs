@@ -27,7 +27,7 @@ defmodule Werewolf.GameFromBackupTest do
             "1" => [
               %{
                 "type" => "werewolf",
-                "target" => 2,
+                "target" => 2
               }
             ]
           },
@@ -68,7 +68,7 @@ defmodule Werewolf.GameFromBackupTest do
             1 => [
               %Werewolf.KillTarget{
                 type: :werewolf,
-                target: 2,
+                target: 2
               }
             ]
           },

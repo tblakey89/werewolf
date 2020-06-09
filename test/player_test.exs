@@ -83,7 +83,9 @@ defmodule Werewolf.PlayerTest do
     end
 
     test "not update players when target equals heal target", context do
-      {:ok, players, _, targets} = Player.kill_player(context[:player_map], "villager", "villager")
+      {:ok, players, _, targets} =
+        Player.kill_player(context[:player_map], "villager", "villager")
+
       assert players == context[:player_map]
       assert targets == []
       assert players["villager"].alive == true

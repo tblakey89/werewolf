@@ -21,6 +21,25 @@ defmodule Werewolf.PlayerRulesTest do
     end
   end
 
+  describe "standard_player_check/2" do
+    setup [:host_player_map, :regular_player_map, :user, :alt_user]
+
+    test "when user is a standard player, returns ok", context do
+      assert :ok =
+               PlayerRules.standard_player_check(context[:regular_player_map], context[:alt_user])
+    end
+
+    test "when host player, returns error tuple", context do
+      assert {:error, :forbidden} =
+               PlayerRules.standard_player_check(context[:host_player_map], context[:user])
+    end
+
+    test "when user is not a player, returns error tuple", context do
+      assert {:error, :forbidden} =
+               PlayerRules.standard_player_check(context[:regular_player_map], context[:user])
+    end
+  end
+
   describe "player_check/2" do
     setup [:regular_player_map, :alt_user]
 
