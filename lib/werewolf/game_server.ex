@@ -37,6 +37,10 @@ defmodule Werewolf.GameServer do
     GenServer.call(game, {:launch_game, user})
   end
 
+  def launch_game(game) do
+    GenServer.call(game, {:launch_game, nil})
+  end
+
   def action(game, user, target, action_type) do
     GenServer.call(game, {:action, user, target, action_type})
   end

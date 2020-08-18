@@ -13,6 +13,16 @@ defmodule Werewolf.Game do
     targets: %{}
   ]
 
+  def new(nil, name, phase_length) do
+    case Enum.member?(phase_lengths(), phase_length) do
+      true ->
+        {:ok, %Game{id: name, players: %{}, phase_length: phase_length}}
+
+      false ->
+        {:error, :invalid_phase_length}
+    end
+  end
+
   def new(user, name, phase_length) do
     {:ok, host_player} = Player.new(:host, user)
 

@@ -19,6 +19,14 @@ defmodule Werewolf.PlayerRulesTest do
       assert {:error, :unauthorized} =
                PlayerRules.host_check(context[:regular_player_map], context[:alt_user])
     end
+
+    test "when user is nil, and no host", context do
+      assert :ok = PlayerRules.host_check(context[:regular_player_map], context[nil])
+    end
+
+    test "when user is nil, and there is a host", context do
+      assert {:error, :unauthorized} = PlayerRules.host_check(context[:host_player_map], nil)
+    end
   end
 
   describe "standard_player_check/2" do

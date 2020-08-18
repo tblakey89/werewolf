@@ -5,6 +5,12 @@ defmodule Werewolf.GameTest do
   describe "new/2" do
     setup [:user]
 
+    test "returns a game struct when no user, but valid phase length", context do
+      {:ok, game} = Game.new(nil, context[:user].id, :day)
+      assert length(Map.keys(game.players)) == 0
+      assert game.phase_length == :day
+    end
+
     test "returns a game struct when given user and valid phase length", context do
       {:ok, game} = Game.new(context[:user], context[:user].id, :day)
       assert game.players[context[:user].id].id == context[:user].id
@@ -72,7 +78,7 @@ defmodule Werewolf.GameTest do
   end
 
   describe "launch_game/3" do
-    setup [:ready_game, :ready_rules, :rules, :user, :game, :other_user]
+    setup [:ready_game, :ready_rules, :rules, :user, :game, :other_user, :hostless_game]
 
     test "when state is ready, able to launch game", context do
       {:ok, game, rules} =
@@ -91,6 +97,14 @@ defmodule Werewolf.GameTest do
     test "when not-host tries to launch game", context do
       {:error, :unauthorized} =
         Game.launch_game(context[:ready_game], context[:other_user], context[:ready_rules])
+    end
+
+    test "when hostless game is launched with nil user", context do
+      {:ok, game, rules} = Game.launch_game(context[:hostless_game], nil, context[:ready_rules])
+
+      assert rules.state == :night_phase
+      assert game.phases == 1
+      assert game.players[context[:user].id].role != :none
     end
   end
 
@@ -162,7 +176,11 @@ defmodule Werewolf.GameTest do
   end
 
   defp ready_game(_context) do
-    [ready_game: %Game{id: 0, players: generate_players(), phase_length: :day, phases: 0}]
+    [ready_game: %Game{id: 0, players: generate_players(true), phase_length: :day, phases: 0}]
+  end
+
+  defp hostless_game(_context) do
+    [hostless_game: %Game{id: 0, players: generate_players(false), phase_length: :day, phases: 0}]
   end
 
   defp game(_context), do: [game: create_game(%{username: "test1", id: "test1"}, :day)]
@@ -234,8 +252,8 @@ defmodule Werewolf.GameTest do
     game
   end
 
-  defp generate_players() do
-    players = %{"test1" => %Player{id: "test1", host: true}}
+  defp generate_players(hosted) do
+    players = %{"test1" => %Player{id: "test1", host: hosted}}
     users = for n <- 2..8, do: %Player{id: "test#{n}", host: false}
 
     Enum.reduce(users, players, fn player, acc ->

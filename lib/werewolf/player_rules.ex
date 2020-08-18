@@ -1,15 +1,15 @@
 defmodule Werewolf.PlayerRules do
-  def host_check(players, user) do
-    case Map.has_key?(players, user.id) && is_host?(players[user.id]) do
-      true -> :ok
-      false -> {:error, :unauthorized}
-    end
-  end
-
   def standard_player_check(players, user) do
     case Map.has_key?(players, user.id) && !is_host?(players[user.id]) do
       true -> :ok
       false -> {:error, :forbidden}
+    end
+  end
+
+  def host_check(players, nil) do
+    case Enum.any?(players, fn {id, player} -> is_host?(player) end) do
+      false -> :ok
+      true -> {:error, :unauthorized}
     end
   end
 
