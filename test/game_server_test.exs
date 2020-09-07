@@ -40,7 +40,7 @@ defmodule Werewolf.GameServerTest do
     test "maintains state after shutdown" do
       {game, players} = setup_game(:day, 8)
       GameServer.stop(game)
-      {:ok, game} = GameServer.start_link(host(), name(), :day, nil, fn _a, _b -> nil end)
+      {:ok, game} = GameServer.start_link(host(), name(), :day, nil, fn _a, _b -> nil end, [])
       assert {:no_win, :none, 2, _} = GameServer.end_phase(game)
       clear_ets()
     end
@@ -111,7 +111,7 @@ defmodule Werewolf.GameServerTest do
 
   defp setup_game(phase_length, player_count) do
     clear_ets()
-    {:ok, game} = GameServer.start_link(host(), name(), phase_length, nil, fn _a, _b -> nil end)
+    {:ok, game} = GameServer.start_link(host(), name(), phase_length, nil, fn _a, _b -> nil end, [])
     assert_able_to_add_users(game, player_count)
     assert {:ok, :launch_game, state} = GameServer.launch_game(game, host)
     assert_all_players_have_roles(state.game.players)
@@ -120,7 +120,7 @@ defmodule Werewolf.GameServerTest do
 
   defp setup_hostless_game(phase_length, player_count) do
     clear_ets()
-    {:ok, game} = GameServer.start_link(nil, name(), phase_length, nil, fn _a, _b -> nil end)
+    {:ok, game} = GameServer.start_link(nil, name(), phase_length, nil, fn _a, _b -> nil end, [])
     GameServer.add_player(game, %{username: "test1", id: "test1"})
     assert_able_to_add_users(game, player_count)
     assert {:ok, :launch_game, state} = GameServer.launch_game(game)

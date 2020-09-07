@@ -25,6 +25,13 @@ defmodule Werewolf.Player do
     }
   end
 
+  def additional_roles_by_number() do
+    %{
+      detective: 1,
+      doctor: 1
+    }
+  end
+
   def player_team(role) do
     roles_by_team()[role]
   end
@@ -44,9 +51,9 @@ defmodule Werewolf.Player do
     end
   end
 
-  def assign_roles(players) do
+  def assign_roles(players, allowed_roles \\ [:detective, :doctor]) do
     map_size(players)
-    |> generate_role_list()
+    |> generate_role_list(allowed_roles)
     |> Enum.zip(Map.values(players))
     |> Enum.reduce(%{}, fn {role, player}, acc ->
       Map.put(acc, player.id, Map.put(player, :role, role))
@@ -73,17 +80,36 @@ defmodule Werewolf.Player do
     end)
   end
 
-  defp generate_role_list(player_count) do
-    Enum.flat_map(role_numbers(player_count), fn {role, count} ->
+  defp generate_role_list(player_count, allowed_roles) do
+    Enum.flat_map(role_numbers(player_count, allowed_roles), fn {role, count} ->
       for _ <- 1..count, do: role
     end)
     |> Enum.shuffle()
   end
 
-  defp role_numbers(player_count) do
+  defp role_numbers(player_count, allowed_roles) do
     werewolf_count = round(Float.floor(player_count / @villager_to_werewolf) + 1)
-    villager_count = round(player_count - werewolf_count - 2)
-    %{werewolf: werewolf_count, villager: villager_count, doctor: 1, detective: 1}
+    {villager_count, updated_additional_roles} = village_role_count(player_count, werewolf_count, allowed_roles)
+    initial_roles = %{werewolf: werewolf_count, villager: villager_count}
+    Enum.reduce(updated_additional_roles, initial_roles, fn role, roles ->
+      Map.put(roles, role, additional_roles_by_number()[role])
+    end)
+    |> Enum.reject(fn {role, count} -> count == 0 end)
+  end
+
+  defp village_role_count(player_count, werewolf_count, allowed_roles) do
+    additional_count = Enum.reduce(allowed_roles, 0, fn role, acc ->
+      additional_roles_by_number()[role] + acc
+    end)
+
+    villager_count = round(player_count - werewolf_count - additional_count)
+
+    cond do
+      villager_count >= 0 ->
+        {villager_count, allowed_roles}
+      villager_count < 0 ->
+        village_role_count(player_count, werewolf_count, Enum.shuffle(allowed_roles) |> tl())
+    end
   end
 
   defp win_check(players) do

@@ -15,9 +15,10 @@ defmodule Werewolf.GameSupervisor do
         name,
         phase_length,
         state \\ nil,
-        broadcast_func \\ fn _a, _b -> nil end
+        broadcast_func \\ fn _a, _b -> nil end,
+        allowed_roles \\ []
       ) do
-    Supervisor.start_child(__MODULE__, [user, name, phase_length, state, broadcast_func])
+    Supervisor.start_child(__MODULE__, [user, name, phase_length, state, broadcast_func, allowed_roles])
   end
 
   def stop_game(name) do

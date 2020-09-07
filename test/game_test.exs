@@ -6,19 +6,20 @@ defmodule Werewolf.GameTest do
     setup [:user]
 
     test "returns a game struct when no user, but valid phase length", context do
-      {:ok, game} = Game.new(nil, context[:user].id, :day)
+      {:ok, game} = Game.new(nil, context[:user].id, :day, [])
       assert length(Map.keys(game.players)) == 0
       assert game.phase_length == :day
     end
 
-    test "returns a game struct when given user and valid phase length", context do
-      {:ok, game} = Game.new(context[:user], context[:user].id, :day)
+    test "returns a game struct when given user, valid phase length, allowed_roles", context do
+      {:ok, game} = Game.new(context[:user], context[:user].id, :day, [:doctor, :detective])
       assert game.players[context[:user].id].id == context[:user].id
       assert game.phase_length == :day
+      assert game.allowed_roles == [:doctor, :detective]
     end
 
     test "returns an error when given an invalid phase length", context do
-      assert {:error, :invalid_phase_length} == Game.new(context[:user], context[:user], :year)
+      assert {:error, :invalid_phase_length} == Game.new(context[:user], context[:user], :year, [])
     end
   end
 
@@ -78,7 +79,7 @@ defmodule Werewolf.GameTest do
   end
 
   describe "launch_game/3" do
-    setup [:ready_game, :ready_rules, :rules, :user, :game, :other_user, :hostless_game]
+    setup [:ready_game, :allowed_roles_game, :ready_rules, :rules, :user, :game, :other_user, :hostless_game]
 
     test "when state is ready, able to launch game", context do
       {:ok, game, rules} =
@@ -87,6 +88,16 @@ defmodule Werewolf.GameTest do
       assert rules.state == :night_phase
       assert game.phases == 1
       assert game.players[context[:user].id].role != :none
+    end
+
+    test "when game launched with game with allowed roles", context do
+      {:ok, game, rules} =
+        Game.launch_game(context[:allowed_roles_game], context[:user], context[:ready_rules])
+
+      assert Enum.count(game.players, fn {name, player} -> player.role == :doctor end) == 1
+      assert Enum.count(game.players, fn {name, player} -> player.role == :detective end) == 1
+      assert Enum.count(game.players, fn {name, player} -> player.role == :villager end) == 4
+      assert Enum.count(game.players, fn {name, player} -> player.role == :werewolf end) == 2
     end
 
     test "when game is in the wrong state", context do
@@ -179,6 +190,10 @@ defmodule Werewolf.GameTest do
     [ready_game: %Game{id: 0, players: generate_players(true), phase_length: :day, phases: 0}]
   end
 
+  defp allowed_roles_game(_context) do
+    [allowed_roles_game: %Game{id: 0, players: generate_players(true), phase_length: :day, phases: 0, allowed_roles: [:detective, :doctor]}]
+  end
+
   defp hostless_game(_context) do
     [hostless_game: %Game{id: 0, players: generate_players(false), phase_length: :day, phases: 0}]
   end
@@ -248,7 +263,7 @@ defmodule Werewolf.GameTest do
   end
 
   defp create_game(user, phase_length) do
-    {:ok, game} = Game.new(user, user.id, phase_length)
+    {:ok, game} = Game.new(user, user.id, phase_length, [])
     game
   end
 

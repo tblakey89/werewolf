@@ -10,25 +10,26 @@ defmodule Werewolf.Game do
     :end_phase_unix_time,
     win_status: :no_win,
     phases: 0,
-    targets: %{}
+    targets: %{},
+    allowed_roles: []
   ]
 
-  def new(nil, name, phase_length) do
+  def new(nil, name, phase_length, allowed_roles) do
     case Enum.member?(phase_lengths(), phase_length) do
       true ->
-        {:ok, %Game{id: name, players: %{}, phase_length: phase_length}}
+        {:ok, %Game{id: name, allowed_roles: allowed_roles, players: %{}, phase_length: phase_length}}
 
       false ->
         {:error, :invalid_phase_length}
     end
   end
 
-  def new(user, name, phase_length) do
+  def new(user, name, phase_length, allowed_roles) do
     {:ok, host_player} = Player.new(:host, user)
 
     case Enum.member?(phase_lengths(), phase_length) do
       true ->
-        {:ok, %Game{id: name, players: %{user.id => host_player}, phase_length: phase_length}}
+        {:ok, %Game{id: name, allowed_roles: allowed_roles, players: %{user.id => host_player}, phase_length: phase_length}}
 
       false ->
         {:error, :invalid_phase_length}
@@ -71,7 +72,7 @@ defmodule Werewolf.Game do
          game
          | phases: 1,
            end_phase_unix_time: Phase.calculate_end_of_phase_unix(game.phase_length),
-           players: Player.assign_roles(game.players)
+           players: Player.assign_roles(game.players, game.allowed_roles)
        }, rules}
     else
       {:error, reason} -> {:error, reason}
