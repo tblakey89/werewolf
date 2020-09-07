@@ -148,7 +148,7 @@ defmodule Werewolf.GameTest do
   end
 
   describe "end_phase/2" do
-    setup [:night_rules, :day_rules, :finished_game, :rules]
+    setup [:night_rules, :day_rules, :finished_game, :too_many_phases_game, :rules]
 
     test "when game won, sends win atom, and updates state", context do
       {:ok, game, rules, target, win_status} =
@@ -158,6 +158,14 @@ defmodule Werewolf.GameTest do
       assert rules.state == :game_over
       assert target == "test2"
       assert win_status == :village_win
+    end
+
+    test "when too many phases, ends game and updates state", context do
+      {:ok, game, rules, target, win_status} =
+        Game.end_phase(context[:too_many_phases_game], context[:day_rules])
+
+      assert rules.state == :game_over
+      assert win_status == :too_many_phases
     end
 
     test "when votes tie, sends no_win atom, and updates state", context do
@@ -255,6 +263,45 @@ defmodule Werewolf.GameTest do
                   target: "test2"
                 }
               }
+            }
+          }
+        }
+      }
+    ]
+  end
+
+  defp too_many_phases_game(_context) do
+    [
+      too_many_phases_game: %Game{
+        id: 1,
+        phases: 6,
+        phase_length: :day,
+        players: %{
+          "test1" => %Player{
+            id: "test1",
+            alive: true,
+            host: true,
+            role: :villager,
+            actions: %{
+              1 => %{}
+            }
+          },
+          "test2" => %Player{
+            id: "test2",
+            alive: true,
+            host: false,
+            role: :werewolf,
+            actions: %{
+              1 => %{}
+            }
+          },
+          "test3" => %Player{
+            id: "test3",
+            alive: true,
+            host: false,
+            role: :villager,
+            actions: %{
+              1 => %{}
             }
           }
         }

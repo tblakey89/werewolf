@@ -26,6 +26,14 @@ defmodule Werewolf.GameServerTest do
     end
   end
 
+  describe "min players are added, no host, assigns roles, launches game, too many phases" do
+    test "successfully goes through game" do
+      {game, players} = setup_hostless_game(:day, 8)
+      assert_too_many_phases(game, players)
+      clear_ets()
+    end
+  end
+
   describe "ensure phase is ended when timer runs out" do
     test "successfully transitions phase" do
       {game, players} = setup_game(:millisecond, 8)
@@ -77,6 +85,15 @@ defmodule Werewolf.GameServerTest do
       if win_status != :werewolf_win, do: {:cont, acc}, else: {:halt, acc}
     end)
     |> assert_correct_win(:werewolf_win)
+  end
+
+  defp assert_too_many_phases(game, players) do
+    Enum.reduce_while(1..16, [], fn _, acc ->
+      {win_status, _, _, _} = GameServer.end_phase(game)
+      acc = acc ++ [win_status]
+      if win_status != :too_many_phases, do: {:cont, acc}, else: {:halt, acc}
+    end)
+    |> assert_correct_win(:too_many_phases)
   end
 
   defp assert_correct_win(win_statuses, win_type) do

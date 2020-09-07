@@ -117,6 +117,7 @@ defmodule Werewolf.Game do
          {:ok, players, win_status, targets} <-
            Player.kill_player(game.players, target, heal_target),
          {:ok, players} <- Action.resolve_inspect_action(players, game.phases),
+         {:ok, win_status} <- check_phase_limit(players, game.phases, win_status),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status}) do
       game_targets = Map.put(game.targets, game.phases, targets)
 
@@ -159,4 +160,9 @@ defmodule Werewolf.Game do
     |> Enum.map(fn actions -> actions[game.phases] end)
     |> Enum.reject(fn action -> is_nil(action) end)
   end
+
+  defp check_phase_limit(players, phases, :no_win) when map_size(players) * 2 <= phases do
+    {:ok, :too_many_phases}
+  end
+  defp check_phase_limit(_, _, win_status), do: {:ok, win_status}
 end
