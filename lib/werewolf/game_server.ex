@@ -49,6 +49,10 @@ defmodule Werewolf.GameServer do
     GenServer.call(game, :end_phase)
   end
 
+  def end_game(game, user) do
+    GenServer.call(game, {:end_game, user})
+  end
+
   def stop(game) do
     GenServer.stop(game)
   end
@@ -119,6 +123,19 @@ defmodule Werewolf.GameServer do
   def handle_call(:end_phase, _from, state_data) do
     cancel_phase_countdown(state_data.timer)
     trigger_end_phase(state_data, &reply_success/2)
+  end
+
+  def handle_call({:end_game, user}, _from, state_data) do
+    cancel_phase_countdown(state_data.timer)
+
+    with {:ok, game, rules} <- Game.end_game(state_data.game, user, state_data.rules) do
+      state_data
+      |> update_game(game)
+      |> update_rules(rules)
+      |> reply_success({:ok, :end_game})
+    else
+      {:error, reason} -> reply_failure(state_data, reason)
+    end
   end
 
   def handle_info(:end_phase, state_data) do
@@ -201,6 +218,7 @@ defmodule Werewolf.GameServer do
   end
 
   defp noreply_success(state_data, reply) do
+    :ets.insert(:game_state, {state_data.game.id, state_data})
     state_data.broadcast_func.(state_data, reply)
     {:noreply, state_data, @timeout}
   end

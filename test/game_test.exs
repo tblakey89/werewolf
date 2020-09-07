@@ -195,6 +195,26 @@ defmodule Werewolf.GameTest do
     end
   end
 
+  describe "end_game/3" do
+    setup [:game, :night_rules, :rules, :user, :other_user]
+
+    test "when night_phase, and host, can end game", context do
+      {:ok, game, rules} = Game.end_game(context[:game], context[:user], context[:night_rules])
+
+      assert rules.state == :game_over
+      assert game.win_status == :host_end
+    end
+
+    test "when game is in the wrong state, cannot end game", context do
+      {:error, :invalid_action} = Game.end_game(context[:game], context[:user], context[:rules])
+    end
+
+    test "when not-host tries to end game", context do
+      {:error, :unauthorized} =
+        Game.end_game(context[:game], context[:other_user], context[:night_rules])
+    end
+  end
+
   describe "current_vote_count/1" do
     setup [:finished_game]
 

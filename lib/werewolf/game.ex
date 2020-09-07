@@ -143,6 +143,19 @@ defmodule Werewolf.Game do
     end
   end
 
+  def end_game(game, user, rules) do
+    with :ok <- PlayerRules.host_check(game.players, user),
+         {:ok, rules} <- Rules.check(rules, {:end_phase, :host_end}) do
+      {:ok,
+       %{
+         game
+         | win_status: :host_end
+       }, rules}
+    else
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
   def phase_lengths() do
     [
       :millisecond,

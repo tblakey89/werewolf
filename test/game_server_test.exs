@@ -34,6 +34,16 @@ defmodule Werewolf.GameServerTest do
     end
   end
 
+  describe "min players are added, host can end game after start" do
+    test "successfully goes through game" do
+      {game, players} = setup_game(:day, 8)
+      {:ok, :end_game, state_data} = GameServer.end_game(game, host())
+      assert state_data.game.win_status == :host_end
+      assert state_data.rules.state == :game_over
+      clear_ets()
+    end
+  end
+
   describe "ensure phase is ended when timer runs out" do
     test "successfully transitions phase" do
       {game, players} = setup_game(:millisecond, 8)
