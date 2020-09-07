@@ -19,7 +19,8 @@ defmodule Werewolf.GameTest do
     end
 
     test "returns an error when given an invalid phase length", context do
-      assert {:error, :invalid_phase_length} == Game.new(context[:user], context[:user], :year, [])
+      assert {:error, :invalid_phase_length} ==
+               Game.new(context[:user], context[:user], :year, [])
     end
   end
 
@@ -79,7 +80,16 @@ defmodule Werewolf.GameTest do
   end
 
   describe "launch_game/3" do
-    setup [:ready_game, :allowed_roles_game, :ready_rules, :rules, :user, :game, :other_user, :hostless_game]
+    setup [
+      :ready_game,
+      :allowed_roles_game,
+      :ready_rules,
+      :rules,
+      :user,
+      :game,
+      :other_user,
+      :hostless_game
+    ]
 
     test "when state is ready, able to launch game", context do
       {:ok, game, rules} =
@@ -199,7 +209,15 @@ defmodule Werewolf.GameTest do
   end
 
   defp allowed_roles_game(_context) do
-    [allowed_roles_game: %Game{id: 0, players: generate_players(true), phase_length: :day, phases: 0, allowed_roles: [:detective, :doctor]}]
+    [
+      allowed_roles_game: %Game{
+        id: 0,
+        players: generate_players(true),
+        phase_length: :day,
+        phases: 0,
+        allowed_roles: [:detective, :doctor]
+      }
+    ]
   end
 
   defp hostless_game(_context) do

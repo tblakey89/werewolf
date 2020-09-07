@@ -27,14 +27,21 @@ defmodule Werewolf.PlayerTest do
     end
 
     test "when 2 players, doctor, detective included" do
-      assigned_players = Map.values(Player.assign_roles(generate_players(2), [:doctor, :detective]))
+      assigned_players =
+        Map.values(Player.assign_roles(generate_players(2), [:doctor, :detective]))
+
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 0
-      assert Enum.count(assigned_players, fn player -> player.role == :detective || player.role == :doctor end) == 1
+
+      assert Enum.count(assigned_players, fn player ->
+               player.role == :detective || player.role == :doctor
+             end) == 1
     end
 
     test "when 8 players, doctor, detective included" do
-      assigned_players = Map.values(Player.assign_roles(generate_players(8), [:doctor, :detective]))
+      assigned_players =
+        Map.values(Player.assign_roles(generate_players(8), [:doctor, :detective]))
+
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 2
       assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 4
       assert Enum.count(assigned_players, fn player -> player.role == :detective end) == 1
@@ -42,7 +49,9 @@ defmodule Werewolf.PlayerTest do
     end
 
     test "when 18 players, 4 werewolves, 14 villagers" do
-      assigned_players = Map.values(Player.assign_roles(generate_players(18), [:doctor, :detective]))
+      assigned_players =
+        Map.values(Player.assign_roles(generate_players(18), [:doctor, :detective]))
+
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 4
       assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 12
       assert Enum.count(assigned_players, fn player -> player.role == :detective end) == 1

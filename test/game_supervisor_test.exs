@@ -7,9 +7,16 @@ defmodule Werewolf.GameSupervisorTest do
 
     test "successfully restarts", context do
       {:ok, game} =
-        GameSupervisor.start_game(context[:host], context[:host].id, :day, nil, fn _a, _b ->
-          nil
-        end, [])
+        GameSupervisor.start_game(
+          context[:host],
+          context[:host].id,
+          :day,
+          nil,
+          fn _a, _b ->
+            nil
+          end,
+          []
+        )
 
       Werewolf.GameServer.add_player(game, %{id: 2})
       Process.exit(game, :boom)

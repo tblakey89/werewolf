@@ -89,8 +89,12 @@ defmodule Werewolf.Player do
 
   defp role_numbers(player_count, allowed_roles) do
     werewolf_count = round(Float.floor(player_count / @villager_to_werewolf) + 1)
-    {villager_count, updated_additional_roles} = village_role_count(player_count, werewolf_count, allowed_roles)
+
+    {villager_count, updated_additional_roles} =
+      village_role_count(player_count, werewolf_count, allowed_roles)
+
     initial_roles = %{werewolf: werewolf_count, villager: villager_count}
+
     Enum.reduce(updated_additional_roles, initial_roles, fn role, roles ->
       Map.put(roles, role, additional_roles_by_number()[role])
     end)
@@ -98,15 +102,17 @@ defmodule Werewolf.Player do
   end
 
   defp village_role_count(player_count, werewolf_count, allowed_roles) do
-    additional_count = Enum.reduce(allowed_roles, 0, fn role, acc ->
-      additional_roles_by_number()[role] + acc
-    end)
+    additional_count =
+      Enum.reduce(allowed_roles, 0, fn role, acc ->
+        additional_roles_by_number()[role] + acc
+      end)
 
     villager_count = round(player_count - werewolf_count - additional_count)
 
     cond do
       villager_count >= 0 ->
         {villager_count, allowed_roles}
+
       villager_count < 0 ->
         village_role_count(player_count, werewolf_count, Enum.shuffle(allowed_roles) |> tl())
     end

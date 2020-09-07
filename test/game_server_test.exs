@@ -128,7 +128,10 @@ defmodule Werewolf.GameServerTest do
 
   defp setup_game(phase_length, player_count) do
     clear_ets()
-    {:ok, game} = GameServer.start_link(host(), name(), phase_length, nil, fn _a, _b -> nil end, [])
+
+    {:ok, game} =
+      GameServer.start_link(host(), name(), phase_length, nil, fn _a, _b -> nil end, [])
+
     assert_able_to_add_users(game, player_count)
     assert {:ok, :launch_game, state} = GameServer.launch_game(game, host)
     assert_all_players_have_roles(state.game.players)

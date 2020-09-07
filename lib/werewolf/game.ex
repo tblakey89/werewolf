@@ -17,7 +17,8 @@ defmodule Werewolf.Game do
   def new(nil, name, phase_length, allowed_roles) do
     case Enum.member?(phase_lengths(), phase_length) do
       true ->
-        {:ok, %Game{id: name, allowed_roles: allowed_roles, players: %{}, phase_length: phase_length}}
+        {:ok,
+         %Game{id: name, allowed_roles: allowed_roles, players: %{}, phase_length: phase_length}}
 
       false ->
         {:error, :invalid_phase_length}
@@ -29,7 +30,13 @@ defmodule Werewolf.Game do
 
     case Enum.member?(phase_lengths(), phase_length) do
       true ->
-        {:ok, %Game{id: name, allowed_roles: allowed_roles, players: %{user.id => host_player}, phase_length: phase_length}}
+        {:ok,
+         %Game{
+           id: name,
+           allowed_roles: allowed_roles,
+           players: %{user.id => host_player},
+           phase_length: phase_length
+         }}
 
       false ->
         {:error, :invalid_phase_length}
@@ -164,5 +171,6 @@ defmodule Werewolf.Game do
   defp check_phase_limit(players, phases, :no_win) when map_size(players) * 2 <= phases do
     {:ok, :too_many_phases}
   end
+
   defp check_phase_limit(_, _, win_status), do: {:ok, win_status}
 end
