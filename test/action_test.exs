@@ -50,20 +50,36 @@ defmodule Werewolf.ActionTest do
       players = context[:additional_player_map]
       {:ok, player} = Player.add_action(players["detective"], 1, Action.new(:inspect, "villager"))
       players = put_in(players["detective"], player)
-      {:ok, little_girl_player} = Player.add_action(players["little_girl"], 1, Action.new(:inspect, "detective"))
+
+      {:ok, little_girl_player} =
+        Player.add_action(players["little_girl"], 1, Action.new(:inspect, "detective"))
+
       players = put_in(players["little_girl"], little_girl_player)
 
       {:ok, players} = Action.resolve_inspect_action(players, 1)
       assert players["little_girl"].actions[1][:inspect].result == true
     end
 
-    test "when little_girl alive, successfully inspects player, gets false for detective with no action", context do
+    test "when little_girl alive, successfully inspects player, gets false for detective with no action",
+         context do
       players = context[:additional_player_map]
-      {:ok, player} = Player.add_action(players["little_girl"], 1, Action.new(:inspect, "detective"))
+
+      {:ok, player} =
+        Player.add_action(players["little_girl"], 1, Action.new(:inspect, "detective"))
+
       players = put_in(players["little_girl"], player)
 
       {:ok, players} = Action.resolve_inspect_action(players, 1)
       assert players["little_girl"].actions[1][:inspect].result == false
+    end
+
+    test "when devil alive, successfully inspects player", context do
+      players = context[:additional_player_map]
+      {:ok, player} = Player.add_action(players["devil"], 1, Action.new(:inspect, "villager"))
+      players = put_in(players["devil"], player)
+
+      {:ok, players} = Action.resolve_inspect_action(players, 1)
+      assert players["devil"].actions[1][:inspect].result == :villager
     end
   end
 

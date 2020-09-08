@@ -65,6 +65,27 @@ defmodule Werewolf.PlayerTest do
       assert Enum.count(assigned_players, fn player -> player.role == :detective end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :doctor end) == 1
     end
+
+    test "when 18 players, 4 werewolves, all additional roles" do
+      assigned_players =
+        Map.values(
+          Player.assign_roles(generate_players(18), [
+            :doctor,
+            :detective,
+            :mason,
+            :little_girl,
+            :devil
+          ])
+        )
+
+      assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 4
+      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 8
+      assert Enum.count(assigned_players, fn player -> player.role == :detective end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :doctor end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :mason end) == 2
+      assert Enum.count(assigned_players, fn player -> player.role == :little_girl end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :devil end) == 1
+    end
   end
 
   describe "add_action/3" do

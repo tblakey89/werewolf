@@ -39,6 +39,15 @@ defmodule Werewolf.ActionRules do
 
   def valid(
         %Rules{state: :night_phase},
+        %Player{alive: true, role: :devil},
+        %Action{type: :inspect} = action,
+        players
+      ) do
+    response(action, players)
+  end
+
+  def valid(
+        %Rules{state: :night_phase},
         %Player{alive: true, role: :little_girl},
         %Action{type: :inspect} = action,
         players
