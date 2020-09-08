@@ -10,7 +10,7 @@ defmodule Werewolf.ActionTest do
   end
 
   describe "resolve_inspect_action/2" do
-    setup [:player_map]
+    setup [:player_map, :additional_player_map]
 
     test "when detective alive, successfully inspects player", context do
       players = context[:player_map]
@@ -44,6 +44,26 @@ defmodule Werewolf.ActionTest do
       players = context[:player_map]
       {:ok, players} = Action.resolve_inspect_action(players, 1)
       assert players == context[:player_map]
+    end
+
+    test "when little_girl alive, successfully inspects player, gets activity", context do
+      players = context[:additional_player_map]
+      {:ok, player} = Player.add_action(players["detective"], 1, Action.new(:inspect, "villager"))
+      players = put_in(players["detective"], player)
+      {:ok, little_girl_player} = Player.add_action(players["little_girl"], 1, Action.new(:inspect, "detective"))
+      players = put_in(players["little_girl"], little_girl_player)
+
+      {:ok, players} = Action.resolve_inspect_action(players, 1)
+      assert players["little_girl"].actions[1][:inspect].result == true
+    end
+
+    test "when little_girl alive, successfully inspects player, gets false for detective with no action", context do
+      players = context[:additional_player_map]
+      {:ok, player} = Player.add_action(players["little_girl"], 1, Action.new(:inspect, "detective"))
+      players = put_in(players["little_girl"], player)
+
+      {:ok, players} = Action.resolve_inspect_action(players, 1)
+      assert players["little_girl"].actions[1][:inspect].result == false
     end
   end
 

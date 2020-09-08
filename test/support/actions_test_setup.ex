@@ -30,6 +30,12 @@ defmodule Werewolf.Support.ActionsTestSetup do
   def dead_detective(_context),
     do: [dead_detective: %Player{host: false, alive: false, id: "test", role: :detective}]
 
+    def little_girl(_context),
+      do: [little_girl: %Player{host: false, alive: true, id: "test", role: :little_girl}]
+
+    def dead_little_girl(_context),
+      do: [dead_little_girl: %Player{host: false, alive: false, id: "test", role: :little_girl}]
+
   def day_state(_context), do: [day_state: %Rules{state: :day_phase}]
 
   def night_state(_context), do: [night_state: %Rules{state: :night_phase}]

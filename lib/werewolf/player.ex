@@ -16,13 +16,18 @@ defmodule Werewolf.Player do
     [:villager, :werewolf]
   end
 
+  def inspect_roles() do
+    [:detective, :little_girl]
+  end
+
   def roles_by_team() do
     %{
       werewolf: :werewolf,
       villager: :villager,
       detective: :villager,
       doctor: :villager,
-      mason: :villager
+      mason: :villager,
+      little_girl: :villager
     }
   end
 
@@ -30,7 +35,8 @@ defmodule Werewolf.Player do
     %{
       detective: 1,
       doctor: 1,
-      mason: 2
+      mason: 2,
+      little_girl: 1
     }
   end
 

@@ -17,6 +17,17 @@ defmodule Werewolf.Support.PlayerTestSetup do
       }
     ]
 
+    def additional_player_map(_context),
+      do: [
+        additional_player_map: %{
+          "villager" => %Player{id: "villager", host: false, role: :villager},
+          "werewolf" => %Player{id: "werewolf", host: false, role: :werewolf},
+          "doctor" => %Player{id: "doctor", host: false, role: :doctor},
+          "detective" => %Player{id: "detective", host: false, role: :detective},
+          "little_girl" => %Player{id: "little_girl", host: false, role: :little_girl}
+        }
+      ]
+
   def regular_player(_context), do: [regular_player: %Player{id: "tester2", host: false}]
 
   def players(_context), do: [players: %{"test" => %Player{id: "test", host: false}}]
