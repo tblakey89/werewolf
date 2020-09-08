@@ -21,14 +21,16 @@ defmodule Werewolf.Player do
       werewolf: :werewolf,
       villager: :villager,
       detective: :villager,
-      doctor: :villager
+      doctor: :villager,
+      mason: :villager
     }
   end
 
   def additional_roles_by_number() do
     %{
       detective: 1,
-      doctor: 1
+      doctor: 1,
+      mason: 2
     }
   end
 
