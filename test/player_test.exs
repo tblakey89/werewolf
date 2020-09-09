@@ -74,17 +74,19 @@ defmodule Werewolf.PlayerTest do
             :detective,
             :mason,
             :little_girl,
-            :devil
+            :devil,
+            :hunter
           ])
         )
 
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 4
-      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 8
+      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 7
       assert Enum.count(assigned_players, fn player -> player.role == :detective end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :doctor end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :mason end) == 2
       assert Enum.count(assigned_players, fn player -> player.role == :little_girl end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :devil end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :hunter end) == 1
     end
   end
 
@@ -116,28 +118,28 @@ defmodule Werewolf.PlayerTest do
   end
 
   describe "kill_player/3" do
-    setup [:player_map]
+    setup [:player_map, :additional_player_map]
 
     test "sets player to alive false, and calculates correct win (werewolf)", context do
-      {:ok, players, win, targets} = Player.kill_player(context[:player_map], "villager")
+      {:ok, players, win, targets} = Player.kill_player(context[:player_map], 1, "villager")
       assert players["villager"].alive == false
       assert Enum.at(targets, 0).target == "villager"
       assert win == :no_win
-      {:ok, players, win, targets} = Player.kill_player(players, "detective")
+      {:ok, players, win, targets} = Player.kill_player(players, 1, "detective")
       assert Enum.at(targets, 0).target == "detective"
       assert players["detective"].alive == false
       assert win == :werewolf_win
     end
 
     test "not update players when no target", context do
-      {:ok, players, _, targets} = Player.kill_player(context[:player_map], :none)
+      {:ok, players, _, targets} = Player.kill_player(context[:player_map], 1, :none)
       assert targets == []
       assert players == context[:player_map]
     end
 
     test "not update players when target equals heal target", context do
       {:ok, players, _, targets} =
-        Player.kill_player(context[:player_map], "villager", "villager")
+        Player.kill_player(context[:player_map], 1, "villager", "villager")
 
       assert players == context[:player_map]
       assert targets == []
@@ -145,17 +147,40 @@ defmodule Werewolf.PlayerTest do
     end
 
     test "sets player to alive false when heal target different", context do
-      {:ok, players, _, _} = Player.kill_player(context[:player_map], "villager", "detective")
+      {:ok, players, _, _} = Player.kill_player(context[:player_map], 1, "villager", "detective")
       assert players["villager"].alive == false
     end
 
+    test "sets hunter to alive false then sets hunter target to alive false", context do
+      {:ok, players, _, _} =
+        Player.kill_player(context[:additional_player_map], 1, "hunter_action", "little_girl")
+
+      assert players["detective"].alive == false
+      assert players["hunter_action"].alive == false
+    end
+
+    test "sets hunter to alive false but ignores hunter target if healed", context do
+      {:ok, players, _, _} =
+        Player.kill_player(context[:additional_player_map], 1, "hunter_action", "detective")
+
+      assert players["detective"].alive == true
+      assert players["hunter_action"].alive == false
+    end
+
+    test "sets hunter to alive false and no further death if no hunt action", context do
+      {:ok, players, _, _} =
+        Player.kill_player(context[:additional_player_map], 1, "hunter", "detective")
+
+      assert players["hunter"].alive == false
+    end
+
     test "calculates a villager win when no more werewolves", context do
-      {:ok, _, win, _} = Player.kill_player(context[:player_map], "werewolf")
+      {:ok, _, win, _} = Player.kill_player(context[:player_map], 1, "werewolf")
       assert win == :village_win
     end
 
     test "calculates no win when werewolf and villagers", context do
-      {:ok, _, win, _} = Player.kill_player(context[:player_map], :none)
+      {:ok, _, win, _} = Player.kill_player(context[:player_map], 1, :none)
       assert win == :no_win
     end
   end

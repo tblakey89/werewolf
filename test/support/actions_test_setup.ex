@@ -9,6 +9,8 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def inspect_action(_context), do: [inspect_action: %Action{type: :inspect, target: "target"}]
 
+  def hunt_action(_context), do: [hunt_action: %Action{type: :hunt, target: "target"}]
+
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
   def dead_player(_context), do: [dead_player: %Player{host: false, alive: false, id: "test"}]
@@ -41,6 +43,12 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def dead_little_girl(_context),
     do: [dead_little_girl: %Player{host: false, alive: false, id: "test", role: :little_girl}]
+
+  def hunter(_context),
+    do: [hunter: %Player{host: false, alive: true, id: "test", role: :hunter}]
+
+  def dead_hunter(_context),
+    do: [dead_hunter: %Player{host: false, alive: false, id: "test", role: :hunter}]
 
   def day_state(_context), do: [day_state: %Rules{state: :day_phase}]
 

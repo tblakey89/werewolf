@@ -28,7 +28,8 @@ defmodule Werewolf.Player do
       doctor: :villager,
       mason: :villager,
       little_girl: :villager,
-      devil: :villager
+      devil: :villager,
+      hunter: :villager
     }
   end
 
@@ -38,7 +39,8 @@ defmodule Werewolf.Player do
       doctor: 1,
       mason: 2,
       little_girl: 1,
-      devil: 1
+      devil: 1,
+      hunter: 1
     }
   end
 
@@ -70,18 +72,49 @@ defmodule Werewolf.Player do
     end)
   end
 
-  def kill_player(players, target, heal_target \\ :none)
+  def kill_player(players, phase_number, target, heal_target \\ :none)
 
-  def kill_player(players, :none, _), do: {:ok, players, win_check(players), []}
+  def kill_player(players, _, :none, _), do: {:ok, players, win_check(players), []}
 
-  def kill_player(players, target, heal_target) when target == heal_target do
+  def kill_player(players, _, target, heal_target) when target == heal_target do
     {:ok, players, win_check(players), []}
   end
 
-  def kill_player(players, target, _heal_target) do
+  def kill_player(players, phase_number, target, heal_target) do
     players = put_in(players[target].alive, false)
-    {:ok, players, win_check(players), [KillTarget.new(:werewolf, target)]}
+
+    {players, targets} =
+      hunter_response(
+        players,
+        players[target].role,
+        players[target].actions[phase_number],
+        heal_target,
+        [KillTarget.new(:werewolf, target)]
+      )
+
+    {:ok, players, win_check(players), targets}
   end
+
+  defp hunter_response(players, :hunter, nil, _, targets), do: {players, targets}
+
+  defp hunter_response(players, :hunter, actions, heal_target, targets) do
+    case actions[:hunt] do
+      nil ->
+        {players, targets}
+
+      hunt_action ->
+        case hunt_action.target == heal_target do
+          true ->
+            {players, targets}
+
+          false ->
+            players = put_in(players[hunt_action.target].alive, false)
+            {players, targets ++ [KillTarget.new(:hunter, hunt_action.target)]}
+        end
+    end
+  end
+
+  defp hunter_response(players, _, _, _, targets), do: {players, targets}
 
   defp by_team(players) do
     Enum.filter(players, fn {_, player} -> player.alive end)

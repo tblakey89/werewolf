@@ -350,4 +350,70 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
   end
+
+  describe "valid/3 hunter" do
+    setup [
+      :hunt_action,
+      :player,
+      :hunter,
+      :dead_hunter,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to hunt, returns ok tuple", context do
+      action = context[:hunt_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:hunter],
+                 action,
+                 context[:players]
+               )
+    end
+
+    test "unable to hunt for dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:hunter],
+                 context[:hunt_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to hunt when hunter is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_hunter],
+                 context[:hunt_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to hunt in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:hunter],
+                 context[:hunt_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to hunt when wrong role", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf],
+                 context[:hunt_action],
+                 context[:players]
+               )
+    end
+  end
 end

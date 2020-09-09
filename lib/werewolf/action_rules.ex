@@ -55,6 +55,15 @@ defmodule Werewolf.ActionRules do
     response(action, players)
   end
 
+  def valid(
+        %Rules{state: :night_phase},
+        %Player{alive: true, role: :hunter},
+        %Action{type: :hunt} = action,
+        players
+      ) do
+    response(action, players)
+  end
+
   def valid(_rules, _player, _action, _players) do
     {:error, :invalid_action}
   end
