@@ -33,7 +33,8 @@ defmodule Werewolf.Support.PlayerTestSetup do
           host: false,
           actions: %{1 => %{hunt: %Action{type: :hunt, target: "detective"}}},
           role: :hunter
-        }
+        },
+        "fool" => %Player{id: "fool", host: false, actions: %{}, role: :fool}
       }
     ]
 

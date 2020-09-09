@@ -75,18 +75,20 @@ defmodule Werewolf.PlayerTest do
             :mason,
             :little_girl,
             :devil,
-            :hunter
+            :hunter,
+            :fool
           ])
         )
 
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 4
-      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 7
+      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 6
       assert Enum.count(assigned_players, fn player -> player.role == :detective end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :doctor end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :mason end) == 2
       assert Enum.count(assigned_players, fn player -> player.role == :little_girl end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :devil end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :hunter end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :fool end) == 1
     end
   end
 
@@ -117,7 +119,7 @@ defmodule Werewolf.PlayerTest do
     end
   end
 
-  describe "kill_player/3" do
+  describe "kill_player/4" do
     setup [:player_map, :additional_player_map]
 
     test "sets player to alive false, and calculates correct win (werewolf)", context do
@@ -181,6 +183,22 @@ defmodule Werewolf.PlayerTest do
 
     test "calculates no win when werewolf and villagers", context do
       {:ok, _, win, _} = Player.kill_player(context[:player_map], 1, :none)
+      assert win == :no_win
+    end
+
+    test "a fool win if killed on day phase", context do
+      {:ok, players, win, targets} =
+        Player.kill_player(context[:additional_player_map], 2, "fool")
+
+      assert players["fool"].alive == false
+      assert win == :fool_win
+    end
+
+    test "not a fool win if killed on night phase", context do
+      {:ok, players, win, targets} =
+        Player.kill_player(context[:additional_player_map], 1, "fool")
+
+      assert players["fool"].alive == false
       assert win == :no_win
     end
   end

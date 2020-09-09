@@ -1,4 +1,5 @@
 defmodule Werewolf.Player do
+  import Guard, only: [is_even: 1]
   alias Werewolf.Player
   alias Werewolf.KillTarget
 
@@ -29,7 +30,8 @@ defmodule Werewolf.Player do
       mason: :villager,
       little_girl: :villager,
       devil: :villager,
-      hunter: :villager
+      hunter: :villager,
+      fool: :villager
     }
   end
 
@@ -40,7 +42,8 @@ defmodule Werewolf.Player do
       mason: 2,
       little_girl: 1,
       devil: 1,
-      hunter: 1
+      hunter: 1,
+      fool: 1
     }
   end
 
@@ -75,6 +78,15 @@ defmodule Werewolf.Player do
   def kill_player(players, phase_number, target, heal_target \\ :none)
 
   def kill_player(players, _, :none, _), do: {:ok, players, win_check(players), []}
+
+  def kill_player(players, phase_number, target, _) when is_even(phase_number) do
+    players = put_in(players[target].alive, false)
+
+    case players[target].role do
+      :fool -> {:ok, players, :fool_win, [KillTarget.new(:vote, target)]}
+      _ -> {:ok, players, win_check(players), [KillTarget.new(:vote, target)]}
+    end
+  end
 
   def kill_player(players, _, target, heal_target) when target == heal_target do
     {:ok, players, win_check(players), []}
