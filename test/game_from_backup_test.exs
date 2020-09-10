@@ -23,6 +23,7 @@ defmodule Werewolf.GameFromBackupTest do
           "phase_length" => "day",
           "phases" => 0,
           "win_status" => "werewolf_win",
+          "allowed_roles" => ["doctor", "detective"],
           "targets" => %{
             "1" => [
               %{
@@ -64,6 +65,7 @@ defmodule Werewolf.GameFromBackupTest do
           phase_length: :day,
           phases: 0,
           win_status: :werewolf_win,
+          allowed_roles: [:doctor, :detective],
           targets: %{
             1 => [
               %Werewolf.KillTarget{
