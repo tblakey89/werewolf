@@ -59,7 +59,7 @@ defmodule Werewolf.GameServerTest do
       {game, players} = setup_game(:day, 8)
       GameServer.stop(game)
       {:ok, game} = GameServer.start_link(host(), name(), :day, nil, fn _a, _b -> nil end, [])
-      assert {:no_win, :none, 2, _} = GameServer.end_phase(game)
+      assert {:no_win, %{}, 2, _} = GameServer.end_phase(game)
       clear_ets()
     end
   end
@@ -169,8 +169,8 @@ defmodule Werewolf.GameServerTest do
       GameServer.action(game, user(player.id), target.id, :vote)
     end)
 
-    {win_status, killed_player, _, _} = GameServer.end_phase(game)
-    assert target.id == killed_player
+    {win_status, targets, _, _} = GameServer.end_phase(game)
+    assert target.id == (targets[:vote] || targets[:werewolf])
     win_status
   end
 

@@ -161,12 +161,12 @@ defmodule Werewolf.GameTest do
     setup [:night_rules, :day_rules, :finished_game, :too_many_phases_game, :rules]
 
     test "when game won, sends win atom, and updates state", context do
-      {:ok, game, rules, target, win_status} =
+      {:ok, game, rules, targets, win_status} =
         Game.end_phase(context[:finished_game], context[:day_rules])
 
       assert game.players["test2"].alive == false
       assert rules.state == :game_over
-      assert target == "test2"
+      assert targets == %{werewolf: "test2"}
       assert win_status == :village_win
     end
 
@@ -185,7 +185,7 @@ defmodule Werewolf.GameTest do
       {:ok, game, rules, target, win_status} = Game.end_phase(finished_game, context[:day_rules])
       assert game.players["test2"].alive == true
       assert rules.state == :night_phase
-      assert target == :none
+      assert target == %{}
       assert win_status == :no_win
       assert game.phases == 2
     end

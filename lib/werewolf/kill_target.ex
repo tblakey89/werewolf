@@ -8,4 +8,10 @@ defmodule Werewolf.KillTarget do
   def new(type, target) do
     %KillTarget{type: type, target: target}
   end
+
+  def to_map(kill_targets) do
+    Enum.reduce(kill_targets, %{}, fn kill_target, map ->
+      Map.put_new(map, kill_target.type, kill_target.target)
+    end)
+  end
 end

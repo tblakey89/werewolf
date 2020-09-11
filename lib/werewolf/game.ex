@@ -1,5 +1,5 @@
 defmodule Werewolf.Game do
-  alias Werewolf.{Game, Player, PlayerRules, Rules, ActionRules, Action, Votes, Phase}
+  alias Werewolf.{Game, Player, PlayerRules, Rules, ActionRules, Action, Votes, Phase, KillTarget}
 
   @enforce_keys [:id, :players, :phase_length]
   @derive Jason.Encoder
@@ -102,23 +102,6 @@ defmodule Werewolf.Game do
   end
 
   def end_phase(game, rules) do
-    # count votes should return loser
-    # if tie, returns :none atom
-    # kill player, or not if tie
-    # win check
-    # if win change to gameover, declare winner,
-    # :werewolf_win, :village_win, otherwise
-    # go to next day/night phase
-    # don't need to worry about alternate paths,
-    # should be same win or continue,
-    # all we need to do is send the messages, let phoenix
-    # handle how to broadcast the actual text
-    # like:
-    # {:ok, :village_win, 'player_id'} ('player_id' is player who was killed)
-    # {:ok, :werewolf_win, :user_dead}
-    # {:ok, :day/:night, :user_dead/:none}
-    # :user_dead could in the future be replaced by list of tuples
-    # [{:user_dead, :werewolf}, {:user_dead, :vigilante}], etc
     with {:ok, votes, target} <- Votes.count_from_actions(phase_actions(game)),
          {:ok, heal_target} <- Action.resolve_heal_action(game.players, game.phases),
          {:ok, players, win_status, targets} <-
@@ -137,7 +120,7 @@ defmodule Werewolf.Game do
           end_phase_unix_time: Phase.calculate_end_of_phase_unix(game.phase_length)
       }
 
-      {:ok, game, rules, target, win_status}
+      {:ok, game, rules, KillTarget.to_map(targets), win_status}
     else
       {:error, reason} -> {:error, reason}
     end
