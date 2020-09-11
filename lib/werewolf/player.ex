@@ -110,19 +110,14 @@ defmodule Werewolf.Player do
   defp hunter_response(players, :hunter, nil, _, targets), do: {players, targets}
 
   defp hunter_response(players, :hunter, actions, heal_target, targets) do
-    case actions[:hunt] do
-      nil ->
-        {players, targets}
-
-      hunt_action ->
-        case hunt_action.target == heal_target do
-          true ->
-            {players, targets}
-
-          false ->
-            players = put_in(players[hunt_action.target].alive, false)
-            {players, targets ++ [KillTarget.new(:hunter, hunt_action.target)]}
-        end
+    with true <- Map.has_key?(actions, :hunt),
+         false <- actions[:hunt].target == heal_target,
+         %Player{alive: true} <- players[actions[:hunt].target] do
+      hunt_action = actions[:hunt]
+      players = put_in(players[hunt_action.target].alive, false)
+      {players, targets ++ [KillTarget.new(:hunter, hunt_action.target)]}
+    else
+      _ -> {players, targets}
     end
   end
 
