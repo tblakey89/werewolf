@@ -220,7 +220,7 @@ defmodule Werewolf.GameTest do
 
     test "returns correct vote count", context do
       finished_game = context[:finished_game]
-      assert Game.current_vote_count(finished_game) == {3, "test2"}
+      assert Game.current_vote_count(finished_game) == {[{"test2", 3}, {"test3", 1}], "test2"}
     end
   end
 
@@ -299,6 +299,20 @@ defmodule Werewolf.GameTest do
                 vote: %Action{
                   type: :vote,
                   target: "test2"
+                }
+              }
+            }
+          },
+          "test4" => %Player{
+            id: "test4",
+            alive: true,
+            host: false,
+            role: :villager,
+            actions: %{
+              1 => %{
+                vote: %Action{
+                  type: :vote,
+                  target: "test3"
                 }
               }
             }
