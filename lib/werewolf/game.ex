@@ -155,10 +155,12 @@ defmodule Werewolf.Game do
 
   def current_vote_count(game) do
     {:ok, votes, target} = Votes.count_from_actions(phase_actions(game))
+
     vote_tuples =
-      Enum.map(votes, fn({key, value}) -> {key, value} end)
-        |> List.keysort(1)
-        |> Enum.reverse
+      Enum.map(votes, fn {key, value} -> {key, value} end)
+      |> List.keysort(1)
+      |> Enum.reverse()
+
     {vote_tuples, target}
   end
 
