@@ -18,6 +18,12 @@ defmodule Werewolf.PlayerTest do
   end
 
   describe "assign_roles/1" do
+    test "when 5 players" do
+      assigned_players = Map.values(Player.assign_roles(generate_players(5), []))
+      assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 4
+    end
+
     test "when 8 players" do
       assigned_players = Map.values(Player.assign_roles(generate_players(8), []))
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 2

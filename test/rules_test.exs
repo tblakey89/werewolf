@@ -26,10 +26,10 @@ defmodule Werewolf.RulesTest do
     end
   end
 
-  describe "check/2 :add_player when 7 players" do
+  describe "check/2 :add_player when 4 players" do
     setup [:pre_ready_game, :ready_rules, :initialized_rules]
 
-    test "returns :error tuple when unable to add players", context do
+    test "returns ready rules when hitting minimum required", context do
       rules = context[:ready_rules]
       assert {:ok, rules} == Rules.check(context[:rules], {:add_player, context[:game]})
     end
@@ -150,9 +150,9 @@ defmodule Werewolf.RulesTest do
 
   defp full_game(_context), do: [game: %{players: generate_players(18)}]
 
-  defp pre_ready_game(_context), do: [game: %{players: generate_players(7)}]
+  defp pre_ready_game(_context), do: [game: %{players: generate_players(4)}]
 
-  defp ready_game(_context), do: [game: %{players: generate_players(8)}]
+  defp ready_game(_context), do: [game: %{players: generate_players(5)}]
 
   defp generate_players(amount), do: for(_ <- 1..amount, do: %{})
 end

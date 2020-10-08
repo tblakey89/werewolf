@@ -4,7 +4,7 @@ defmodule Werewolf.Rules do
   @derive Jason.Encoder
   defstruct state: :initialized
 
-  @min_players 8
+  @min_players 5
   @max_players 18
 
   def new, do: %Rules{}
