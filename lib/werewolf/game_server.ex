@@ -21,6 +21,10 @@ defmodule Werewolf.GameServer do
     GenServer.call(game, :get_state)
   end
 
+  def relevant_players(game, type) do
+    GenServer.call(game, {:relevant_players, type})
+  end
+
   def add_player(game, user) do
     GenServer.call(game, {:add_player, user})
   end
@@ -59,6 +63,11 @@ defmodule Werewolf.GameServer do
 
   def handle_call(:get_state, _from, state_data) do
     {:reply, {:ok, state_data}, state_data, @timeout}
+  end
+
+  def handle_call({:relevant_players, type}, _from, state_data) do
+    {:reply, {:ok, Game.relevant_players(type, state_data.game, state_data.rules)}, state_data,
+     @timeout}
   end
 
   def handle_call({:add_player, user}, _from, state_data) do

@@ -139,6 +139,24 @@ defmodule Werewolf.Game do
     end
   end
 
+  def relevant_players(:standard, game, _rules) do
+    Map.keys(game.players)
+  end
+
+  def relevant_players(type, game, rules) do
+    case Rules.is_playing?(rules) do
+      true ->
+        Map.values(game.players)
+        |> Enum.filter(fn player ->
+          Player.relevant_player?(player, type)
+        end)
+        |> Enum.map(fn player -> player.id end)
+
+      false ->
+        []
+    end
+  end
+
   def phase_lengths() do
     [
       :millisecond,

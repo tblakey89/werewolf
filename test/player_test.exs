@@ -125,6 +125,35 @@ defmodule Werewolf.PlayerTest do
     end
   end
 
+  describe "relevant_player?/2" do
+    setup [:regular_player_map, :dead_player_map, :player_map]
+
+    test "returns true for dead player when given dead", context do
+      assert Player.relevant_player?(context[:dead_player_map][3], :dead) == true
+    end
+
+    test "returns false for alive player when given dead", context do
+      assert Player.relevant_player?(context[:regular_player_map][2], :dead) == false
+    end
+
+    test "returns true for player when matches role", context do
+      assert Player.relevant_player?(context[:player_map]["werewolf"], :werewolf) == true
+    end
+
+    test "returns false for player when matches role but dead", context do
+      player = %{
+        context[:player_map]["werewolf"]
+        | alive: false
+      }
+
+      assert Player.relevant_player?(player, :werewolf) == false
+    end
+
+    test "returns false for player that does not match role", context do
+      assert Player.relevant_player?(context[:player_map]["villager"], :werewolf) == false
+    end
+  end
+
   describe "kill_player/4" do
     setup [:player_map, :additional_player_map]
 

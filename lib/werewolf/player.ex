@@ -75,6 +75,14 @@ defmodule Werewolf.Player do
     end)
   end
 
+  def relevant_player?(player, :dead) do
+    !player.alive
+  end
+
+  def relevant_player?(player, type) do
+    player.role == type && player.alive
+  end
+
   def kill_player(players, phase_number, target, heal_target \\ :none)
 
   def kill_player(players, _, :none, _), do: {:ok, players, win_check(players), []}

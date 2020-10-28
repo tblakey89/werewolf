@@ -215,6 +215,31 @@ defmodule Werewolf.GameTest do
     end
   end
 
+  describe "relevant_players/3" do
+    setup [:finished_game, :rules, :ready_rules, :day_rules]
+
+    test "when given standard, returns all player ids", context do
+      relevant_players =
+        Game.relevant_players(:standard, context[:finished_game], context[:rules])
+
+      assert relevant_players == ["test1", "test2", "test3", "test4"]
+    end
+
+    test "when given non-standard, returns empty list if not playing", context do
+      relevant_players =
+        Game.relevant_players(:werewolf, context[:finished_game], context[:ready_rules])
+
+      assert relevant_players == []
+    end
+
+    test "when given non-standard, returns relevant player ids, if playing", context do
+      relevant_players =
+        Game.relevant_players(:werewolf, context[:finished_game], context[:day_rules])
+
+      assert relevant_players == ["test2"]
+    end
+  end
+
   describe "current_vote_count/1" do
     setup [:finished_game]
 

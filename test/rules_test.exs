@@ -138,6 +138,22 @@ defmodule Werewolf.RulesTest do
     end
   end
 
+  describe "is_playing?/1" do
+    setup [:night_rules, :day_rules, :ready_rules]
+
+    test "returns false when not playing", context do
+      assert false == Rules.is_playing?(context[:ready_rules])
+    end
+
+    test "returns true when day_phase", context do
+      assert true == Rules.is_playing?(context[:day_rules])
+    end
+
+    test "returns true when night_phase", context do
+      assert true == Rules.is_playing?(context[:night_rules])
+    end
+  end
+
   defp initialized_rules(_context), do: [rules: Rules.new()]
 
   defp ready_rules(_context), do: [ready_rules: %Rules{state: :ready}]

@@ -59,6 +59,10 @@ defmodule Werewolf.Rules do
 
   def check(_state, _action), do: {:error, :invalid_action}
 
+  def is_playing?(%Rules{state: :night_phase} = rules), do: true
+  def is_playing?(%Rules{state: :day_phase} = rules), do: true
+  def is_playing?(_rules), do: false
+
   defp able_to_add_new_player?(game) do
     Enum.count(game.players) < @max_players
   end
