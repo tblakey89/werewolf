@@ -2,12 +2,25 @@ defmodule Werewolf.Player do
   import Guard, only: [is_even: 1]
   alias Werewolf.Player
   alias Werewolf.KillTarget
+  alias Werewolf.Item
 
   @enforce_keys [:id, :host]
   @derive Jason.Encoder
-  defstruct [:id, host: false, role: :none, alive: true, actions: %{}]
+  defstruct [:id, host: false, role: :none, alive: true, actions: %{}, items: []]
 
   @villager_to_werewolf 6
+
+  @items_by_role %{
+    werewolf: [],
+    villager: [],
+    detective: [:magnifying_glass],
+    doctor: [:first_aid_kit],
+    mason: [],
+    little_girl: [:binoculars],
+    devil: [:magnifying_glass],
+    hunter: [:dead_man_switch],
+    fool: []
+  }
 
   def new(type, user) do
     {:ok, %Player{id: user.id, host: type == :host}}
@@ -71,7 +84,7 @@ defmodule Werewolf.Player do
     |> generate_role_list(allowed_roles)
     |> Enum.zip(Map.values(players))
     |> Enum.reduce(%{}, fn {role, player}, acc ->
-      Map.put(acc, player.id, Map.put(player, :role, role))
+      Map.put(acc, player.id, %{player | role: role, items: items_for_role(role)})
     end)
   end
 
@@ -113,6 +126,12 @@ defmodule Werewolf.Player do
       )
 
     {:ok, players, win_check(players), targets}
+  end
+
+  defp items_for_role(role) do
+    Enum.map(@items_by_role[role], fn item_type ->
+      Item.new(item_type)
+    end)
   end
 
   defp hunter_response(players, :hunter, nil, _, targets), do: {players, targets}

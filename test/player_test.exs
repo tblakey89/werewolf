@@ -1,7 +1,7 @@
 defmodule Werewolf.PlayerTest do
   use ExUnit.Case
   import Werewolf.Support.PlayerTestSetup
-  alias Werewolf.{Player, Action}
+  alias Werewolf.{Player, Action, Item}
 
   describe "new/2" do
     setup [:user]
@@ -95,6 +95,32 @@ defmodule Werewolf.PlayerTest do
       assert Enum.count(assigned_players, fn player -> player.role == :devil end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :hunter end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :fool end) == 1
+      assert Enum.find(assigned_players, fn player -> player.role == :werewolf end).items == []
+      assert Enum.find(assigned_players, fn player -> player.role == :villager end).items == []
+
+      assert Enum.find(assigned_players, fn player -> player.role == :detective end).items == [
+               Item.new(:magnifying_glass)
+             ]
+
+      assert Enum.find(assigned_players, fn player -> player.role == :doctor end).items == [
+               Item.new(:first_aid_kit)
+             ]
+
+      assert Enum.find(assigned_players, fn player -> player.role == :mason end).items == []
+
+      assert Enum.find(assigned_players, fn player -> player.role == :little_girl end).items == [
+               Item.new(:binoculars)
+             ]
+
+      assert Enum.find(assigned_players, fn player -> player.role == :devil end).items == [
+               Item.new(:magnifying_glass)
+             ]
+
+      assert Enum.find(assigned_players, fn player -> player.role == :hunter end).items == [
+               Item.new(:dead_man_switch)
+             ]
+
+      assert Enum.find(assigned_players, fn player -> player.role == :fool end).items == []
     end
   end
 
