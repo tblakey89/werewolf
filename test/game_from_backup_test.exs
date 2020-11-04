@@ -47,7 +47,17 @@ defmodule Werewolf.GameFromBackupTest do
               "alive" => true,
               "host" => true,
               "id" => 1,
-              "role" => "none"
+              "role" => "none",
+              "items" => [
+                %{
+                  "type" => "magnifying_glass",
+                  "remaining_uses" => "infinite"
+                },
+                %{
+                  "type" => "gun",
+                  "remaining_uses" => 1
+                }
+              ]
             }
           }
         },
@@ -88,7 +98,17 @@ defmodule Werewolf.GameFromBackupTest do
               alive: true,
               host: true,
               id: 1,
-              role: :none
+              role: :none,
+              items: [
+                %Werewolf.Item{
+                  type: :magnifying_glass,
+                  remaining_uses: :infinite
+                },
+                %Werewolf.Item{
+                  type: :gun,
+                  remaining_uses: 1
+                }
+              ]
             }
           }
         },
