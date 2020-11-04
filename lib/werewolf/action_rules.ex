@@ -1,5 +1,5 @@
 defmodule Werewolf.ActionRules do
-  alias Werewolf.{Rules, Player, Action}
+  alias Werewolf.{Rules, Player, Action, Item}
 
   def valid(
         %Rules{state: :day_phase},
@@ -21,47 +21,26 @@ defmodule Werewolf.ActionRules do
 
   def valid(
         %Rules{state: :night_phase},
-        %Player{alive: true, role: :doctor},
-        %Action{type: :heal} = action,
+        %Player{alive: true, items: items},
+        %Action{type: action_type} = action,
         players
       ) do
-    response(action, players)
-  end
+    cond do
+      action_type == :heal && Item.usable?(:first_aid_kit, items) ->
+        response(action, players)
 
-  def valid(
-        %Rules{state: :night_phase},
-        %Player{alive: true, role: :detective},
-        %Action{type: :inspect} = action,
-        players
-      ) do
-    response(action, players)
-  end
+      action_type == :inspect && Item.usable?(:magnifying_glass, items) ->
+        response(action, players)
 
-  def valid(
-        %Rules{state: :night_phase},
-        %Player{alive: true, role: :devil},
-        %Action{type: :inspect} = action,
-        players
-      ) do
-    response(action, players)
-  end
+      action_type == :inspect && Item.usable?(:binoculars, items) ->
+        response(action, players)
 
-  def valid(
-        %Rules{state: :night_phase},
-        %Player{alive: true, role: :little_girl},
-        %Action{type: :inspect} = action,
-        players
-      ) do
-    response(action, players)
-  end
+      action_type == :hunt && Item.usable?(:dead_man_switch, items) ->
+        response(action, players)
 
-  def valid(
-        %Rules{state: :night_phase},
-        %Player{alive: true, role: :hunter},
-        %Action{type: :hunt} = action,
-        players
-      ) do
-    response(action, players)
+      true ->
+        {:error, :invalid_action}
+    end
   end
 
   def valid(_rules, _player, _action, _players) do

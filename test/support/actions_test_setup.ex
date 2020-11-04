@@ -1,5 +1,5 @@
 defmodule Werewolf.Support.ActionsTestSetup do
-  alias Werewolf.{Action, Rules, Player}
+  alias Werewolf.{Action, Rules, Player, Item}
 
   def vote_action(_context), do: [vote_action: %Action{type: :vote, target: "target"}]
 
@@ -21,34 +21,115 @@ defmodule Werewolf.Support.ActionsTestSetup do
   def dead_werewolf(_context),
     do: [dead_werewolf: %Player{host: false, alive: false, id: "test", role: :werewolf}]
 
-  def doctor(_context), do: [doctor: %Player{host: false, alive: true, id: "test", role: :doctor}]
+  def doctor(_context),
+    do: [
+      doctor: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :doctor,
+        items: [Item.new(:first_aid_kit)]
+      }
+    ]
 
   def dead_doctor(_context),
-    do: [dead_doctor: %Player{host: false, alive: false, id: "test", role: :doctor}]
+    do: [
+      dead_doctor: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :doctor,
+        items: [Item.new(:first_aid_kit)]
+      }
+    ]
 
   def detective(_context),
-    do: [detective: %Player{host: false, alive: true, id: "test", role: :detective}]
+    do: [
+      detective: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :detective,
+        items: [Item.new(:magnifying_glass)]
+      }
+    ]
 
   def dead_detective(_context),
-    do: [dead_detective: %Player{host: false, alive: false, id: "test", role: :detective}]
+    do: [
+      dead_detective: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :detective,
+        items: [Item.new(:magnifying_glass)]
+      }
+    ]
 
   def devil(_context),
-    do: [devil: %Player{host: false, alive: true, id: "test", role: :devil}]
+    do: [
+      devil: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :devil,
+        items: [Item.new(:magnifying_glass)]
+      }
+    ]
 
   def dead_devil(_context),
-    do: [dead_devil: %Player{host: false, alive: false, id: "test", role: :devil}]
+    do: [
+      dead_devil: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :devil,
+        items: [Item.new(:magnifying_glass)]
+      }
+    ]
 
   def little_girl(_context),
-    do: [little_girl: %Player{host: false, alive: true, id: "test", role: :little_girl}]
+    do: [
+      little_girl: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :little_girl,
+        items: [Item.new(:binoculars)]
+      }
+    ]
 
   def dead_little_girl(_context),
-    do: [dead_little_girl: %Player{host: false, alive: false, id: "test", role: :little_girl}]
+    do: [
+      dead_little_girl: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :little_girl,
+        items: [Item.new(:binoculars)]
+      }
+    ]
 
   def hunter(_context),
-    do: [hunter: %Player{host: false, alive: true, id: "test", role: :hunter}]
+    do: [
+      hunter: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :hunter,
+        items: [Item.new(:dead_man_switch)]
+      }
+    ]
 
   def dead_hunter(_context),
-    do: [dead_hunter: %Player{host: false, alive: false, id: "test", role: :hunter}]
+    do: [
+      dead_hunter: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :hunter,
+        items: [Item.new(:dead_man_switch)]
+      }
+    ]
 
   def day_state(_context), do: [day_state: %Rules{state: :day_phase}]
 
