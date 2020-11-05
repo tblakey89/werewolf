@@ -79,6 +79,10 @@ defmodule Werewolf.Player do
     end
   end
 
+  def use_item(player, item_type) do
+    {:ok, put_in(player.items, Item.use_item(item_type, player.items))}
+  end
+
   def assign_roles(players, allowed_roles \\ [:detective, :doctor]) do
     map_size(players)
     |> generate_role_list(allowed_roles)

@@ -1,6 +1,7 @@
 defmodule Werewolf.Support.PlayerTestSetup do
   alias Werewolf.Player
   alias Werewolf.Action
+  alias Werewolf.Item
 
   def user(_context), do: [user: %{username: "tester", id: 1}]
   def alt_user(_context), do: [alt_user: %{username: "tester2", id: 2}]
@@ -41,7 +42,14 @@ defmodule Werewolf.Support.PlayerTestSetup do
       }
     ]
 
-  def regular_player(_context), do: [regular_player: %Player{id: "tester2", host: false}]
+  def regular_player(_context),
+    do: [
+      regular_player: %Player{
+        id: "tester2",
+        host: false,
+        items: [%Item{type: :flower, remaining_uses: 1}]
+      }
+    ]
 
   def players(_context), do: [players: %{"test" => %Player{id: "test", host: false}}]
 end

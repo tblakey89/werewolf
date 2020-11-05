@@ -22,6 +22,20 @@ defmodule Werewolf.Item do
     end)
   end
 
+  def use_item(item_type, items) do
+    Enum.map(items, fn item ->
+      Map.put(item, :remaining_uses, calculate_remaining_uses(item_type, item))
+    end)
+  end
+
+  defp calculate_remaining_uses(_, %Item{remaining_uses: :infinite}), do: :infinite
+
+  defp calculate_remaining_uses(item_type, %Item{type: item_type} = item) do
+    item.remaining_uses - 1
+  end
+
+  defp calculate_remaining_uses(_, %Item{remaining_uses: uses}), do: uses
+
   defp remaining_uses_left?(:infinite), do: true
   defp remaining_uses_left?(uses) when uses > 0, do: true
   defp remaining_uses_left?(_), do: false

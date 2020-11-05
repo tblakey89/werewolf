@@ -27,4 +27,21 @@ defmodule Werewolf.ItemTest do
                false
     end
   end
+
+  describe "use_item/2" do
+    test "returns infinite remaining uses when it is infinite" do
+      assert Enum.at(Item.use_item(:flower, [%Item{type: :flower, remaining_uses: :infinite}]), 0).remaining_uses ==
+               :infinite
+    end
+
+    test "returns 0 remaining uses when it is 1" do
+      assert Enum.at(Item.use_item(:flower, [%Item{type: :flower, remaining_uses: 1}]), 0).remaining_uses ==
+               0
+    end
+
+    test "returns 1 remaining uses when it is 1, but wrong item" do
+      assert Enum.at(Item.use_item(:first_aid_kit, [%Item{type: :flower, remaining_uses: 1}]), 0).remaining_uses ==
+               1
+    end
+  end
 end

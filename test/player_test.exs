@@ -151,6 +151,20 @@ defmodule Werewolf.PlayerTest do
     end
   end
 
+  describe "use_item/2" do
+    setup [:regular_player]
+
+    test "when using item owned by user", context do
+      {:ok, player} = Player.use_item(context[:regular_player], :flower)
+      assert Enum.at(player.items, 0).remaining_uses == 0
+    end
+
+    test "when using item not owned by user", context do
+      {:ok, player} = Player.use_item(context[:regular_player], :food)
+      assert Enum.at(player.items, 0).remaining_uses == 1
+    end
+  end
+
   describe "relevant_player?/2" do
     setup [:regular_player_map, :dead_player_map, :player_map]
 
