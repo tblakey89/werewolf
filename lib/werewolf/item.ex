@@ -9,7 +9,9 @@ defmodule Werewolf.Item do
     magnifying_glass: :infinite,
     first_aid_kit: :infinite,
     dead_man_switch: :infinite,
-    binoculars: :infinite
+    binoculars: :infinite,
+    kill_potion: 1,
+    resurrection_scroll: 1
   }
 
   def new(type) do

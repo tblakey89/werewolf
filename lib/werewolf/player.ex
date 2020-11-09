@@ -19,7 +19,8 @@ defmodule Werewolf.Player do
     little_girl: [:binoculars],
     devil: [:magnifying_glass],
     hunter: [:dead_man_switch],
-    fool: []
+    fool: [],
+    witch: [:kill_potion, :resurrection_scroll]
   }
 
   def new(type, user) do
@@ -44,7 +45,8 @@ defmodule Werewolf.Player do
       little_girl: :villager,
       devil: :villager,
       hunter: :villager,
-      fool: :villager
+      fool: :villager,
+      witch: :villager
     }
   end
 
@@ -56,7 +58,8 @@ defmodule Werewolf.Player do
       little_girl: 1,
       devil: 1,
       hunter: 1,
-      fool: 1
+      fool: 1,
+      witch: 1
     }
   end
 
