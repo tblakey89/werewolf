@@ -10,7 +10,7 @@ defmodule Werewolf.Item do
     first_aid_kit: :infinite,
     dead_man_switch: :infinite,
     binoculars: :infinite,
-    kill_potion: 1,
+    poison: 1,
     resurrection_scroll: 1
   }
 

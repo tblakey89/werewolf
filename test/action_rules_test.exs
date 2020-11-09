@@ -164,7 +164,7 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
 
-    test "unable to heal when wrong role", context do
+    test "unable to heal when have wrong items", context do
       assert {:error, :invalid_action} ==
                ActionRules.valid(
                  context[:night_state],
@@ -230,7 +230,7 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
 
-    test "unable to inspect when wrong role", context do
+    test "unable to inspect when have wrong items", context do
       assert {:error, :invalid_action} ==
                ActionRules.valid(
                  context[:night_state],
@@ -406,12 +406,78 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
 
-    test "unable to hunt when wrong role", context do
+    test "unable to hunt when have wrong items", context do
       assert {:error, :invalid_action} ==
                ActionRules.valid(
                  context[:night_state],
                  context[:werewolf],
                  context[:hunt_action],
+                 context[:players]
+               )
+    end
+  end
+
+  describe "valid/3 witch" do
+    setup [
+      :resurrect_action,
+      :player,
+      :witch,
+      :dead_witch,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to resurrect, returns ok tuple", context do
+      action = context[:resurrect_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:witch],
+                 action,
+                 context[:players]
+               )
+    end
+
+    test "unable to resurrect for dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:witch],
+                 context[:resurrect_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to resurrect when witch is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_witch],
+                 context[:resurrect_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to resurrect in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:witch],
+                 context[:resurrect_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to resurrect when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf],
+                 context[:resurrect_action],
                  context[:players]
                )
     end

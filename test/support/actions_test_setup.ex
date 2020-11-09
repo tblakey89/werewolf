@@ -11,6 +11,8 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def hunt_action(_context), do: [hunt_action: %Action{type: :hunt, target: "target"}]
 
+  def resurrect_action(_context), do: [resurrect_action: %Action{type: :resurrect, target: "target"}]
+
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
   def dead_player(_context), do: [dead_player: %Player{host: false, alive: false, id: "test"}]
@@ -128,6 +130,28 @@ defmodule Werewolf.Support.ActionsTestSetup do
         id: "test",
         role: :hunter,
         items: [Item.new(:dead_man_switch)]
+      }
+    ]
+
+  def witch(_context),
+    do: [
+      witch: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :witch,
+        items: [Item.new(:resurrection_scroll)]
+      }
+    ]
+
+  def dead_witch(_context),
+    do: [
+      dead_witch: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :witch,
+        items: [Item.new(:resurrection_scroll)]
       }
     ]
 

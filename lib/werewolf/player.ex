@@ -20,7 +20,7 @@ defmodule Werewolf.Player do
     devil: [:magnifying_glass],
     hunter: [:dead_man_switch],
     fool: [],
-    witch: [:kill_potion, :resurrection_scroll]
+    witch: [:poison, :resurrection_scroll]
   }
 
   def new(type, user) do

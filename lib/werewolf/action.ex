@@ -36,6 +36,22 @@ defmodule Werewolf.Action do
     end
   end
 
+  def resolve_resurrect_action(players, phase_number) do
+    {:ok,
+       with {:ok, players_with_item} <- find_players_for_items(Map.values(players), [:resurrection_scroll]),
+            {:ok, player_and_actions} <- find_actions_for_phase(players_with_item, phase_number, :resurrect) do
+        Enum.reduce(player_and_actions, players, fn({_player, action}, acc_players) ->
+          put_in(
+            acc_players[action.target].alive,
+            true
+          )
+        end)
+       else
+         nil -> players
+       end
+     }
+  end
+
   defp find_players_for_items(players, item_types) do
     {:ok, Enum.filter(players, fn player ->
            Player.has_item?(player, item_types) && player.alive

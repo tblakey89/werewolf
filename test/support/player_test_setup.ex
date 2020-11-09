@@ -39,7 +39,8 @@ defmodule Werewolf.Support.PlayerTestSetup do
           role: :hunter,
           items: [Item.new(:dead_man_switch)]
         },
-        "fool" => %Player{id: "fool", host: false, actions: %{}, role: :fool}
+        "fool" => %Player{id: "fool", host: false, actions: %{}, role: :fool},
+        "witch" => %Player{id: "witch", host: false, actions: %{}, role: :witch, items: [Item.new(:resurrection_scroll), Item.new(:poison)]},
       }
     ]
 

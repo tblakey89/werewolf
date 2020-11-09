@@ -111,4 +111,36 @@ defmodule Werewolf.ActionTest do
       assert heal_targets == []
     end
   end
+
+  describe "resolve_resurrect_action/2" do
+    setup [:additional_player_map]
+
+    test "when witch alive, successfully resurrects player", context do
+      players = context[:additional_player_map]
+      {:ok, player} = Player.add_action(players["witch"], 1, Action.new(:resurrect, "villager"))
+      players = put_in(players["villager"].alive, false)
+      players = put_in(players["witch"], player)
+
+      {:ok, players} = Action.resolve_resurrect_action(players, 1)
+      assert players["villager"].alive == true
+    end
+
+    test "when witch dead, does not resolve action", context do
+      players = context[:additional_player_map]
+      {:ok, player} = Player.add_action(players["witch"], 1, Action.new(:resurrect, "villager"))
+      players = put_in(players["villager"].alive, false)
+      players = put_in(players["witch"], player)
+      players = put_in(players["witch"].alive, false)
+
+      {:ok, players} = Action.resolve_resurrect_action(players, 1)
+      assert players["villager"].alive == false
+    end
+
+    test "when witch alive, but no resurrect action", context do
+      players = context[:additional_player_map]
+      players = put_in(players["villager"].alive, false)
+      {:ok, players} = Action.resolve_resurrect_action(players, 1)
+      assert players["villager"].alive == false
+    end
+  end
 end

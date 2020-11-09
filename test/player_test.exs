@@ -125,7 +125,7 @@ defmodule Werewolf.PlayerTest do
       assert Enum.find(assigned_players, fn player -> player.role == :fool end).items == []
 
       assert Enum.find(assigned_players, fn player -> player.role == :witch end).items == [
-               Item.new(:kill_potion), Item.new(:resurrection_scroll)
+               Item.new(:poison), Item.new(:resurrection_scroll)
              ]
     end
   end
