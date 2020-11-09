@@ -222,7 +222,7 @@ defmodule Werewolf.PlayerTest do
 
     test "not update players when target equals heal target", context do
       {:ok, players, _, targets} =
-        Player.kill_player(context[:player_map], 1, "villager", "villager")
+        Player.kill_player(context[:player_map], 1, "villager", ["villager"])
 
       assert players == context[:player_map]
       assert targets == []
@@ -231,7 +231,7 @@ defmodule Werewolf.PlayerTest do
 
     test "sets player to alive false when heal target different", context do
       {:ok, players, _, targets} =
-        Player.kill_player(context[:player_map], 1, "villager", "detective")
+        Player.kill_player(context[:player_map], 1, "villager", ["detective"])
 
       assert players["villager"].alive == false
       assert length(targets) == 1
@@ -239,7 +239,7 @@ defmodule Werewolf.PlayerTest do
 
     test "sets hunter to alive false then sets hunter target to alive false", context do
       {:ok, players, _, targets} =
-        Player.kill_player(context[:additional_player_map], 1, "hunter_action", "little_girl")
+        Player.kill_player(context[:additional_player_map], 1, "hunter_action", ["little_girl"])
 
       assert players["detective"].alive == false
       assert players["hunter_action"].alive == false
@@ -248,7 +248,7 @@ defmodule Werewolf.PlayerTest do
 
     test "sets hunter to alive false but ignores hunter target if healed", context do
       {:ok, players, _, targets} =
-        Player.kill_player(context[:additional_player_map], 1, "hunter_action", "detective")
+        Player.kill_player(context[:additional_player_map], 1, "hunter_action", ["detective"])
 
       assert players["detective"].alive == true
       assert players["hunter_action"].alive == false
@@ -257,7 +257,7 @@ defmodule Werewolf.PlayerTest do
 
     test "sets hunter to alive false and no further death if no hunt action", context do
       {:ok, players, _, targets} =
-        Player.kill_player(context[:additional_player_map], 1, "hunter", "detective")
+        Player.kill_player(context[:additional_player_map], 1, "hunter", ["detective"])
 
       assert players["hunter"].alive == false
       assert length(targets) == 1
@@ -266,7 +266,7 @@ defmodule Werewolf.PlayerTest do
     test "sets hunter to alive false ignores target of dead user", context do
       players = context[:additional_player_map]
       players = put_in(players["detective"].alive, false)
-      {:ok, players, _, targets} = Player.kill_player(players, 1, "hunter_action", "little_girl")
+      {:ok, players, _, targets} = Player.kill_player(players, 1, "hunter_action", ["little_girl"])
 
       assert players["hunter_action"].alive == false
       assert length(targets) == 1

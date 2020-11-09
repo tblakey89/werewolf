@@ -103,9 +103,9 @@ defmodule Werewolf.Game do
 
   def end_phase(game, rules) do
     with {:ok, votes, target} <- Votes.count_from_actions(phase_actions(game)),
-         {:ok, heal_target} <- Action.resolve_heal_action(game.players, game.phases),
+         {:ok, heal_targets} <- Action.resolve_heal_action(game.players, game.phases),
          {:ok, players, win_status, targets} <-
-           Player.kill_player(game.players, game.phases, target, heal_target),
+           Player.kill_player(game.players, game.phases, target, heal_targets),
          {:ok, players} <- Action.resolve_inspect_action(players, game.phases),
          {:ok, win_status} <- check_phase_limit(players, game.phases, win_status),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status}) do

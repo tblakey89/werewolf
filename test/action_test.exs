@@ -91,8 +91,8 @@ defmodule Werewolf.ActionTest do
       {:ok, player} = Player.add_action(players["doctor"], 1, Action.new(:heal, "villager"))
       players = put_in(players["doctor"], player)
 
-      {:ok, heal_target} = Action.resolve_heal_action(players, 1)
-      assert heal_target == "villager"
+      {:ok, heal_targets} = Action.resolve_heal_action(players, 1)
+      assert heal_targets == ["villager"]
     end
 
     test "when doctor dead, does not resolve action", context do
@@ -101,14 +101,14 @@ defmodule Werewolf.ActionTest do
       players = put_in(players["doctor"], player)
       players = put_in(players["doctor"].alive, false)
 
-      {:ok, heal_target} = Action.resolve_heal_action(players, 1)
-      assert heal_target == :none
+      {:ok, heal_targets} = Action.resolve_heal_action(players, 1)
+      assert heal_targets == []
     end
 
     test "when doctor alive, but no heal action", context do
       players = context[:player_map]
-      {:ok, heal_target} = Action.resolve_heal_action(players, 1)
-      assert heal_target == :none
+      {:ok, heal_targets} = Action.resolve_heal_action(players, 1)
+      assert heal_targets == []
     end
   end
 end

@@ -12,42 +12,43 @@ defmodule Werewolf.Action do
 
   def resolve_inspect_action(players, phase_number) do
     {:ok,
-     Enum.reduce(Player.inspect_roles(), players, fn role, acc_players ->
-       with {:ok, player} <- find_player_for_action(acc_players, role),
-            {:ok, action} <- find_action_for_phase(player.actions, phase_number, :inspect) do
-         put_in(
-           acc_players[player.id].actions[phase_number][:inspect].result,
-           inspect_answer(role, acc_players[action.target], phase_number)
-         )
+       with {:ok, players_with_item} <- find_players_for_items(Map.values(players), [:magnifying_glass, :binoculars]),
+            {:ok, player_and_actions} <- find_actions_for_phase(players_with_item, phase_number, :inspect) do
+        Enum.reduce(player_and_actions, players, fn({player, action}, acc_players) ->
+          put_in(
+            acc_players[player.id].actions[phase_number][:inspect].result,
+            # this should be item not role
+            inspect_answer(player.role, acc_players[action.target], phase_number)
+          )
+        end)
        else
-         nil -> acc_players
+         nil -> players
        end
-     end)}
+     }
   end
 
   def resolve_heal_action(players, phase_number) do
-    with {:ok, player} <- find_player_for_action(players, :doctor),
-         {:ok, action} <- find_action_for_phase(player.actions, phase_number, :heal) do
-      {:ok, action.target}
+    with {:ok, players_with_item} <- find_players_for_items(Map.values(players), [:first_aid_kit]),
+         {:ok, player_and_actions} <- find_actions_for_phase(players_with_item, phase_number, :heal) do
+      {:ok, Enum.map(player_and_actions, fn({_player, action}) -> action.target end)}
     else
-      nil -> {:ok, :none}
+      nil -> {:ok, []}
     end
   end
 
-  defp find_player_for_action(players, role) do
-    case Enum.find(players, fn {id, player} ->
-           player.role == role && player.alive
-         end) do
-      {id, player} -> {:ok, player}
-      nil -> nil
-    end
+  defp find_players_for_items(players, item_types) do
+    {:ok, Enum.filter(players, fn player ->
+           Player.has_item?(player, item_types) && player.alive
+         end)}
   end
 
-  defp find_action_for_phase(actions, phase_number, type) do
-    case actions[phase_number][type] do
-      nil -> nil
-      action -> {:ok, action}
-    end
+  defp find_actions_for_phase(players_with_item, phase_number, type) do
+    {:ok, Enum.reduce(players_with_item, [], fn(player, player_and_actions) ->
+      case player.actions[phase_number][type] do
+        nil -> player_and_actions
+        action -> [{player, action} | player_and_actions]
+      end
+    end)}
   end
 
   defp inspect_answer(:little_girl, target_player, phase_number) do

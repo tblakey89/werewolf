@@ -30,6 +30,15 @@ defmodule Werewolf.Item do
     end)
   end
 
+  def includes?(item_types, items) do
+    # This should always be two very small lists
+    Enum.any?(items, fn(item) ->
+      remaining_uses_left?(item.remaining_uses) && Enum.any?(item_types, fn(item_type) ->
+        item_type == item.type
+      end)
+    end)
+  end
+
   defp calculate_remaining_uses(_, %Item{remaining_uses: :infinite}), do: :infinite
 
   defp calculate_remaining_uses(item_type, %Item{type: item_type} = item) do

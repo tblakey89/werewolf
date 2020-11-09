@@ -86,6 +86,10 @@ defmodule Werewolf.Player do
     {:ok, put_in(player.items, Item.use_item(item_type, player.items))}
   end
 
+  def has_item?(player, item_types) do
+    Item.includes?(item_types, player.items)
+  end
+
   def assign_roles(players, allowed_roles \\ [:detective, :doctor]) do
     map_size(players)
     |> generate_role_list(allowed_roles)
@@ -103,7 +107,7 @@ defmodule Werewolf.Player do
     player.role == type && player.alive
   end
 
-  def kill_player(players, phase_number, target, heal_target \\ :none)
+  def kill_player(players, phase_number, target, heal_targets \\ [])
 
   def kill_player(players, _, :none, _), do: {:ok, players, win_check(players), []}
 
@@ -116,23 +120,23 @@ defmodule Werewolf.Player do
     end
   end
 
-  def kill_player(players, _, target, heal_target) when target == heal_target do
-    {:ok, players, win_check(players), []}
-  end
+  def kill_player(players, phase_number, target, heal_targets) do
+    case Enum.member?(heal_targets, target) do
+      true -> {:ok, players, win_check(players), []}
+      false ->
+        players = put_in(players[target].alive, false)
 
-  def kill_player(players, phase_number, target, heal_target) do
-    players = put_in(players[target].alive, false)
+        {players, targets} =
+          hunter_response(
+            players,
+            players[target].role,
+            players[target].actions[phase_number],
+            heal_targets,
+            [KillTarget.new(:werewolf, target)]
+          )
 
-    {players, targets} =
-      hunter_response(
-        players,
-        players[target].role,
-        players[target].actions[phase_number],
-        heal_target,
-        [KillTarget.new(:werewolf, target)]
-      )
-
-    {:ok, players, win_check(players), targets}
+        {:ok, players, win_check(players), targets}
+    end
   end
 
   defp items_for_role(role) do
@@ -143,9 +147,9 @@ defmodule Werewolf.Player do
 
   defp hunter_response(players, :hunter, nil, _, targets), do: {players, targets}
 
-  defp hunter_response(players, :hunter, actions, heal_target, targets) do
+  defp hunter_response(players, :hunter, actions, heal_targets, targets) do
     with true <- Map.has_key?(actions, :hunt),
-         false <- actions[:hunt].target == heal_target,
+         false <- Enum.member?(heal_targets, actions[:hunt].target),
          %Player{alive: true} <- players[actions[:hunt].target] do
       hunt_action = actions[:hunt]
       players = put_in(players[hunt_action.target].alive, false)
