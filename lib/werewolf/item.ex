@@ -32,10 +32,11 @@ defmodule Werewolf.Item do
 
   def includes?(item_types, items) do
     # This should always be two very small lists
-    Enum.any?(items, fn(item) ->
-      remaining_uses_left?(item.remaining_uses) && Enum.any?(item_types, fn(item_type) ->
-        item_type == item.type
-      end)
+    Enum.any?(items, fn item ->
+      remaining_uses_left?(item.remaining_uses) &&
+        Enum.any?(item_types, fn item_type ->
+          item_type == item.type
+        end)
     end)
   end
 

@@ -41,6 +41,9 @@ defmodule Werewolf.ActionRules do
       action_type == :resurrect && Item.usable?(:resurrection_scroll, items) ->
         response(action, players)
 
+      action_type == :poison && Item.usable?(:poison, items) ->
+        response(action, players)
+
       true ->
         {:error, :invalid_action}
     end

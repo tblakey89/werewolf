@@ -11,7 +11,10 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def hunt_action(_context), do: [hunt_action: %Action{type: :hunt, target: "target"}]
 
-  def resurrect_action(_context), do: [resurrect_action: %Action{type: :resurrect, target: "target"}]
+  def resurrect_action(_context),
+    do: [resurrect_action: %Action{type: :resurrect, target: "target"}]
+
+  def poison_action(_context), do: [poison_action: %Action{type: :poison, target: "target"}]
 
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
@@ -140,7 +143,7 @@ defmodule Werewolf.Support.ActionsTestSetup do
         alive: true,
         id: "test",
         role: :witch,
-        items: [Item.new(:resurrection_scroll)]
+        items: [Item.new(:resurrection_scroll), Item.new(:poison)]
       }
     ]
 

@@ -106,11 +106,15 @@ defmodule Werewolf.Game do
          {:ok, heal_targets} <- Action.resolve_heal_action(game.players, game.phases),
          {:ok, players, win_status, targets} <-
            Player.kill_player(game.players, game.phases, target, heal_targets),
+         {:ok, players, poison_targets} <-
+           Action.resolve_poison_action(players, game.phases, heal_targets),
          {:ok, players} <- Action.resolve_inspect_action(players, game.phases),
-         {:ok, players} <- Action.resolve_resurrect_action(players, game.phases),
+         {:ok, players, resurrect_targets} <-
+           Action.resolve_resurrect_action(players, game.phases),
          {:ok, win_status} <- check_phase_limit(players, game.phases, win_status),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status}) do
-      game_targets = Map.put(game.targets, game.phases, targets)
+      game_targets =
+        Map.put(game.targets, game.phases, targets ++ poison_targets ++ resurrect_targets)
 
       game = %{
         game

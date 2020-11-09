@@ -17,8 +17,20 @@ defmodule Werewolf.Support.PlayerTestSetup do
       player_map: %{
         "villager" => %Player{id: "villager", host: false, actions: %{}, role: :villager},
         "werewolf" => %Player{id: "werewolf", host: false, actions: %{}, role: :werewolf},
-        "doctor" => %Player{id: "doctor", host: false, actions: %{}, role: :doctor, items: [Item.new(:first_aid_kit)]},
-        "detective" => %Player{id: "detective", host: false, actions: %{}, role: :detective, items: [Item.new(:magnifying_glass)]}
+        "doctor" => %Player{
+          id: "doctor",
+          host: false,
+          actions: %{},
+          role: :doctor,
+          items: [Item.new(:first_aid_kit)]
+        },
+        "detective" => %Player{
+          id: "detective",
+          host: false,
+          actions: %{},
+          role: :detective,
+          items: [Item.new(:magnifying_glass)]
+        }
       }
     ]
 
@@ -27,11 +39,41 @@ defmodule Werewolf.Support.PlayerTestSetup do
       additional_player_map: %{
         "villager" => %Player{id: "villager", host: false, actions: %{}, role: :villager},
         "werewolf" => %Player{id: "werewolf", host: false, actions: %{}, role: :werewolf},
-        "doctor" => %Player{id: "doctor", host: false, actions: %{}, role: :doctor, items: [Item.new(:first_aid_kit)]},
-        "detective" => %Player{id: "detective", host: false, actions: %{}, role: :detective, items: [Item.new(:magnifying_glass)]},
-        "little_girl" => %Player{id: "little_girl", host: false, actions: %{}, role: :little_girl, items: [Item.new(:binoculars)]},
-        "devil" => %Player{id: "devil", host: false, actions: %{}, role: :devil, items: [Item.new(:magnifying_glass)]},
-        "hunter" => %Player{id: "hunter", host: false, actions: %{}, role: :hunter, items: [Item.new(:dead_man_switch)]},
+        "doctor" => %Player{
+          id: "doctor",
+          host: false,
+          actions: %{},
+          role: :doctor,
+          items: [Item.new(:first_aid_kit)]
+        },
+        "detective" => %Player{
+          id: "detective",
+          host: false,
+          actions: %{},
+          role: :detective,
+          items: [Item.new(:magnifying_glass)]
+        },
+        "little_girl" => %Player{
+          id: "little_girl",
+          host: false,
+          actions: %{},
+          role: :little_girl,
+          items: [Item.new(:binoculars)]
+        },
+        "devil" => %Player{
+          id: "devil",
+          host: false,
+          actions: %{},
+          role: :devil,
+          items: [Item.new(:magnifying_glass)]
+        },
+        "hunter" => %Player{
+          id: "hunter",
+          host: false,
+          actions: %{},
+          role: :hunter,
+          items: [Item.new(:dead_man_switch)]
+        },
         "hunter_action" => %Player{
           id: "hunter_action",
           host: false,
@@ -40,7 +82,13 @@ defmodule Werewolf.Support.PlayerTestSetup do
           items: [Item.new(:dead_man_switch)]
         },
         "fool" => %Player{id: "fool", host: false, actions: %{}, role: :fool},
-        "witch" => %Player{id: "witch", host: false, actions: %{}, role: :witch, items: [Item.new(:resurrection_scroll), Item.new(:poison)]},
+        "witch" => %Player{
+          id: "witch",
+          host: false,
+          actions: %{},
+          role: :witch,
+          items: [Item.new(:resurrection_scroll), Item.new(:poison)]
+        }
       }
     ]
 

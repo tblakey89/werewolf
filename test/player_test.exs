@@ -125,7 +125,8 @@ defmodule Werewolf.PlayerTest do
       assert Enum.find(assigned_players, fn player -> player.role == :fool end).items == []
 
       assert Enum.find(assigned_players, fn player -> player.role == :witch end).items == [
-               Item.new(:poison), Item.new(:resurrection_scroll)
+               Item.new(:poison),
+               Item.new(:resurrection_scroll)
              ]
     end
   end
@@ -266,7 +267,9 @@ defmodule Werewolf.PlayerTest do
     test "sets hunter to alive false ignores target of dead user", context do
       players = context[:additional_player_map]
       players = put_in(players["detective"].alive, false)
-      {:ok, players, _, targets} = Player.kill_player(players, 1, "hunter_action", ["little_girl"])
+
+      {:ok, players, _, targets} =
+        Player.kill_player(players, 1, "hunter_action", ["little_girl"])
 
       assert players["hunter_action"].alive == false
       assert length(targets) == 1

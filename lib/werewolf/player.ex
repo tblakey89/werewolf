@@ -122,7 +122,9 @@ defmodule Werewolf.Player do
 
   def kill_player(players, phase_number, target, heal_targets) do
     case Enum.member?(heal_targets, target) do
-      true -> {:ok, players, win_check(players), []}
+      true ->
+        {:ok, players, win_check(players), []}
+
       false ->
         players = put_in(players[target].alive, false)
 

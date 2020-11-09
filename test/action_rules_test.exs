@@ -420,6 +420,7 @@ defmodule Werewolf.ActionRulesTest do
   describe "valid/3 witch" do
     setup [
       :resurrect_action,
+      :poison_action,
       :player,
       :witch,
       :dead_witch,
@@ -478,6 +479,58 @@ defmodule Werewolf.ActionRulesTest do
                  context[:night_state],
                  context[:werewolf],
                  context[:resurrect_action],
+                 context[:players]
+               )
+    end
+
+    test "when able to poison, returns ok tuple", context do
+      action = context[:poison_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:witch],
+                 action,
+                 context[:players]
+               )
+    end
+
+    test "unable to poison for dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:witch],
+                 context[:poison_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to poison when witch is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_witch],
+                 context[:poison_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to poison in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:witch],
+                 context[:poison_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to poison when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf],
+                 context[:poison_action],
                  context[:players]
                )
     end
