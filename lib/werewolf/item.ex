@@ -14,6 +14,15 @@ defmodule Werewolf.Item do
     resurrection_scroll: 1
   }
 
+  @items_to_actions %{
+    magnifying_glass: :inspect,
+    first_aid_kit: :heal,
+    dead_man_switch: :hunt,
+    binoculars: :inspect,
+    poison: :poison,
+    resurrection_scroll: :resurrect
+  }
+
   def new(type) do
     %Item{type: type, remaining_uses: @uses_by_type[type]}
   end
@@ -24,9 +33,12 @@ defmodule Werewolf.Item do
     end)
   end
 
-  def use_item(item_type, items) do
+  def use_items(actions, items) do
     Enum.map(items, fn item ->
-      Map.put(item, :remaining_uses, calculate_remaining_uses(item_type, item))
+      case actions[@items_to_actions[item.type]] do
+        nil -> item
+        action -> Map.put(item, :remaining_uses, calculate_remaining_uses(item.type, item))
+      end
     end)
   end
 

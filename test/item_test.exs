@@ -1,6 +1,7 @@
 defmodule Werewolf.ItemTest do
   use ExUnit.Case
   alias Werewolf.Item
+  alias Werewolf.Action
 
   describe "new/2" do
     test "returns a Item struct with infinite uses when give magnifying glass" do
@@ -28,20 +29,32 @@ defmodule Werewolf.ItemTest do
     end
   end
 
-  describe "use_item/2" do
+  describe "use_items/2" do
     test "returns infinite remaining uses when it is infinite" do
-      assert Enum.at(Item.use_item(:flower, [%Item{type: :flower, remaining_uses: :infinite}]), 0).remaining_uses ==
-               :infinite
+      assert Enum.at(
+               Item.use_items(%{resurrect: Action.new(:resurrect, :target)}, [
+                 %Item{type: :resurrection_scroll, remaining_uses: :infinite}
+               ]),
+               0
+             ).remaining_uses == :infinite
     end
 
     test "returns 0 remaining uses when it is 1" do
-      assert Enum.at(Item.use_item(:flower, [%Item{type: :flower, remaining_uses: 1}]), 0).remaining_uses ==
+      assert Enum.at(
+               Item.use_items(%{resurrect: Action.new(:resurrect, :target)}, [
+                 %Item{type: :resurrection_scroll, remaining_uses: 1}
+               ]),
                0
+             ).remaining_uses == 0
     end
 
     test "returns 1 remaining uses when it is 1, but wrong item" do
-      assert Enum.at(Item.use_item(:first_aid_kit, [%Item{type: :flower, remaining_uses: 1}]), 0).remaining_uses ==
-               1
+      assert Enum.at(
+               Item.use_items(%{first_aid_kit: Action.new(:heal, :target)}, [
+                 %Item{type: :poison, remaining_uses: 1}
+               ]),
+               0
+             ).remaining_uses == 1
     end
   end
 end

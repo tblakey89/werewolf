@@ -118,6 +118,7 @@ defmodule Werewolf.Game do
            ),
          {:ok, players, resurrect_targets} <-
            Action.resolve_resurrect_action(players, game.phases),
+         {:ok, players} <- Player.use_items(players, game.phases),
          {:ok, win_status} <- check_phase_limit(players, game.phases, win_status),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status}) do
       game_targets =

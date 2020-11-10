@@ -82,8 +82,14 @@ defmodule Werewolf.Player do
     end
   end
 
-  def use_item(player, item_type) do
-    {:ok, put_in(player.items, Item.use_item(item_type, player.items))}
+  def use_items(players, phase_number) do
+    {:ok,
+     Enum.reduce(Map.values(players), players, fn player, player_acc ->
+       Map.put(player_acc, player.id, %{
+         player
+         | items: Item.use_items(player.actions[phase_number], player.items)
+       })
+     end)}
   end
 
   def has_item?(player, item_types) do
