@@ -128,16 +128,7 @@ defmodule Werewolf.Player do
       false ->
         players = put_in(players[target].alive, false)
 
-        {players, targets} =
-          hunter_response(
-            players,
-            players[target].role,
-            players[target].actions[phase_number],
-            heal_targets,
-            [KillTarget.new(:werewolf, target)]
-          )
-
-        {:ok, players, win_check(players), targets}
+        {:ok, players, win_check(players), [KillTarget.new(:werewolf, target)]}
     end
   end
 
@@ -146,22 +137,6 @@ defmodule Werewolf.Player do
       Item.new(item_type)
     end)
   end
-
-  defp hunter_response(players, :hunter, nil, _, targets), do: {players, targets}
-
-  defp hunter_response(players, :hunter, actions, heal_targets, targets) do
-    with true <- Map.has_key?(actions, :hunt),
-         false <- Enum.member?(heal_targets, actions[:hunt].target),
-         %Player{alive: true} <- players[actions[:hunt].target] do
-      hunt_action = actions[:hunt]
-      players = put_in(players[hunt_action.target].alive, false)
-      {players, targets ++ [KillTarget.new(:hunter, hunt_action.target)]}
-    else
-      _ -> {players, targets}
-    end
-  end
-
-  defp hunter_response(players, _, _, _, targets), do: {players, targets}
 
   defp by_team(players) do
     Enum.filter(players, fn {_, player} -> player.alive end)

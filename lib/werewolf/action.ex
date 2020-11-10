@@ -40,6 +40,28 @@ defmodule Werewolf.Action do
     end
   end
 
+  def resolve_hunt_action(players, phase_number, targets, heal_targets) do
+    with {:ok, players_with_item} <-
+           find_players_for_dead_man_switch(Map.values(players), targets),
+         {:ok, player_and_actions} <-
+           find_actions_for_phase(players_with_item, players, phase_number, :hunt),
+         {:ok, player_and_valid_actions} <-
+           remove_healed_actions(player_and_actions, heal_targets) do
+      {:ok,
+       Enum.reduce(player_and_valid_actions, players, fn {_player, action}, acc_players ->
+         put_in(
+           acc_players[action.target].alive,
+           false
+         )
+       end),
+       Enum.map(player_and_actions, fn {_player, action} ->
+         KillTarget.new(:hunt, action.target)
+       end)}
+    else
+      nil -> players
+    end
+  end
+
   def resolve_poison_action(players, phase_number, heal_targets) do
     with {:ok, players_with_item} <- find_players_for_items(Map.values(players), [:poison]),
          {:ok, player_and_actions} <-
@@ -85,6 +107,15 @@ defmodule Werewolf.Action do
     {:ok,
      Enum.filter(players, fn player ->
        Player.has_item?(player, item_types) && player.alive
+     end)}
+  end
+
+  defp find_players_for_dead_man_switch(players, targets) do
+    target_ids = Enum.map(targets, fn target -> target.target end)
+
+    {:ok,
+     Enum.filter(players, fn player ->
+       Player.has_item?(player, [:dead_man_switch]) && Enum.member?(target_ids, player.id)
      end)}
   end
 

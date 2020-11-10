@@ -238,43 +238,6 @@ defmodule Werewolf.PlayerTest do
       assert length(targets) == 1
     end
 
-    test "sets hunter to alive false then sets hunter target to alive false", context do
-      {:ok, players, _, targets} =
-        Player.kill_player(context[:additional_player_map], 1, "hunter_action", ["little_girl"])
-
-      assert players["detective"].alive == false
-      assert players["hunter_action"].alive == false
-      assert length(targets) == 2
-    end
-
-    test "sets hunter to alive false but ignores hunter target if healed", context do
-      {:ok, players, _, targets} =
-        Player.kill_player(context[:additional_player_map], 1, "hunter_action", ["detective"])
-
-      assert players["detective"].alive == true
-      assert players["hunter_action"].alive == false
-      assert length(targets) == 1
-    end
-
-    test "sets hunter to alive false and no further death if no hunt action", context do
-      {:ok, players, _, targets} =
-        Player.kill_player(context[:additional_player_map], 1, "hunter", ["detective"])
-
-      assert players["hunter"].alive == false
-      assert length(targets) == 1
-    end
-
-    test "sets hunter to alive false ignores target of dead user", context do
-      players = context[:additional_player_map]
-      players = put_in(players["detective"].alive, false)
-
-      {:ok, players, _, targets} =
-        Player.kill_player(players, 1, "hunter_action", ["little_girl"])
-
-      assert players["hunter_action"].alive == false
-      assert length(targets) == 1
-    end
-
     test "calculates a villager win when no more werewolves", context do
       {:ok, _, win, _} = Player.kill_player(context[:player_map], 1, "werewolf")
       assert win == :village_win
