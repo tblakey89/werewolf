@@ -439,17 +439,17 @@ defmodule Werewolf.ActionRulesTest do
                  context[:night_state],
                  context[:witch],
                  action,
-                 context[:players]
+                 context[:dead_players]
                )
     end
 
-    test "unable to resurrect for dead player", context do
+    test "unable to resurrect for alive player", context do
       assert {:error, :invalid_target} ==
                ActionRules.valid(
                  context[:night_state],
                  context[:witch],
                  context[:resurrect_action],
-                 context[:dead_players]
+                 context[:players]
                )
     end
 

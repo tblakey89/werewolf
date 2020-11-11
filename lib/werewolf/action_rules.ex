@@ -39,7 +39,7 @@ defmodule Werewolf.ActionRules do
         response(action, players)
 
       action_type == :resurrect && Item.usable?(:resurrection_scroll, items) ->
-        response(action, players)
+        resurrect_response(action, players)
 
       action_type == :poison && Item.usable?(:poison, items) ->
         response(action, players)
@@ -59,6 +59,13 @@ defmodule Werewolf.ActionRules do
 
   defp response(action, players) do
     case valid_target?(action.target, players) do
+      true -> {:ok, action}
+      false -> {:error, :invalid_target}
+    end
+  end
+
+  defp resurrect_response(action, players) do
+    case !Player.alive?(players, action.target) do
       true -> {:ok, action}
       false -> {:error, :invalid_target}
     end
