@@ -30,16 +30,6 @@ defmodule Werewolf.ActionTest do
       assert players["detective"].actions[1][:inspect].result == :werewolf
     end
 
-    test "when detective dead, does not resolve action", context do
-      players = context[:player_map]
-      {:ok, player} = Player.add_action(players["detective"], 1, Action.new(:inspect, "villager"))
-      players = put_in(players["detective"], player)
-      players = put_in(players["detective"].alive, false)
-
-      {:ok, players} = Action.resolve_inspect_action(players, 1)
-      assert players["detective"].actions[1][:inspect].result == nil
-    end
-
     test "when detective alive, but no inspect action", context do
       players = context[:player_map]
       {:ok, players} = Action.resolve_inspect_action(players, 1)
@@ -95,16 +85,6 @@ defmodule Werewolf.ActionTest do
       assert heal_targets == ["villager"]
     end
 
-    test "when doctor dead, does not resolve action", context do
-      players = context[:player_map]
-      {:ok, player} = Player.add_action(players["doctor"], 1, Action.new(:heal, "villager"))
-      players = put_in(players["doctor"], player)
-      players = put_in(players["doctor"].alive, false)
-
-      {:ok, heal_targets} = Action.resolve_heal_action(players, 1)
-      assert heal_targets == []
-    end
-
     test "when doctor alive, but no heal action", context do
       players = context[:player_map]
       {:ok, heal_targets} = Action.resolve_heal_action(players, 1)
@@ -126,18 +106,6 @@ defmodule Werewolf.ActionTest do
       assert(length(targets)) == 1
       assert(Enum.at(targets, 0).type) == :resurrect
       assert(Enum.at(targets, 0).target) == "villager"
-    end
-
-    test "when witch dead, does not resolve action", context do
-      players = context[:additional_player_map]
-      {:ok, player} = Player.add_action(players["witch"], 1, Action.new(:resurrect, "villager"))
-      players = put_in(players["villager"].alive, false)
-      players = put_in(players["witch"], player)
-      players = put_in(players["witch"].alive, false)
-
-      {:ok, players, targets} = Action.resolve_resurrect_action(players, 1)
-      assert players["villager"].alive == false
-      assert(length(targets)) == 0
     end
 
     test "when witch alive, but no resurrect action", context do
@@ -170,17 +138,6 @@ defmodule Werewolf.ActionTest do
       players = put_in(players["witch"], player)
 
       {:ok, players, targets} = Action.resolve_poison_action(players, 1, ["villager"])
-      assert players["villager"].alive == true
-      assert(length(targets)) == 0
-    end
-
-    test "when witch dead, does not resolve action", context do
-      players = context[:additional_player_map]
-      {:ok, player} = Player.add_action(players["witch"], 1, Action.new(:poison, "villager"))
-      players = put_in(players["witch"], player)
-      players = put_in(players["witch"].alive, false)
-
-      {:ok, players, targets} = Action.resolve_poison_action(players, 1, [])
       assert players["villager"].alive == true
       assert(length(targets)) == 0
     end

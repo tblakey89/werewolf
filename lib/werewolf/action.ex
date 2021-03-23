@@ -106,7 +106,7 @@ defmodule Werewolf.Action do
   defp find_players_for_items(players, item_types) do
     {:ok,
      Enum.filter(players, fn player ->
-       Player.has_item?(player, item_types) && player.alive
+       Player.has_item?(player, item_types)
      end)}
   end
 
