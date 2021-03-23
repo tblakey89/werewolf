@@ -115,27 +115,41 @@ defmodule Werewolf.Player do
 
   def kill_player(players, phase_number, target, heal_targets \\ [])
 
-  def kill_player(players, _, :none, _), do: {:ok, players, win_check(players), []}
+  def kill_player(players, _, :none, _), do: {:ok, players, nil, []}
 
   def kill_player(players, phase_number, target, _) when is_even(phase_number) do
     players = put_in(players[target].alive, false)
 
     case players[target].role do
       :fool -> {:ok, players, :fool_win, [KillTarget.new(:vote, target)]}
-      _ -> {:ok, players, win_check(players), [KillTarget.new(:vote, target)]}
+      _ -> {:ok, players, nil, [KillTarget.new(:vote, target)]}
     end
   end
 
   def kill_player(players, phase_number, target, heal_targets) do
     case Enum.member?(heal_targets, target) do
       true ->
-        {:ok, players, win_check(players), []}
+        {:ok, players, nil, []}
 
       false ->
         players = put_in(players[target].alive, false)
 
-        {:ok, players, win_check(players), [KillTarget.new(:werewolf, target)]}
+        {:ok, players, nil, [KillTarget.new(:werewolf, target)]}
     end
+  end
+
+  def win_check_by_remaining_players(:fool_win, _players), do: {:ok, :fool_win}
+  def win_check_by_remaining_players(_existing_win_status, players) do
+    team_count = by_team(players)
+
+    {:ok,
+      cond do
+        team_count[:werewolf] == 0 && team_count[:villager] == 0 -> :tie
+        team_count[:werewolf] == 0 -> :village_win
+        team_count[:werewolf] >= team_count[:villager] -> :werewolf_win
+        true -> :no_win
+      end
+    }
   end
 
   defp items_for_role(role) do
@@ -186,17 +200,6 @@ defmodule Werewolf.Player do
 
       villager_count < 0 ->
         village_role_count(player_count, werewolf_count, Enum.shuffle(allowed_roles) |> tl())
-    end
-  end
-
-  defp win_check(players) do
-    team_count = by_team(players)
-
-    cond do
-      team_count[:werewolf] == 0 && team_count[:villager] == 0 -> :tie
-      team_count[:werewolf] == 0 -> :village_win
-      team_count[:werewolf] >= team_count[:villager] -> :werewolf_win
-      true -> :no_win
     end
   end
 end

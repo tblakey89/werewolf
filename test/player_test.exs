@@ -210,15 +210,15 @@ defmodule Werewolf.PlayerTest do
   describe "kill_player/4" do
     setup [:player_map, :additional_player_map]
 
-    test "sets player to alive false, and calculates correct win (werewolf)", context do
+    test "sets player to alive false", context do
       {:ok, players, win, targets} = Player.kill_player(context[:player_map], 1, "villager")
       assert players["villager"].alive == false
       assert Enum.at(targets, 0).target == "villager"
-      assert win == :no_win
+      assert win == nil
       {:ok, players, win, targets} = Player.kill_player(players, 1, "detective")
       assert Enum.at(targets, 0).target == "detective"
       assert players["detective"].alive == false
-      assert win == :werewolf_win
+      assert win == nil
     end
 
     test "not update players when no target", context do
@@ -244,16 +244,6 @@ defmodule Werewolf.PlayerTest do
       assert length(targets) == 1
     end
 
-    test "calculates a villager win when no more werewolves", context do
-      {:ok, _, win, _} = Player.kill_player(context[:player_map], 1, "werewolf")
-      assert win == :village_win
-    end
-
-    test "calculates no win when werewolf and villagers", context do
-      {:ok, _, win, _} = Player.kill_player(context[:player_map], 1, :none)
-      assert win == :no_win
-    end
-
     test "a fool win if killed on day phase", context do
       {:ok, players, win, targets} =
         Player.kill_player(context[:additional_player_map], 2, "fool")
@@ -267,7 +257,38 @@ defmodule Werewolf.PlayerTest do
         Player.kill_player(context[:additional_player_map], 1, "fool")
 
       assert players["fool"].alive == false
+      assert win == nil
+    end
+  end
+
+  describe "win_check_by_remaining_players/2" do
+    setup [:player_map]
+
+    test "calculates a villager win when no more werewolves", context do
+      players = context[:player_map]
+      players = put_in(players["werewolf"].alive, false)
+      {:ok, win} = Player.win_check_by_remaining_players(nil, players)
+      assert win == :village_win
+    end
+
+    test "calculates no win when werewolf and villagers", context do
+      {:ok, win} = Player.win_check_by_remaining_players(nil, context[:player_map])
       assert win == :no_win
+    end
+
+    test "calculates fool win, when fool provided", context do
+      players = context[:player_map]
+      players = put_in(players["werewolf"].alive, false)
+      {:ok, win} = Player.win_check_by_remaining_players(:fool_win, players)
+      assert win == :fool_win
+    end
+
+    test "calculates werewolf win, when werewolves equal villagers", context do
+      players = context[:player_map]
+      players = put_in(players["villager"].alive, false)
+      players = put_in(players["detective"].alive, false)
+      {:ok, win} = Player.win_check_by_remaining_players(nil, players)
+      assert win == :werewolf_win
     end
   end
 
