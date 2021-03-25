@@ -54,7 +54,7 @@ defmodule Werewolf.Action do
            false
          )
        end),
-       Enum.map(player_and_actions, fn {_player, action} ->
+       Enum.map(player_and_valid_actions, fn {_player, action} ->
          KillTarget.new(:hunt, action.target)
        end)}
     else
@@ -75,7 +75,7 @@ defmodule Werewolf.Action do
            false
          )
        end),
-       Enum.map(player_and_actions, fn {_player, action} ->
+       Enum.map(player_and_valid_actions, fn {_player, action} ->
          KillTarget.new(:poison, action.target)
        end)}
     else
