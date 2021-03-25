@@ -122,11 +122,12 @@ defmodule Werewolf.Game do
          {:ok, win_status} <- Player.win_check_by_remaining_players(win_status, players),
          {:ok, win_status} <- check_phase_limit(players, game.phases, win_status),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status}) do
+      phase_targets = targets ++ poison_targets ++ resurrect_targets ++ hunt_targets
       game_targets =
         Map.put(
           game.targets,
           game.phases,
-          targets ++ poison_targets ++ resurrect_targets ++ hunt_targets
+          phase_targets
         )
 
       game = %{
@@ -138,7 +139,7 @@ defmodule Werewolf.Game do
           end_phase_unix_time: Phase.calculate_end_of_phase_unix(game.phase_length)
       }
 
-      {:ok, game, rules, KillTarget.to_map(targets), win_status}
+      {:ok, game, rules, KillTarget.to_map(phase_targets), win_status}
     else
       {:error, reason} -> {:error, reason}
     end
