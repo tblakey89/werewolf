@@ -9,6 +9,35 @@ defmodule Werewolf.RulesTest do
     end
   end
 
+  describe "check/2 :edit_game when initialized" do
+    setup [:new_game, :initialized_rules]
+
+    test "returns :ok tuple when able to edit_game", context do
+      rules = context[:rules]
+      assert {:ok, rules} == Rules.check(context[:rules], {:edit_game, context[:game]})
+    end
+  end
+
+  describe "check/2 :edit_game when ready" do
+    setup [:new_game, :ready_rules]
+
+    test "returns :ok tuple when able to edit_game", context do
+      rules = context[:ready_rules]
+      assert {:ok, rules} == Rules.check(context[:ready_rules], {:edit_game, context[:game]})
+    end
+  end
+
+  describe "check/2 :edit_game when started" do
+    setup [:new_game, :day_rules]
+
+    test "returns :ok tuple when able to edit_game", context do
+      rules = context[:day_rules]
+
+      assert {:error, :invalid_action} ==
+               Rules.check(context[:day_rules], {:edit_game, context[:game]})
+    end
+  end
+
   describe "check/2 :add_player not full" do
     setup [:new_game, :initialized_rules]
 

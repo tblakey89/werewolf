@@ -24,6 +24,21 @@ defmodule Werewolf.GameTest do
     end
   end
 
+  describe "edit/4" do
+    setup [:game, :rules]
+
+    test "returns a game struct with new phase length and allowed_roles", context do
+      {:ok, game} = Game.edit(context[:game], context[:rules], :hour, [:witch, :hunter])
+      assert game.allowed_roles == [:witch, :hunter]
+      assert game.phase_length == :hour
+    end
+
+    test "returns an error when given an invalid phase length", context do
+      assert {:error, :invalid_phase_length} ==
+               Game.edit(context[:game], context[:rules], :year, [:witch, :hunter])
+    end
+  end
+
   describe "add_player/3" do
     setup [:game, :ready_game, :rules, :other_user, :user]
 

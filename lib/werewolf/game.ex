@@ -43,6 +43,21 @@ defmodule Werewolf.Game do
     end
   end
 
+  def edit(game, rules, phase_length, allowed_roles) do
+    with {:ok, rules} <- Rules.check(rules, {:edit_game, game}),
+         true <- Enum.member?(phase_lengths(), phase_length) do
+      {:ok,
+       %{
+         game
+         | allowed_roles: allowed_roles,
+           phase_length: phase_length
+       }}
+    else
+      {:error, reason} -> {:error, reason}
+      false -> {:error, :invalid_phase_length}
+    end
+  end
+
   def add_player(game, user, rules) do
     with {:ok, rules} <- Rules.check(rules, {:add_player, game}),
          {:ok, players} <- PlayerRules.unique_check(game.players, user) do
@@ -123,6 +138,7 @@ defmodule Werewolf.Game do
          {:ok, win_status} <- check_phase_limit(players, game.phases, win_status),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status}) do
       phase_targets = targets ++ poison_targets ++ resurrect_targets ++ hunt_targets
+
       game_targets =
         Map.put(
           game.targets,

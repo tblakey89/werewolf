@@ -21,6 +21,10 @@ defmodule Werewolf.GameServer do
     GenServer.call(game, :get_state)
   end
 
+  def edit_game(game, phase_length, allowed_roles) do
+    GenServer.call(game, {:edit_game, phase_length, allowed_roles})
+  end
+
   def relevant_players(game, type) do
     GenServer.call(game, {:relevant_players, type})
   end
@@ -63,6 +67,16 @@ defmodule Werewolf.GameServer do
 
   def handle_call(:get_state, _from, state_data) do
     {:reply, {:ok, state_data}, state_data, @timeout}
+  end
+
+  def handle_call({:edit_game, phase_length, allowed_roles}, _from, state_data) do
+    with {:ok, game} <- Game.edit(state_data.game, state_data.rules, phase_length, allowed_roles) do
+      state_data
+      |> update_game(game)
+      |> reply_success({:ok, :edit_game})
+    else
+      {:error, reason} -> reply_failure(state_data, reason)
+    end
   end
 
   def handle_call({:relevant_players, type}, _from, state_data) do

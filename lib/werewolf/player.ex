@@ -139,17 +139,17 @@ defmodule Werewolf.Player do
   end
 
   def win_check_by_remaining_players(:fool_win, _players), do: {:ok, :fool_win}
+
   def win_check_by_remaining_players(_existing_win_status, players) do
     team_count = by_team(players)
 
     {:ok,
-      cond do
-        team_count[:werewolf] == 0 && team_count[:villager] == 0 -> :tie
-        team_count[:werewolf] == 0 -> :village_win
-        team_count[:werewolf] >= team_count[:villager] -> :werewolf_win
-        true -> :no_win
-      end
-    }
+     cond do
+       team_count[:werewolf] == 0 && team_count[:villager] == 0 -> :tie
+       team_count[:werewolf] == 0 -> :village_win
+       team_count[:werewolf] >= team_count[:villager] -> :werewolf_win
+       true -> :no_win
+     end}
   end
 
   defp items_for_role(role) do

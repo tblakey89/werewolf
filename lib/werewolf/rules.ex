@@ -9,6 +9,9 @@ defmodule Werewolf.Rules do
 
   def new, do: %Rules{}
 
+  def check(%Rules{state: :initialized} = rules, {:edit_game, game}), do: {:ok, rules}
+  def check(%Rules{state: :ready} = rules, {:edit_game, game}), do: {:ok, rules}
+
   def check(%Rules{state: :initialized} = rules, {:add_player, game}) do
     case able_to_add_new_player?(game) do
       true ->
