@@ -109,7 +109,7 @@ defmodule Werewolf.Player do
   end
 
   def relevant_player?(player, :dead) do
-    !player.alive
+    !player.alive || has_item?(player, [:crystal_ball])
   end
 
   def relevant_player?(player, type) do

@@ -88,6 +88,13 @@ defmodule Werewolf.Support.PlayerTestSetup do
           actions: %{},
           role: :witch,
           items: [Item.new(:resurrection_scroll), Item.new(:poison)]
+        },
+        "medium" => %Player{
+          id: "medium",
+          host: false,
+          actions: %{},
+          role: :medium,
+          items: [Item.new(:crystal_ball)]
         }
       }
     ]

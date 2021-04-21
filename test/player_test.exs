@@ -181,7 +181,7 @@ defmodule Werewolf.PlayerTest do
   end
 
   describe "relevant_player?/2" do
-    setup [:regular_player_map, :dead_player_map, :player_map]
+    setup [:regular_player_map, :dead_player_map, :player_map, :additional_player_map]
 
     test "returns true for dead player when given dead", context do
       assert Player.relevant_player?(context[:dead_player_map][3], :dead) == true
@@ -189,6 +189,10 @@ defmodule Werewolf.PlayerTest do
 
     test "returns false for alive player when given dead", context do
       assert Player.relevant_player?(context[:regular_player_map][2], :dead) == false
+    end
+
+    test "returns true for alive player when given dead, but has crystal_ball", context do
+      assert Player.relevant_player?(context[:additional_player_map]["medium"], :dead) == true
     end
 
     test "returns true for player when matches role", context do
