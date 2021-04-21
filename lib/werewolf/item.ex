@@ -11,7 +11,8 @@ defmodule Werewolf.Item do
     dead_man_switch: :infinite,
     binoculars: :infinite,
     poison: 1,
-    resurrection_scroll: 1
+    resurrection_scroll: 1,
+    crystal_ball: :infinite
   }
 
   @items_to_actions %{
@@ -20,7 +21,8 @@ defmodule Werewolf.Item do
     dead_man_switch: :hunt,
     binoculars: :inspect,
     poison: :poison,
-    resurrection_scroll: :resurrect
+    resurrection_scroll: :resurrect,
+    crystal_ball: :channel
   }
 
   def new(type) do

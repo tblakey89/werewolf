@@ -83,12 +83,13 @@ defmodule Werewolf.PlayerTest do
             :devil,
             :hunter,
             :fool,
-            :witch
+            :witch,
+            :medium
           ])
         )
 
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 4
-      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 5
+      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 4
       assert Enum.count(assigned_players, fn player -> player.role == :detective end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :doctor end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :mason end) == 2
@@ -97,6 +98,7 @@ defmodule Werewolf.PlayerTest do
       assert Enum.count(assigned_players, fn player -> player.role == :hunter end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :fool end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :witch end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :medium end) == 1
       assert Enum.find(assigned_players, fn player -> player.role == :werewolf end).items == []
       assert Enum.find(assigned_players, fn player -> player.role == :villager end).items == []
 

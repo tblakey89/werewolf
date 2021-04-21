@@ -20,7 +20,8 @@ defmodule Werewolf.Player do
     devil: [:magnifying_glass],
     hunter: [:dead_man_switch],
     fool: [],
-    witch: [:poison, :resurrection_scroll]
+    witch: [:poison, :resurrection_scroll],
+    medium: [:crystal_ball]
   }
 
   def new(type, user) do
@@ -46,7 +47,8 @@ defmodule Werewolf.Player do
       devil: :villager,
       hunter: :villager,
       fool: :villager,
-      witch: :villager
+      witch: :villager,
+      medium: :villager
     }
   end
 
@@ -59,7 +61,8 @@ defmodule Werewolf.Player do
       devil: 1,
       hunter: 1,
       fool: 1,
-      witch: 1
+      witch: 1,
+      medium: 1
     }
   end
 
