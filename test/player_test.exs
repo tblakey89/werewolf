@@ -17,6 +17,18 @@ defmodule Werewolf.PlayerTest do
     end
   end
 
+  describe "match_team?/2" do
+    setup [:player_map]
+
+    test "returns true when on same team", context do
+      assert true == Player.match_team?(context[:player_map]["villager"], context[:player_map]["detective"])
+    end
+
+    test "returns false when on different team", context do
+      assert false == Player.match_team?(context[:player_map]["villager"], context[:player_map]["werewolf"])
+    end
+  end
+
   describe "assign_roles/1" do
     test "when 5 players" do
       assigned_players = Map.values(Player.assign_roles(generate_players(5), []))
@@ -84,12 +96,13 @@ defmodule Werewolf.PlayerTest do
             :hunter,
             :fool,
             :witch,
-            :medium
+            :medium,
+            :ninja
           ])
         )
 
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 4
-      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 4
+      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 3
       assert Enum.count(assigned_players, fn player -> player.role == :detective end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :doctor end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :mason end) == 2
@@ -99,6 +112,7 @@ defmodule Werewolf.PlayerTest do
       assert Enum.count(assigned_players, fn player -> player.role == :fool end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :witch end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :medium end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :ninja end) == 1
       assert Enum.find(assigned_players, fn player -> player.role == :werewolf end).items == []
       assert Enum.find(assigned_players, fn player -> player.role == :villager end).items == []
 
@@ -129,6 +143,14 @@ defmodule Werewolf.PlayerTest do
       assert Enum.find(assigned_players, fn player -> player.role == :witch end).items == [
                Item.new(:poison),
                Item.new(:resurrection_scroll)
+             ]
+
+      assert Enum.find(assigned_players, fn player -> player.role == :medium end).items == [
+               Item.new(:crystal_ball)
+             ]
+
+      assert Enum.find(assigned_players, fn player -> player.role == :ninja end).items == [
+               Item.new(:sword)
              ]
     end
   end

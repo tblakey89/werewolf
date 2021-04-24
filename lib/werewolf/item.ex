@@ -12,7 +12,8 @@ defmodule Werewolf.Item do
     binoculars: :infinite,
     poison: 1,
     resurrection_scroll: 1,
-    crystal_ball: :infinite
+    crystal_ball: :infinite,
+    sword: :infinite
   }
 
   @items_to_actions %{
@@ -22,7 +23,8 @@ defmodule Werewolf.Item do
     binoculars: :inspect,
     poison: :poison,
     resurrection_scroll: :resurrect,
-    crystal_ball: :channel
+    crystal_ball: :channel,
+    sword: :assassinate
   }
 
   def new(type) do

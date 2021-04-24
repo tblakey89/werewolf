@@ -95,6 +95,13 @@ defmodule Werewolf.Support.PlayerTestSetup do
           actions: %{},
           role: :medium,
           items: [Item.new(:crystal_ball)]
+        },
+        "ninja" => %Player{
+          id: "ninja",
+          host: false,
+          actions: %{},
+          role: :ninja,
+          items: [Item.new(:sword)]
         }
       }
     ]

@@ -535,4 +535,70 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
   end
+
+  describe "valid/3 ninja" do
+    setup [
+      :assassinate_action,
+      :player,
+      :ninja,
+      :dead_hunter,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to assassinate, returns ok tuple", context do
+      action = context[:assassinate_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:ninja],
+                 action,
+                 context[:players]
+               )
+    end
+
+    test "unable to assassinate for dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:ninja],
+                 context[:assassinate_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to assassinate when ninja is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_ninja],
+                 context[:assassinate_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to assassinate in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:ninja],
+                 context[:assassinate_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to assassinate when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf],
+                 context[:assassinate_action],
+                 context[:players]
+               )
+    end
+  end
 end

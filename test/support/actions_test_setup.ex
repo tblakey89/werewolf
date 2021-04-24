@@ -11,6 +11,8 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def hunt_action(_context), do: [hunt_action: %Action{type: :hunt, target: "target"}]
 
+  def assassinate_action(_context), do: [assassinate_action: %Action{type: :assassinate, target: "target"}]
+
   def resurrect_action(_context),
     do: [resurrect_action: %Action{type: :resurrect, target: "target"}]
 
@@ -155,6 +157,28 @@ defmodule Werewolf.Support.ActionsTestSetup do
         id: "test",
         role: :witch,
         items: [Item.new(:resurrection_scroll)]
+      }
+    ]
+
+  def ninja(_context),
+    do: [
+      ninja: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :ninja,
+        items: [Item.new(:sword)]
+      }
+    ]
+
+  def dead_ninja(_context),
+    do: [
+      dead_ninja: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :ninja,
+        items: [Item.new(:sword)]
       }
     ]
 

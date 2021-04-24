@@ -21,7 +21,8 @@ defmodule Werewolf.Player do
     hunter: [:dead_man_switch],
     fool: [],
     witch: [:poison, :resurrection_scroll],
-    medium: [:crystal_ball]
+    medium: [:crystal_ball],
+    ninja: [:sword]
   }
 
   def new(type, user) do
@@ -48,7 +49,8 @@ defmodule Werewolf.Player do
       hunter: :villager,
       fool: :villager,
       witch: :villager,
-      medium: :villager
+      medium: :villager,
+      ninja: :villager
     }
   end
 
@@ -62,7 +64,8 @@ defmodule Werewolf.Player do
       hunter: 1,
       fool: 1,
       witch: 1,
-      medium: 1
+      medium: 1,
+      ninja: 1
     }
   end
 
@@ -72,6 +75,10 @@ defmodule Werewolf.Player do
 
   def alive?(players, key) do
     players[key].alive
+  end
+
+  def match_team?(player_one, player_two) do
+    player_team(player_one.role) == player_team(player_two.role)
   end
 
   def add_action(player, phase_number, action) do
