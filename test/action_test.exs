@@ -230,7 +230,9 @@ defmodule Werewolf.ActionTest do
       {:ok, player} = Player.add_action(players["ninja"], 1, Action.new(:assassinate, "villager"))
       players = put_in(players["ninja"], player)
 
-      {:ok, players, targets} = Action.resolve_assassinate_action(players, 1, [KillTarget.new(:poison, "werewolf")], [])
+      {:ok, players, targets} =
+        Action.resolve_assassinate_action(players, 1, [KillTarget.new(:poison, "werewolf")], [])
+
       assert players["villager"].alive == false
       assert players["ninja"].alive == false
       assert length(targets) == 3
@@ -240,7 +242,6 @@ defmodule Werewolf.ActionTest do
       assert Enum.at(targets, 1).target == "villager"
       assert Enum.at(targets, 2).type == :seppuku
       assert Enum.at(targets, 2).target == "ninja"
-
     end
 
     test "when ninja alive, but no assassinate action", context do
@@ -248,6 +249,52 @@ defmodule Werewolf.ActionTest do
       {:ok, players, targets} = Action.resolve_assassinate_action(players, 1, [], [])
       assert players["villager"].alive == true
       assert(length(targets)) == 0
+    end
+  end
+
+  describe "resolve_steal_action/2" do
+    setup [:additional_player_map]
+
+    test "when werewolf_thief alive, successfully steals from player", context do
+      players = context[:additional_player_map]
+
+      {:ok, player} =
+        Player.add_action(players["werewolf_thief"], 1, Action.new(:steal, "detective"))
+
+      players = put_in(players["werewolf_thief"], player)
+
+      {:ok, players} = Action.resolve_steal_action(players, 1)
+      assert players["detective"].actions[1][:theft].type == :theft
+      assert players["detective"].actions[1][:theft].result == :magnifying_glass
+      assert players["werewolf_thief"].actions[1][:steal].result == :magnifying_glass
+      assert length(players["detective"].items) == 0
+      assert length(players["werewolf_thief"].items) == 2
+    end
+
+    test "when werewolf_thief alive, successfully steals from player with multiple items",
+         context do
+      players = context[:additional_player_map]
+      {:ok, player} = Player.add_action(players["werewolf_thief"], 1, Action.new(:steal, "witch"))
+      players = put_in(players["werewolf_thief"], player)
+
+      {:ok, players} = Action.resolve_steal_action(players, 1)
+      assert players["witch"].actions[1][:theft].type == :theft
+      assert length(players["witch"].items) == 1
+      assert length(players["werewolf_thief"].items) == 2
+    end
+
+    test "when werewolf_thief alive, successfully steals nothing from villager", context do
+      players = context[:additional_player_map]
+
+      {:ok, player} =
+        Player.add_action(players["werewolf_thief"], 1, Action.new(:steal, "villager"))
+
+      players = put_in(players["werewolf_thief"], player)
+
+      {:ok, players} = Action.resolve_steal_action(players, 1)
+      assert players["villager"].actions[1][:theft] == nil
+      assert players["werewolf_thief"].actions[1][:steal].result == nil
+      assert length(players["werewolf_thief"].items) == 1
     end
   end
 end

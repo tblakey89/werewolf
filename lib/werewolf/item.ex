@@ -13,7 +13,8 @@ defmodule Werewolf.Item do
     poison: 1,
     resurrection_scroll: 1,
     crystal_ball: :infinite,
-    sword: :infinite
+    sword: :infinite,
+    lock_pick: 1
   }
 
   @items_to_actions %{
@@ -24,7 +25,8 @@ defmodule Werewolf.Item do
     poison: :poison,
     resurrection_scroll: :resurrect,
     crystal_ball: :channel,
-    sword: :assassinate
+    sword: :assassinate,
+    lock_pick: :steal
   }
 
   def new(type) do

@@ -11,12 +11,15 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def hunt_action(_context), do: [hunt_action: %Action{type: :hunt, target: "target"}]
 
-  def assassinate_action(_context), do: [assassinate_action: %Action{type: :assassinate, target: "target"}]
+  def assassinate_action(_context),
+    do: [assassinate_action: %Action{type: :assassinate, target: "target"}]
 
   def resurrect_action(_context),
     do: [resurrect_action: %Action{type: :resurrect, target: "target"}]
 
   def poison_action(_context), do: [poison_action: %Action{type: :poison, target: "target"}]
+
+  def steal_action(_context), do: [steal_action: %Action{type: :steal, target: "target"}]
 
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
@@ -179,6 +182,28 @@ defmodule Werewolf.Support.ActionsTestSetup do
         id: "test",
         role: :ninja,
         items: [Item.new(:sword)]
+      }
+    ]
+
+  def werewolf_thief(_context),
+    do: [
+      werewolf_thief: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :werewolf_thief,
+        items: [Item.new(:lock_pick)]
+      }
+    ]
+
+  def dead_werewolf_thief(_context),
+    do: [
+      dead_werewolf_thief: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :werewolf_thief,
+        items: [Item.new(:lock_pick)]
       }
     ]
 

@@ -47,6 +47,9 @@ defmodule Werewolf.ActionRules do
       action_type == :assassinate && Item.usable?(:sword, items) ->
         response(action, players)
 
+      action_type == :steal && Item.usable?(:lock_pick, items) ->
+        response(action, players)
+
       true ->
         {:error, :invalid_action}
     end

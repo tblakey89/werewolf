@@ -54,9 +54,10 @@ defmodule Werewolf.Action do
            false
          )
        end),
-       targets ++ Enum.map(player_and_valid_actions, fn {_player, action} ->
-         KillTarget.new(:hunt, action.target)
-       end)}
+       targets ++
+         Enum.map(player_and_valid_actions, fn {_player, action} ->
+           KillTarget.new(:hunt, action.target)
+         end)}
     else
       nil -> {:ok, players, targets}
     end
@@ -75,9 +76,10 @@ defmodule Werewolf.Action do
            false
          )
        end),
-       targets ++ Enum.map(player_and_valid_actions, fn {_player, action} ->
-         KillTarget.new(:poison, action.target)
-       end)}
+       targets ++
+         Enum.map(player_and_valid_actions, fn {_player, action} ->
+           KillTarget.new(:poison, action.target)
+         end)}
     else
       nil -> {:ok, players, targets}
     end
@@ -111,10 +113,12 @@ defmodule Werewolf.Action do
            remove_healed_actions(player_and_actions, heal_targets) do
       {:ok,
        Enum.reduce(player_and_valid_actions, players, fn {player, action}, acc_players ->
-         players = put_in(
-           acc_players[action.target].alive,
-           false
-         )
+         players =
+           put_in(
+             acc_players[action.target].alive,
+             false
+           )
+
          case Player.match_team?(player, acc_players[action.target]) do
            true -> add_seppuku(players, player, phase_number)
            false -> players
@@ -122,6 +126,7 @@ defmodule Werewolf.Action do
        end),
        Enum.reduce(player_and_valid_actions, targets, fn {player, action}, acc_targets ->
          targets = acc_targets ++ [KillTarget.new(:assassinate, action.target)]
+
          case Player.match_team?(player, players[action.target]) do
            true -> targets ++ [KillTarget.new(:seppuku, player.id)]
            false -> targets
@@ -129,6 +134,45 @@ defmodule Werewolf.Action do
        end)}
     else
       nil -> {:ok, players, targets}
+    end
+  end
+
+  def resolve_steal_action(players, phase_number) do
+    with {:ok, players_with_item} <- find_players_for_items(Map.values(players), [:lock_pick]),
+         {:ok, player_and_valid_actions} <-
+           find_actions_for_phase(players_with_item, players, phase_number, :steal) do
+      {:ok,
+       Enum.reduce(player_and_valid_actions, players, fn {player, action}, acc_players ->
+         target_player = acc_players[action.target]
+         {stolen_item, left_items} = steal_item(target_player.items)
+         theft_action = generate_theft_action(stolen_item)
+
+         target_player = Player.update_items(target_player, left_items)
+         {:ok, target_player} = Player.add_action(target_player, phase_number, theft_action)
+         player = Player.update_items(player, [stolen_item | player.items])
+
+         updated_players =
+           put_in(
+             acc_players[action.target],
+             target_player
+           )
+
+         case stolen_item do
+           nil ->
+             updated_players
+
+           stolen_item ->
+             put_in(
+               updated_players[player.id],
+               put_in(
+                 player.actions[phase_number][:steal].result,
+                 stolen_item.type
+               )
+             )
+         end
+       end)}
+    else
+      nil -> {:ok, players}
     end
   end
 
@@ -197,7 +241,9 @@ defmodule Werewolf.Action do
   end
 
   defp add_seppuku(players, player, phase_number) do
-    {:ok, player_with_action} = Player.add_action(player, phase_number, Action.new(:seppuku, player.id))
+    {:ok, player_with_action} =
+      Player.add_action(player, phase_number, Action.new(:seppuku, player.id))
+
     put_in(
       players[player.id],
       %{
@@ -205,5 +251,18 @@ defmodule Werewolf.Action do
         | alive: false
       }
     )
+  end
+
+  defp steal_item([]), do: {nil, []}
+
+  defp steal_item(items) do
+    [stolen_item | remaining_items] = Enum.shuffle(items)
+    {stolen_item, remaining_items}
+  end
+
+  defp generate_theft_action(nil), do: nil
+
+  defp generate_theft_action(stolen_item) do
+    %Action{type: :theft, result: stolen_item.type, target: 0}
   end
 end

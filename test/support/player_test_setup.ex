@@ -102,6 +102,13 @@ defmodule Werewolf.Support.PlayerTestSetup do
           actions: %{},
           role: :ninja,
           items: [Item.new(:sword)]
+        },
+        "werewolf_thief" => %Player{
+          id: "werewolf_thief",
+          host: false,
+          actions: %{},
+          role: :werewolf_thief,
+          items: [Item.new(:lock_pick)]
         }
       }
     ]

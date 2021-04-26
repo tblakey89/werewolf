@@ -601,4 +601,70 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
   end
+
+  describe "valid/3 werewolf_thief" do
+    setup [
+      :steal_action,
+      :player,
+      :werewolf_thief,
+      :dead_hunter,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to steal, returns ok tuple", context do
+      action = context[:steal_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_thief],
+                 action,
+                 context[:players]
+               )
+    end
+
+    test "unable to steal from dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_thief],
+                 context[:steal_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to steal when werewolf_thief is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_werewolf_thief],
+                 context[:steal_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to steal in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:werewolf_thief],
+                 context[:steal_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to steal when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf],
+                 context[:steal_action],
+                 context[:players]
+               )
+    end
+  end
 end
