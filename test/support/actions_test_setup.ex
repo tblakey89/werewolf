@@ -207,6 +207,28 @@ defmodule Werewolf.Support.ActionsTestSetup do
       }
     ]
 
+  def werewolf_detective(_context),
+    do: [
+      werewolf_detective: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :werewolf_detective,
+        items: [Item.new(:magnifying_glass)]
+      }
+    ]
+
+  def dead_werewolf_detective(_context),
+    do: [
+      dead_werewolf_detective: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :werewolf_detective,
+        items: [Item.new(:magnifying_glass)]
+      }
+    ]
+
   def day_state(_context), do: [day_state: %Rules{state: :day_phase}]
 
   def night_state(_context), do: [night_state: %Rules{state: :night_phase}]

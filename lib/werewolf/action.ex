@@ -147,8 +147,10 @@ defmodule Werewolf.Action do
          {stolen_item, left_items} = steal_item(target_player.items)
          theft_action = generate_theft_action(stolen_item)
 
-         target_player = Player.update_items(target_player, left_items)
-         {:ok, target_player} = Player.add_action(target_player, phase_number, theft_action)
+         {:ok, target_player} =
+           Player.update_items(target_player, left_items)
+           |> Player.add_action(phase_number, theft_action)
+
          player = Player.update_items(player, [stolen_item | player.items])
 
          updated_players =

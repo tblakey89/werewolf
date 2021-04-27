@@ -109,6 +109,13 @@ defmodule Werewolf.Support.PlayerTestSetup do
           actions: %{},
           role: :werewolf_thief,
           items: [Item.new(:lock_pick)]
+        },
+        "werewolf_detective" => %Player{
+          id: "werewolf_detective",
+          host: false,
+          actions: %{},
+          role: :werewolf_detective,
+          items: [Item.new(:magnifying_glass)]
         }
       }
     ]

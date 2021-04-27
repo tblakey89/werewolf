@@ -667,4 +667,59 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
   end
+
+  describe "valid/3 werewolf_detective" do
+    setup [
+      :inspect_action,
+      :player,
+      :werewolf_detective,
+      :dead_werewolf_detective,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to inspect, returns ok tuple", context do
+      action = context[:inspect_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_detective],
+                 action,
+                 context[:players]
+               )
+    end
+
+    test "unable to inspect for dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_detective],
+                 context[:inspect_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to inspect when werewolf_detective is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_werewolf_detective],
+                 context[:inspect_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to inspect in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:werewolf_detective],
+                 context[:inspect_action],
+                 context[:players]
+               )
+    end
+  end
 end

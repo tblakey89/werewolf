@@ -23,7 +23,8 @@ defmodule Werewolf.Player do
     witch: [:poison, :resurrection_scroll],
     medium: [:crystal_ball],
     ninja: [:sword],
-    werewolf_thief: [:lock_pick]
+    werewolf_thief: [:lock_pick],
+    werewolf_detective: [:magnifying_glass]
   }
 
   def new(type, user) do
@@ -35,7 +36,7 @@ defmodule Werewolf.Player do
   end
 
   def inspect_roles() do
-    [:detective, :little_girl, :devil]
+    [:detective, :little_girl, :devil, :werewolf_detective]
   end
 
   def roles_by_team() do
@@ -52,7 +53,8 @@ defmodule Werewolf.Player do
       witch: :villager,
       medium: :villager,
       ninja: :villager,
-      werewolf_thief: :werewolf
+      werewolf_thief: :werewolf,
+      werewolf_detective: :werewolf
     }
   end
 
@@ -68,7 +70,8 @@ defmodule Werewolf.Player do
       witch: 1,
       medium: 1,
       ninja: 1,
-      werewolf_thief: 1
+      werewolf_thief: 1,
+      werewolf_detective: 1
     }
   end
 
