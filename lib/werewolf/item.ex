@@ -15,7 +15,8 @@ defmodule Werewolf.Item do
     crystal_ball: :infinite,
     sword: :infinite,
     lock_pick: 1,
-    hammer: 1
+    hammer: 1,
+    cursed_relic: :infinite
   }
 
   @items_to_actions %{
@@ -28,7 +29,8 @@ defmodule Werewolf.Item do
     crystal_ball: :channel,
     sword: :assassinate,
     lock_pick: :steal,
-    hammer: :sabotage
+    hammer: :sabotage,
+    cursed_relic: :curse
   }
 
   def new(type) do

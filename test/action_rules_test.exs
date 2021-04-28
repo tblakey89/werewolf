@@ -788,4 +788,70 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
   end
+
+  describe "valid/3 werewolf_collector" do
+    setup [
+      :curse_action,
+      :player,
+      :werewolf_collector,
+      :dead_werewolf_collector,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to curse, returns ok tuple", context do
+      action = context[:curse_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:werewolf_collector],
+                 action,
+                 context[:players]
+               )
+    end
+
+    test "unable to curse for dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:werewolf_collector],
+                 context[:curse_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to curse when werewolf_collector is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:dead_werewolf_collector],
+                 context[:curse_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to curse in night phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_collector],
+                 context[:curse_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to curse when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:werewolf],
+                 context[:curse_action],
+                 context[:players]
+               )
+    end
+  end
 end

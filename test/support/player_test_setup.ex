@@ -123,6 +123,13 @@ defmodule Werewolf.Support.PlayerTestSetup do
           actions: %{},
           role: :werewolf_saboteur,
           items: [Item.new(:hammer)]
+        },
+        "werewolf_collector" => %Player{
+          id: "werewolf_collector",
+          host: false,
+          actions: %{},
+          role: :werewolf_collector,
+          items: [Item.new(:cursed_relic)]
         }
       }
     ]

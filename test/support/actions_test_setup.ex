@@ -23,6 +23,8 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def sabotage_action(_context), do: [sabotage_action: %Action{type: :sabotage, target: "target"}]
 
+  def curse_action(_context), do: [curse_action: %Action{type: :curse, target: "target"}]
+
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
   def dead_player(_context), do: [dead_player: %Player{host: false, alive: false, id: "test"}]
@@ -250,6 +252,28 @@ defmodule Werewolf.Support.ActionsTestSetup do
         id: "test",
         role: :werewolf_saboteur,
         items: [Item.new(:hammer)]
+      }
+    ]
+
+  def werewolf_collector(_context),
+    do: [
+      werewolf_collector: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :werewolf_collector,
+        items: [Item.new(:cursed_relic)]
+      }
+    ]
+
+  def dead_werewolf_collector(_context),
+    do: [
+      dead_werewolf_collector: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :werewolf_collector,
+        items: [Item.new(:cursed_relic)]
       }
     ]
 

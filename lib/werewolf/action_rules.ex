@@ -11,6 +11,21 @@ defmodule Werewolf.ActionRules do
   end
 
   def valid(
+        %Rules{state: :day_phase},
+        %Player{alive: true, items: items},
+        %Action{type: action_type} = action,
+        players
+      ) do
+    cond do
+      action_type == :curse && Item.usable?(:cursed_relic, items) ->
+        response(action, players)
+
+      true ->
+        {:error, :invalid_action}
+    end
+  end
+
+  def valid(
         %Rules{state: :night_phase},
         %Player{alive: true, role: :werewolf},
         %Action{type: :vote} = action,

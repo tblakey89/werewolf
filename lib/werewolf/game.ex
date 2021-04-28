@@ -139,6 +139,13 @@ defmodule Werewolf.Game do
              targets,
              heal_targets
            ),
+         {:ok, players, targets} <-
+           Action.resolve_curse_action(
+             players,
+             game.phases,
+             targets,
+             heal_targets
+           ),
          {:ok, players, resurrect_targets} <-
            Action.resolve_resurrect_action(players, game.phases),
          {:ok, players} <- Player.use_items(players, game.phases),
