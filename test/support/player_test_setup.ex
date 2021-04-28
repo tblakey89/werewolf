@@ -116,6 +116,13 @@ defmodule Werewolf.Support.PlayerTestSetup do
           actions: %{},
           role: :werewolf_detective,
           items: [Item.new(:magnifying_glass)]
+        },
+        "werewolf_saboteur" => %Player{
+          id: "werewolf_saboteur",
+          host: false,
+          actions: %{},
+          role: :werewolf_saboteur,
+          items: [Item.new(:hammer)]
         }
       }
     ]

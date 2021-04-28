@@ -118,7 +118,8 @@ defmodule Werewolf.Game do
 
   def end_phase(game, rules) do
     with {:ok, votes, target} <- Votes.count_from_actions(phase_actions(game)),
-         {:ok, heal_targets} <- Action.resolve_heal_action(game.players, game.phases),
+         {:ok, players} <- Action.resolve_sabotage_action(game.players, game.phases),
+         {:ok, heal_targets} <- Action.resolve_heal_action(players, game.phases),
          {:ok, players, win_status, targets} <-
            Player.kill_player(game.players, game.phases, target, heal_targets),
          {:ok, players, targets} <-

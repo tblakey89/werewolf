@@ -24,7 +24,8 @@ defmodule Werewolf.Player do
     medium: [:crystal_ball],
     ninja: [:sword],
     werewolf_thief: [:lock_pick],
-    werewolf_detective: [:magnifying_glass]
+    werewolf_detective: [:magnifying_glass],
+    werewolf_saboteur: [:hammer]
   }
 
   def new(type, user) do
@@ -54,7 +55,8 @@ defmodule Werewolf.Player do
       medium: :villager,
       ninja: :villager,
       werewolf_thief: :werewolf,
-      werewolf_detective: :werewolf
+      werewolf_detective: :werewolf,
+      werewolf_saboteur: :werewolf
     }
   end
 
@@ -71,7 +73,8 @@ defmodule Werewolf.Player do
       medium: 1,
       ninja: 1,
       werewolf_thief: 1,
-      werewolf_detective: 1
+      werewolf_detective: 1,
+      werewolf_saboteur: 1
     }
   end
 

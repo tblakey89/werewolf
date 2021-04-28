@@ -145,7 +145,7 @@ defmodule Werewolf.Action do
        Enum.reduce(player_and_valid_actions, players, fn {player, action}, acc_players ->
          target_player = acc_players[action.target]
          {stolen_item, left_items} = steal_item(target_player.items)
-         theft_action = generate_theft_action(stolen_item)
+         theft_action = generate_item_result_action(:theft, stolen_item)
 
          {:ok, target_player} =
            Player.update_items(target_player, left_items)
@@ -168,6 +168,45 @@ defmodule Werewolf.Action do
                updated_players[player.id],
                put_in(
                  player.actions[phase_number][:steal].result,
+                 stolen_item.type
+               )
+             )
+         end
+       end)}
+    else
+      nil -> {:ok, players}
+    end
+  end
+
+  def resolve_sabotage_action(players, phase_number) do
+    with {:ok, players_with_item} <- find_players_for_items(Map.values(players), [:hammer]),
+         {:ok, player_and_valid_actions} <-
+           find_actions_for_phase(players_with_item, players, phase_number, :sabotage) do
+      {:ok,
+       Enum.reduce(player_and_valid_actions, players, fn {player, action}, acc_players ->
+         target_player = acc_players[action.target]
+         {destroyed_item, left_items} = steal_item(target_player.items)
+         sabotage_action = generate_item_result_action(:destroyed, destroyed_item)
+
+         {:ok, target_player} =
+           Player.update_items(target_player, left_items)
+           |> Player.add_action(phase_number, sabotage_action)
+
+         updated_players =
+           put_in(
+             acc_players[action.target],
+             target_player
+           )
+
+         case destroyed_item do
+           nil ->
+             updated_players
+
+           stolen_item ->
+             put_in(
+               updated_players[player.id],
+               put_in(
+                 player.actions[phase_number][:sabotage].result,
                  stolen_item.type
                )
              )
@@ -262,9 +301,9 @@ defmodule Werewolf.Action do
     {stolen_item, remaining_items}
   end
 
-  defp generate_theft_action(nil), do: nil
+  defp generate_item_result_action(_type, nil), do: nil
 
-  defp generate_theft_action(stolen_item) do
-    %Action{type: :theft, result: stolen_item.type, target: 0}
+  defp generate_item_result_action(type, item) do
+    %Action{type: type, result: item.type, target: 0}
   end
 end

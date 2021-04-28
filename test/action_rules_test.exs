@@ -607,7 +607,7 @@ defmodule Werewolf.ActionRulesTest do
       :steal_action,
       :player,
       :werewolf_thief,
-      :dead_hunter,
+      :dead_werewolf_thief,
       :werewolf,
       :day_state,
       :night_state,
@@ -718,6 +718,72 @@ defmodule Werewolf.ActionRulesTest do
                  context[:day_state],
                  context[:werewolf_detective],
                  context[:inspect_action],
+                 context[:players]
+               )
+    end
+  end
+
+  describe "valid/3 werewolf_saboteur" do
+    setup [
+      :sabotage_action,
+      :player,
+      :werewolf_saboteur,
+      :dead_hunter,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to sabotage, returns ok tuple", context do
+      action = context[:sabotage_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_saboteur],
+                 action,
+                 context[:players]
+               )
+    end
+
+    test "unable to sabotage from dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_saboteur],
+                 context[:sabotage_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to sabotage when werewolf_saboteur is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_werewolf_saboteur],
+                 context[:sabotage_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to sabotage in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:werewolf_saboteur],
+                 context[:sabotage_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to sabotage when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf],
+                 context[:sabotage_action],
                  context[:players]
                )
     end

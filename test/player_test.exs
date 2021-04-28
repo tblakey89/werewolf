@@ -117,11 +117,13 @@ defmodule Werewolf.PlayerTest do
             :witch,
             :medium,
             :ninja,
-            :werewolf_thief
+            :werewolf_thief,
+            :werewolf_detective,
+            :werewolf_saboteur
           ])
         )
 
-      assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 3
+      assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 3
       assert Enum.count(assigned_players, fn player -> player.role == :detective end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :doctor end) == 1
@@ -134,6 +136,11 @@ defmodule Werewolf.PlayerTest do
       assert Enum.count(assigned_players, fn player -> player.role == :medium end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :ninja end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf_thief end) == 1
+
+      assert Enum.count(assigned_players, fn player -> player.role == :werewolf_detective end) ==
+               1
+
+      assert Enum.count(assigned_players, fn player -> player.role == :werewolf_saboteur end) == 1
       assert Enum.find(assigned_players, fn player -> player.role == :werewolf end).items == []
       assert Enum.find(assigned_players, fn player -> player.role == :villager end).items == []
 
@@ -177,6 +184,16 @@ defmodule Werewolf.PlayerTest do
       assert Enum.find(assigned_players, fn player -> player.role == :werewolf_thief end).items ==
                [
                  Item.new(:lock_pick)
+               ]
+
+      assert Enum.find(assigned_players, fn player -> player.role == :werewolf_detective end).items ==
+               [
+                 Item.new(:magnifying_glass)
+               ]
+
+      assert Enum.find(assigned_players, fn player -> player.role == :werewolf_saboteur end).items ==
+               [
+                 Item.new(:hammer)
                ]
     end
   end

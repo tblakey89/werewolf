@@ -21,6 +21,8 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def steal_action(_context), do: [steal_action: %Action{type: :steal, target: "target"}]
 
+  def sabotage_action(_context), do: [sabotage_action: %Action{type: :sabotage, target: "target"}]
+
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
   def dead_player(_context), do: [dead_player: %Player{host: false, alive: false, id: "test"}]
@@ -226,6 +228,28 @@ defmodule Werewolf.Support.ActionsTestSetup do
         id: "test",
         role: :werewolf_detective,
         items: [Item.new(:magnifying_glass)]
+      }
+    ]
+
+  def werewolf_saboteur(_context),
+    do: [
+      werewolf_saboteur: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :werewolf_saboteur,
+        items: [Item.new(:hammer)]
+      }
+    ]
+
+  def dead_werewolf_saboteur(_context),
+    do: [
+      dead_werewolf_saboteur: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :werewolf_saboteur,
+        items: [Item.new(:hammer)]
       }
     ]
 
