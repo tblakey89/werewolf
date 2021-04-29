@@ -205,6 +205,21 @@ defmodule Werewolf.PlayerTest do
                  Item.new(:cursed_relic)
                ]
     end
+
+    test "when 18 players, additional roles" do
+      assigned_players =
+        Map.values(
+          Player.assign_roles(generate_players(18), [
+            :werewolf_mage
+          ])
+        )
+
+      assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 3
+      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 14
+      assert Enum.count(assigned_players, fn player -> player.role == :werewolf_mage end) == 1
+      assert Enum.find(assigned_players, fn player -> player.role == :villager end).items == []
+      assert Enum.find(assigned_players, fn player -> player.role == :werewolf end).items == []
+    end
   end
 
   describe "add_action/3" do

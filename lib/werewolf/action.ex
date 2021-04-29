@@ -21,7 +21,7 @@ defmodule Werewolf.Action do
          put_in(
            acc_players[player.id].actions[phase_number][:inspect].result,
            # this should be item not role
-           inspect_answer(player.role, acc_players[action.target], phase_number)
+           inspect_answer(player.role, acc_players[action.target], phase_number, players)
          )
        end)
      else
@@ -296,12 +296,15 @@ defmodule Werewolf.Action do
      end)}
   end
 
-  defp inspect_answer(:little_girl, target_player, phase_number) do
+  defp inspect_answer(:little_girl, target_player, phase_number, _) do
     Map.has_key?(target_player.actions, phase_number)
   end
 
-  defp inspect_answer(_, target_player, _) do
-    target_player.role
+  defp inspect_answer(_, target_player, phase_number, players) do
+    case target_player.actions[phase_number][:transform] do
+      nil -> target_player.role
+      action -> players[action.target].role
+    end
   end
 
   defp add_seppuku(players, player, phase_number) do

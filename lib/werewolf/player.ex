@@ -26,7 +26,8 @@ defmodule Werewolf.Player do
     werewolf_thief: [:lock_pick],
     werewolf_detective: [:magnifying_glass],
     werewolf_saboteur: [:hammer],
-    werewolf_collector: [:cursed_relic]
+    werewolf_collector: [:cursed_relic],
+    werewolf_mage: [:transformation_scroll]
   }
 
   def new(type, user) do
@@ -58,7 +59,8 @@ defmodule Werewolf.Player do
       werewolf_thief: :werewolf,
       werewolf_detective: :werewolf,
       werewolf_saboteur: :werewolf,
-      werewolf_collector: :werewolf
+      werewolf_collector: :werewolf,
+      werewolf_mage: :werewolf
     }
   end
 
@@ -77,7 +79,8 @@ defmodule Werewolf.Player do
       werewolf_thief: 1,
       werewolf_detective: 1,
       werewolf_saboteur: 1,
-      werewolf_collector: 1
+      werewolf_collector: 1,
+      werewolf_mage: 1
     }
   end
 

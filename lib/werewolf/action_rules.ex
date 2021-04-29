@@ -68,6 +68,9 @@ defmodule Werewolf.ActionRules do
       action_type == :sabotage && Item.usable?(:hammer, items) ->
         response(action, players)
 
+      action_type == :transform && Item.usable?(:transformation_scroll, items) ->
+        response(action, players)
+
       true ->
         {:error, :invalid_action}
     end

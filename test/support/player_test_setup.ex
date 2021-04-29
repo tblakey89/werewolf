@@ -130,6 +130,13 @@ defmodule Werewolf.Support.PlayerTestSetup do
           actions: %{},
           role: :werewolf_collector,
           items: [Item.new(:cursed_relic)]
+        },
+        "werewolf_mage" => %Player{
+          id: "werewolf_mage",
+          host: false,
+          actions: %{},
+          role: :werewolf_mage,
+          items: [Item.new(:transformation_scroll)]
         }
       }
     ]

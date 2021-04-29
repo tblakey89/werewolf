@@ -16,7 +16,8 @@ defmodule Werewolf.Item do
     sword: :infinite,
     lock_pick: 1,
     hammer: 1,
-    cursed_relic: :infinite
+    cursed_relic: :infinite,
+    transformation_scroll: :infinite
   }
 
   @items_to_actions %{
@@ -30,7 +31,8 @@ defmodule Werewolf.Item do
     sword: :assassinate,
     lock_pick: :steal,
     hammer: :sabotage,
-    cursed_relic: :curse
+    cursed_relic: :curse,
+    transformation_scroll: :transform
   }
 
   def new(type) do

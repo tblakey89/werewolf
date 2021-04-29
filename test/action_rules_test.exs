@@ -854,4 +854,70 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
   end
+
+  describe "valid/3 werewolf_mage" do
+    setup [
+      :transform_action,
+      :player,
+      :werewolf_mage,
+      :dead_werewolf_mage,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to transform, returns ok tuple", context do
+      action = context[:transform_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_mage],
+                 action,
+                 context[:players]
+               )
+    end
+
+    test "unable to transform from dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_mage],
+                 context[:transform_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to transform when werewolf_mage is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_werewolf_mage],
+                 context[:transform_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to transform in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:werewolf_mage],
+                 context[:transform_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to transform when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf],
+                 context[:transform_action],
+                 context[:players]
+               )
+    end
+  end
 end

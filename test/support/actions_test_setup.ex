@@ -25,6 +25,8 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def curse_action(_context), do: [curse_action: %Action{type: :curse, target: "target"}]
 
+  def transform_action(_context), do: [transform_action: %Action{type: :transform, target: "target"}]
+
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
   def dead_player(_context), do: [dead_player: %Player{host: false, alive: false, id: "test"}]
@@ -274,6 +276,28 @@ defmodule Werewolf.Support.ActionsTestSetup do
         id: "test",
         role: :werewolf_collector,
         items: [Item.new(:cursed_relic)]
+      }
+    ]
+
+  def werewolf_mage(_context),
+    do: [
+      werewolf_mage: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :werewolf_mage,
+        items: [Item.new(:transformation_scroll)]
+      }
+    ]
+
+  def dead_werewolf_mage(_context),
+    do: [
+      dead_werewolf_mage: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :werewolf_mage,
+        items: [Item.new(:transformation_scroll)]
       }
     ]
 

@@ -30,6 +30,17 @@ defmodule Werewolf.ActionTest do
       assert players["detective"].actions[1][:inspect].result == :werewolf
     end
 
+    test "when detective alive, gets wrong result from player with transform action", context do
+      players = context[:additional_player_map]
+      {:ok, player} = Player.add_action(players["detective"], 1, Action.new(:inspect, "werewolf_mage"))
+      players = put_in(players["detective"], player)
+      {:ok, transform_player} = Player.add_action(players["werewolf_mage"], 1, Action.new(:transform, "doctor"))
+      players = put_in(players["werewolf_mage"], transform_player)
+
+      {:ok, players} = Action.resolve_inspect_action(players, 1)
+      assert players["detective"].actions[1][:inspect].result == :doctor
+    end
+
     test "when detective alive, but no inspect action", context do
       players = context[:player_map]
       {:ok, players} = Action.resolve_inspect_action(players, 1)
