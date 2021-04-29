@@ -137,6 +137,13 @@ defmodule Werewolf.Support.PlayerTestSetup do
           actions: %{},
           role: :werewolf_mage,
           items: [Item.new(:transformation_scroll)]
+        },
+        "gravedigger" => %Player{
+          id: "gravedigger",
+          host: false,
+          actions: %{},
+          role: :gravedigger,
+          items: [Item.new(:pick)]
         }
       }
     ]

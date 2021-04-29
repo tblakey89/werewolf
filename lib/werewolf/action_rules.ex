@@ -54,7 +54,7 @@ defmodule Werewolf.ActionRules do
         response(action, players)
 
       action_type == :resurrect && Item.usable?(:resurrection_scroll, items) ->
-        resurrect_response(action, players)
+        dead_target_response(action, players)
 
       action_type == :poison && Item.usable?(:poison, items) ->
         response(action, players)
@@ -70,6 +70,9 @@ defmodule Werewolf.ActionRules do
 
       action_type == :transform && Item.usable?(:transformation_scroll, items) ->
         response(action, players)
+
+      action_type == :disentomb && Item.usable?(:pick, items) ->
+        dead_target_response(action, players)
 
       true ->
         {:error, :invalid_action}
@@ -91,7 +94,7 @@ defmodule Werewolf.ActionRules do
     end
   end
 
-  defp resurrect_response(action, players) do
+  defp dead_target_response(action, players) do
     case !Player.alive?(players, action.target) do
       true -> {:ok, action}
       false -> {:error, :invalid_target}

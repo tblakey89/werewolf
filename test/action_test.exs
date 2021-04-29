@@ -30,6 +30,16 @@ defmodule Werewolf.ActionTest do
       assert players["detective"].actions[1][:inspect].result == :werewolf
     end
 
+    test "when detective alive, unsuccessfully inspects dead werewolf player", context do
+      players = context[:player_map]
+      {:ok, player} = Player.add_action(players["detective"], 1, Action.new(:inspect, "werewolf"))
+      players = put_in(players["werewolf"].alive, false)
+      players = put_in(players["detective"], player)
+
+      {:ok, players} = Action.resolve_inspect_action(players, 1)
+      assert players["detective"].actions[1][:inspect].result == nil
+    end
+
     test "when detective alive, gets wrong result from player with transform action", context do
       players = context[:additional_player_map]
       {:ok, player} = Player.add_action(players["detective"], 1, Action.new(:inspect, "werewolf_mage"))
@@ -361,6 +371,70 @@ defmodule Werewolf.ActionTest do
       {:ok, players} = Action.resolve_sabotage_action(players, 1)
       assert players["villager"].actions[1][:destroyed] == nil
       assert players["werewolf_saboteur"].actions[1][:sabotage].result == nil
+    end
+  end
+
+  describe "resolve_disentomb_action/2" do
+    setup [:additional_player_map]
+
+    test "when gravedigger alive, successfully disentombs from dead player", context do
+      players = context[:additional_player_map]
+
+      {:ok, player} =
+        Player.add_action(players["gravedigger"], 1, Action.new(:disentomb, "detective"))
+
+      players = put_in(players["gravedigger"], player)
+      players = put_in(players["detective"].alive, false)
+
+      {:ok, players} = Action.resolve_disentomb_action(players, 1)
+      assert players["detective"].actions[1][:grave_rob].type == :grave_rob
+      assert players["detective"].actions[1][:grave_rob].result == :magnifying_glass
+      assert players["gravedigger"].actions[1][:disentomb].result == :magnifying_glass
+      assert length(players["detective"].items) == 0
+      assert length(players["gravedigger"].items) == 2
+    end
+
+    test "when gravedigger alive, successfully disentombs from player with multiple items",
+         context do
+      players = context[:additional_player_map]
+      {:ok, player} = Player.add_action(players["gravedigger"], 1, Action.new(:disentomb, "witch"))
+      players = put_in(players["gravedigger"], player)
+      players = put_in(players["witch"].alive, false)
+
+      {:ok, players} = Action.resolve_disentomb_action(players, 1)
+      assert players["witch"].actions[1][:grave_rob].type == :grave_rob
+      assert length(players["witch"].items) == 1
+      assert length(players["gravedigger"].items) == 2
+    end
+
+    test "when gravedigger alive, successfully disentombs nothing from villager", context do
+      players = context[:additional_player_map]
+
+      {:ok, player} =
+        Player.add_action(players["werewolf_thief"], 1, Action.new(:disentomb, "villager"))
+
+      players = put_in(players["werewolf_thief"], player)
+      players = put_in(players["villager"].alive, false)
+
+      {:ok, players} = Action.resolve_disentomb_action(players, 1)
+      assert players["villager"].actions[1][:grave_rob] == nil
+      assert players["werewolf_thief"].actions[1][:disentomb].result == nil
+      assert length(players["werewolf_thief"].items) == 1
+    end
+
+    test "when gravedigger alive, unsuccessfully disentombs from dead player", context do
+      players = context[:additional_player_map]
+
+      {:ok, player} =
+        Player.add_action(players["gravedigger"], 1, Action.new(:disentomb, "detective"))
+
+      players = put_in(players["gravedigger"], player)
+
+      {:ok, players} = Action.resolve_disentomb_action(players, 1)
+      assert players["detective"].actions[1][:grave_rob] == nil
+      assert players["gravedigger"].actions[1][:disentomb].result == nil
+      assert length(players["detective"].items) == 1
+      assert length(players["gravedigger"].items) == 1
     end
   end
 end

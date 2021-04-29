@@ -920,4 +920,70 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
   end
+
+  describe "valid/3 gravedigger" do
+    setup [
+      :disentomb_action,
+      :player,
+      :gravedigger,
+      :dead_gravedigger,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to disentomb, returns ok tuple", context do
+      action = context[:disentomb_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:gravedigger],
+                 action,
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to disentomb from alive player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:gravedigger],
+                 context[:disentomb_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to disentomb when gravedigger is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_gravedigger],
+                 context[:disentomb_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to disentomb in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:gravedigger],
+                 context[:disentomb_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to disentomb when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf],
+                 context[:disentomb_action],
+                 context[:dead_players]
+               )
+    end
+  end
 end
