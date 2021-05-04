@@ -28,7 +28,8 @@ defmodule Werewolf.Player do
     werewolf_saboteur: [:hammer],
     werewolf_collector: [:cursed_relic],
     werewolf_mage: [:transformation_scroll],
-    gravedigger: [:pick]
+    gravedigger: [:pick],
+    judge: [:scales_of_justice]
   }
 
   def new(type, user) do
@@ -62,7 +63,8 @@ defmodule Werewolf.Player do
       werewolf_saboteur: :werewolf,
       werewolf_collector: :werewolf,
       werewolf_mage: :werewolf,
-      gravedigger: :villager
+      gravedigger: :villager,
+      judge: :villager
     }
   end
 
@@ -83,7 +85,8 @@ defmodule Werewolf.Player do
       werewolf_saboteur: 1,
       werewolf_collector: 1,
       werewolf_mage: 1,
-      gravedigger: 1
+      gravedigger: 1,
+      judge: 1
     }
   end
 
@@ -155,11 +158,11 @@ defmodule Werewolf.Player do
     player.role == type && player.alive
   end
 
-  def kill_player(players, phase_number, target, heal_targets \\ [])
+  def kill_player(players, phase_number, target, heal_targets \\ [], overrule_targets \\ [])
 
-  def kill_player(players, _, :none, _), do: {:ok, players, nil, []}
+  def kill_player(players, _, :none, _, _), do: {:ok, players, nil, []}
 
-  def kill_player(players, phase_number, target, _) when is_even(phase_number) do
+  def kill_player(players, phase_number, target, _, []) when is_even(phase_number) do
     players = put_in(players[target].alive, false)
 
     case players[target].role do
@@ -168,7 +171,12 @@ defmodule Werewolf.Player do
     end
   end
 
-  def kill_player(players, phase_number, target, heal_targets) do
+  def kill_player(players, phase_number, target, _, overrule_targets)
+      when is_even(phase_number) do
+    {:ok, players, nil, overrule_targets}
+  end
+
+  def kill_player(players, phase_number, target, heal_targets, _) do
     case Enum.member?(heal_targets, target) do
       true ->
         {:ok, players, nil, []}

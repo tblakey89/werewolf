@@ -20,6 +20,9 @@ defmodule Werewolf.ActionRules do
       action_type == :curse && Item.usable?(:cursed_relic, items) ->
         response(action, players)
 
+      action_type == :overrule && Item.usable?(:scales_of_justice, items) ->
+        response(action, players)
+
       true ->
         {:error, :invalid_action}
     end

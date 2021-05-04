@@ -121,12 +121,13 @@ defmodule Werewolf.PlayerTest do
             :werewolf_detective,
             :werewolf_saboteur,
             :werewolf_collector,
-            :gravedigger
+            :gravedigger,
+            :judge
           ])
         )
 
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 0
-      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 2
+      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :detective end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :doctor end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :mason end) == 2
@@ -138,6 +139,7 @@ defmodule Werewolf.PlayerTest do
       assert Enum.count(assigned_players, fn player -> player.role == :medium end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :ninja end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :gravedigger end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :judge end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf_thief end) == 1
 
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf_detective end) ==
@@ -206,10 +208,16 @@ defmodule Werewolf.PlayerTest do
                [
                  Item.new(:cursed_relic)
                ]
-     assert Enum.find(assigned_players, fn player -> player.role == :gravedigger end).items ==
-              [
-                Item.new(:pick)
-              ]
+
+      assert Enum.find(assigned_players, fn player -> player.role == :gravedigger end).items ==
+               [
+                 Item.new(:pick)
+               ]
+
+      assert Enum.find(assigned_players, fn player -> player.role == :judge end).items ==
+               [
+                 Item.new(:scales_of_justice)
+               ]
     end
 
     test "when 18 players, additional roles" do

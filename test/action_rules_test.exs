@@ -986,4 +986,70 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
   end
+
+  describe "valid/3 judge" do
+    setup [
+      :overrule_action,
+      :player,
+      :judge,
+      :dead_judge,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to overrule, returns ok tuple", context do
+      action = context[:overrule_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:judge],
+                 action,
+                 context[:players]
+               )
+    end
+
+    test "unable to overrule for dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:judge],
+                 context[:overrule_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to overrule when judge is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:dead_judge],
+                 context[:overrule_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to overrule in night phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:judge],
+                 context[:overrule_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to overrule when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:werewolf],
+                 context[:overrule_action],
+                 context[:players]
+               )
+    end
+  end
 end

@@ -42,9 +42,15 @@ defmodule Werewolf.ActionTest do
 
     test "when detective alive, gets wrong result from player with transform action", context do
       players = context[:additional_player_map]
-      {:ok, player} = Player.add_action(players["detective"], 1, Action.new(:inspect, "werewolf_mage"))
+
+      {:ok, player} =
+        Player.add_action(players["detective"], 1, Action.new(:inspect, "werewolf_mage"))
+
       players = put_in(players["detective"], player)
-      {:ok, transform_player} = Player.add_action(players["werewolf_mage"], 1, Action.new(:transform, "doctor"))
+
+      {:ok, transform_player} =
+        Player.add_action(players["werewolf_mage"], 1, Action.new(:transform, "doctor"))
+
       players = put_in(players["werewolf_mage"], transform_player)
 
       {:ok, players} = Action.resolve_inspect_action(players, 1)
@@ -397,7 +403,10 @@ defmodule Werewolf.ActionTest do
     test "when gravedigger alive, successfully disentombs from player with multiple items",
          context do
       players = context[:additional_player_map]
-      {:ok, player} = Player.add_action(players["gravedigger"], 1, Action.new(:disentomb, "witch"))
+
+      {:ok, player} =
+        Player.add_action(players["gravedigger"], 1, Action.new(:disentomb, "witch"))
+
       players = put_in(players["gravedigger"], player)
       players = put_in(players["witch"].alive, false)
 
@@ -411,15 +420,15 @@ defmodule Werewolf.ActionTest do
       players = context[:additional_player_map]
 
       {:ok, player} =
-        Player.add_action(players["werewolf_thief"], 1, Action.new(:disentomb, "villager"))
+        Player.add_action(players["gravedigger"], 1, Action.new(:disentomb, "villager"))
 
-      players = put_in(players["werewolf_thief"], player)
+      players = put_in(players["gravedigger"], player)
       players = put_in(players["villager"].alive, false)
 
       {:ok, players} = Action.resolve_disentomb_action(players, 1)
       assert players["villager"].actions[1][:grave_rob] == nil
-      assert players["werewolf_thief"].actions[1][:disentomb].result == nil
-      assert length(players["werewolf_thief"].items) == 1
+      assert players["gravedigger"].actions[1][:disentomb].result == nil
+      assert length(players["gravedigger"].items) == 1
     end
 
     test "when gravedigger alive, unsuccessfully disentombs from dead player", context do
@@ -435,6 +444,90 @@ defmodule Werewolf.ActionTest do
       assert players["gravedigger"].actions[1][:disentomb].result == nil
       assert length(players["detective"].items) == 1
       assert length(players["gravedigger"].items) == 1
+    end
+  end
+
+  describe "resolve_curse_action/4" do
+    setup [:additional_player_map]
+
+    test "when werewolf_collector targetted, successfully hunts player", context do
+      players = context[:additional_player_map]
+
+      {:ok, player} =
+        Player.add_action(players["werewolf_collector"], 1, Action.new(:curse, "villager"))
+
+      players = put_in(players["werewolf_collector"], player)
+
+      {:ok, players, targets} =
+        Action.resolve_curse_action(players, 1, [KillTarget.new(:vote, "werewolf_collector")], [])
+
+      assert players["villager"].alive == false
+      assert(length(targets)) == 1
+      assert(Enum.at(targets, 0).type) == :curse
+      assert(Enum.at(targets, 0).target) == "villager"
+    end
+
+    test "when werewolf_collector alive, curses player, but protected", context do
+      players = context[:additional_player_map]
+
+      {:ok, player} =
+        Player.add_action(players["werewolf_collector"], 1, Action.new(:curse, "villager"))
+
+      players = put_in(players["werewolf_collector"], player)
+
+      {:ok, players, targets} =
+        Action.resolve_curse_action(players, 1, [KillTarget.new(:vote, "werewolf_collector")], [
+          "villager"
+        ])
+
+      assert players["villager"].alive == true
+      assert(length(targets)) == 0
+    end
+
+    test "when werewolf_collector not targetted, does not resolve action", context do
+      players = context[:additional_player_map]
+
+      {:ok, player} =
+        Player.add_action(players["werewolf_collector"], 1, Action.new(:curse, "villager"))
+
+      players = put_in(players["werewolf_collector"], player)
+
+      {:ok, players, targets} = Action.resolve_curse_action(players, 1, [], [])
+      assert players["villager"].alive == true
+      assert(length(targets)) == 0
+    end
+
+    test "when werewolf_collector alive, but no hunt action", context do
+      players = context[:additional_player_map]
+
+      {:ok, players, targets} =
+        Action.resolve_curse_action(players, 1, [KillTarget.new(:vote, "werewolf_collector")], [])
+
+      assert players["villager"].alive == true
+      assert(length(targets)) == 0
+    end
+  end
+
+  describe "resolve_overrule_action/4" do
+    setup [:additional_player_map]
+
+    test "when judge alive, successfully poisons player", context do
+      players = context[:additional_player_map]
+      {:ok, player} = Player.add_action(players["judge"], 1, Action.new(:overrule, "villager"))
+      players = put_in(players["judge"], player)
+
+      {:ok, players, overrule_targets} = Action.resolve_overrule_action(players, 1)
+      assert players["villager"].alive == false
+      assert(length(overrule_targets)) == 1
+      assert(Enum.at(overrule_targets, 0).type) == :overrule
+      assert(Enum.at(overrule_targets, 0).target) == "villager"
+    end
+
+    test "when judge alive, but no poison action", context do
+      players = context[:additional_player_map]
+      {:ok, players, overrule_targets} = Action.resolve_overrule_action(players, 1)
+      assert players["villager"].alive == true
+      assert(length(overrule_targets)) == 0
     end
   end
 end

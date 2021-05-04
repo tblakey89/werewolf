@@ -25,9 +25,13 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def curse_action(_context), do: [curse_action: %Action{type: :curse, target: "target"}]
 
-  def transform_action(_context), do: [transform_action: %Action{type: :transform, target: "target"}]
+  def transform_action(_context),
+    do: [transform_action: %Action{type: :transform, target: "target"}]
 
-  def disentomb_action(_context), do: [disentomb_action: %Action{type: :disentomb, target: "target"}]
+  def disentomb_action(_context),
+    do: [disentomb_action: %Action{type: :disentomb, target: "target"}]
+
+  def overrule_action(_context), do: [overrule_action: %Action{type: :overrule, target: "target"}]
 
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
@@ -322,6 +326,28 @@ defmodule Werewolf.Support.ActionsTestSetup do
         id: "test",
         role: :gravedigger,
         items: [Item.new(:pick)]
+      }
+    ]
+
+  def judge(_context),
+    do: [
+      judge: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :judge,
+        items: [Item.new(:scales_of_justice)]
+      }
+    ]
+
+  def dead_judge(_context),
+    do: [
+      dead_judge: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :judge,
+        items: [Item.new(:scales_of_justice)]
       }
     ]
 

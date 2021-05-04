@@ -144,6 +144,13 @@ defmodule Werewolf.Support.PlayerTestSetup do
           actions: %{},
           role: :gravedigger,
           items: [Item.new(:pick)]
+        },
+        "judge" => %Player{
+          id: "judge",
+          host: false,
+          actions: %{},
+          role: :judge,
+          items: [Item.new(:scales_of_justice)]
         }
       }
     ]
