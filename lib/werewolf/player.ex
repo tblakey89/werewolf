@@ -29,7 +29,8 @@ defmodule Werewolf.Player do
     werewolf_collector: [:cursed_relic],
     werewolf_mage: [:transformation_scroll],
     gravedigger: [:pick],
-    judge: [:scales_of_justice]
+    judge: [:scales_of_justice],
+    lawyer: [:defence_case]
   }
 
   def new(type, user) do
@@ -64,7 +65,8 @@ defmodule Werewolf.Player do
       werewolf_collector: :werewolf,
       werewolf_mage: :werewolf,
       gravedigger: :villager,
-      judge: :villager
+      judge: :villager,
+      lawyer: :villager
     }
   end
 
@@ -86,7 +88,8 @@ defmodule Werewolf.Player do
       werewolf_collector: 1,
       werewolf_mage: 1,
       gravedigger: 1,
-      judge: 1
+      judge: 1,
+      lawyer: 1
     }
   end
 
@@ -158,25 +161,39 @@ defmodule Werewolf.Player do
     player.role == type && player.alive
   end
 
-  def kill_player(players, phase_number, target, heal_targets \\ [], overrule_targets \\ [])
+  def kill_player(
+        players,
+        phase_number,
+        target,
+        heal_targets \\ [],
+        defend_targets \\ [],
+        overrule_targets \\ []
+      )
 
-  def kill_player(players, _, :none, _, _), do: {:ok, players, nil, []}
+  def kill_player(players, _, :none, _, _, _), do: {:ok, players, nil, []}
 
-  def kill_player(players, phase_number, target, _, []) when is_even(phase_number) do
-    players = put_in(players[target].alive, false)
+  def kill_player(players, phase_number, target, _, defend_targets, [])
+      when is_even(phase_number) do
+    case Enum.member?(defend_targets, target) do
+      true ->
+        {:ok, players, nil, [KillTarget.new(:defend, target)]}
 
-    case players[target].role do
-      :fool -> {:ok, players, :fool_win, [KillTarget.new(:vote, target)]}
-      _ -> {:ok, players, nil, [KillTarget.new(:vote, target)]}
+      false ->
+        players = put_in(players[target].alive, false)
+
+        case players[target].role do
+          :fool -> {:ok, players, :fool_win, [KillTarget.new(:vote, target)]}
+          _ -> {:ok, players, nil, [KillTarget.new(:vote, target)]}
+        end
     end
   end
 
-  def kill_player(players, phase_number, target, _, overrule_targets)
+  def kill_player(players, phase_number, target, _, _, overrule_targets)
       when is_even(phase_number) do
     {:ok, players, nil, overrule_targets}
   end
 
-  def kill_player(players, phase_number, target, heal_targets, _) do
+  def kill_player(players, phase_number, target, heal_targets, _, _) do
     case Enum.member?(heal_targets, target) do
       true ->
         {:ok, players, nil, []}

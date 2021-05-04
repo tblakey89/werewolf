@@ -1,7 +1,7 @@
 defmodule Werewolf.PlayerTest do
   use ExUnit.Case
   import Werewolf.Support.PlayerTestSetup
-  alias Werewolf.{Player, Action, Item}
+  alias Werewolf.{Player, Action, Item, KillTarget}
 
   describe "new/2" do
     setup [:user]
@@ -122,12 +122,13 @@ defmodule Werewolf.PlayerTest do
             :werewolf_saboteur,
             :werewolf_collector,
             :gravedigger,
-            :judge
+            :judge,
+            :lawyer
           ])
         )
 
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 0
-      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 0
       assert Enum.count(assigned_players, fn player -> player.role == :detective end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :doctor end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :mason end) == 2
@@ -140,6 +141,7 @@ defmodule Werewolf.PlayerTest do
       assert Enum.count(assigned_players, fn player -> player.role == :ninja end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :gravedigger end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :judge end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :lawyer end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf_thief end) == 1
 
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf_detective end) ==
@@ -149,8 +151,6 @@ defmodule Werewolf.PlayerTest do
 
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf_collector end) ==
                1
-
-      assert Enum.find(assigned_players, fn player -> player.role == :villager end).items == []
 
       assert Enum.find(assigned_players, fn player -> player.role == :detective end).items == [
                Item.new(:magnifying_glass)
@@ -217,6 +217,11 @@ defmodule Werewolf.PlayerTest do
       assert Enum.find(assigned_players, fn player -> player.role == :judge end).items ==
                [
                  Item.new(:scales_of_justice)
+               ]
+
+      assert Enum.find(assigned_players, fn player -> player.role == :lawyer end).items ==
+               [
+                 Item.new(:defence_case)
                ]
     end
 
@@ -328,6 +333,37 @@ defmodule Werewolf.PlayerTest do
       assert Enum.at(targets, 0).target == "detective"
       assert players["detective"].alive == false
       assert win == nil
+    end
+
+    test "overrules and kills another player during day", context do
+      {:ok, players, win, targets} =
+        Player.kill_player(context[:player_map], 2, "villager", [], [], [
+          KillTarget.new(:overrule, "detective")
+        ])
+
+      assert players["villager"].alive == true
+      assert length(targets) == 1
+      assert Enum.at(targets, 0).target == "detective"
+    end
+
+    test "overrules and kills another player, ignores defence during day", context do
+      {:ok, players, win, targets} =
+        Player.kill_player(context[:player_map], 2, "villager", [], ["villager"], [
+          KillTarget.new(:overrule, "detective")
+        ])
+
+      assert players["villager"].alive == true
+      assert length(targets) == 1
+      assert Enum.at(targets, 0).target == "detective"
+    end
+
+    test "defends and no player is killed during day", context do
+      {:ok, players, win, targets} =
+        Player.kill_player(context[:player_map], 2, "villager", [], ["villager"], [])
+
+      assert players["villager"].alive == true
+      assert length(targets) == 1
+      assert Enum.at(targets, 0).target == "villager"
     end
 
     test "not update players when no target", context do

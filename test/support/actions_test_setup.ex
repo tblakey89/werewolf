@@ -33,6 +33,8 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def overrule_action(_context), do: [overrule_action: %Action{type: :overrule, target: "target"}]
 
+  def defend_action(_context), do: [defend_action: %Action{type: :defend, target: "target"}]
+
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
   def dead_player(_context), do: [dead_player: %Player{host: false, alive: false, id: "test"}]
@@ -348,6 +350,28 @@ defmodule Werewolf.Support.ActionsTestSetup do
         id: "test",
         role: :judge,
         items: [Item.new(:scales_of_justice)]
+      }
+    ]
+
+  def lawyer(_context),
+    do: [
+      lawyer: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :lawyer,
+        items: [Item.new(:defence_case)]
+      }
+    ]
+
+  def dead_lawyer(_context),
+    do: [
+      dead_lawyer: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :lawyer,
+        items: [Item.new(:defence_case)]
       }
     ]
 

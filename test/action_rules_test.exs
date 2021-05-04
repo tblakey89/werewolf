@@ -1052,4 +1052,70 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
   end
+
+  describe "valid/3 lawyer" do
+    setup [
+      :defend_action,
+      :player,
+      :lawyer,
+      :dead_lawyer,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to defend, returns ok tuple", context do
+      action = context[:defend_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:lawyer],
+                 action,
+                 context[:players]
+               )
+    end
+
+    test "unable to defend for dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:lawyer],
+                 context[:defend_action],
+                 context[:dead_players]
+               )
+    end
+
+    test "unable to defend when lawyer is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:dead_lawyer],
+                 context[:defend_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to defend in night phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:lawyer],
+                 context[:defend_action],
+                 context[:players]
+               )
+    end
+
+    test "unable to defend when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:werewolf],
+                 context[:overrule_action],
+                 context[:players]
+               )
+    end
+  end
 end

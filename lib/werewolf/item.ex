@@ -19,7 +19,8 @@ defmodule Werewolf.Item do
     cursed_relic: :infinite,
     transformation_scroll: :infinite,
     pick: 1,
-    scales_of_justice: 1
+    scales_of_justice: 1,
+    defence_case: 1
   }
 
   @items_to_actions %{
@@ -36,7 +37,8 @@ defmodule Werewolf.Item do
     cursed_relic: :curse,
     transformation_scroll: :transform,
     pick: :disentomb,
-    scales_of_justice: :overrule
+    scales_of_justice: :overrule,
+    defence_case: :defend
   }
 
   def new(type) do

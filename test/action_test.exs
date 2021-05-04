@@ -511,7 +511,7 @@ defmodule Werewolf.ActionTest do
   describe "resolve_overrule_action/4" do
     setup [:additional_player_map]
 
-    test "when judge alive, successfully poisons player", context do
+    test "when judge alive, successfully overrules player", context do
       players = context[:additional_player_map]
       {:ok, player} = Player.add_action(players["judge"], 1, Action.new(:overrule, "villager"))
       players = put_in(players["judge"], player)
@@ -523,11 +523,39 @@ defmodule Werewolf.ActionTest do
       assert(Enum.at(overrule_targets, 0).target) == "villager"
     end
 
-    test "when judge alive, but no poison action", context do
+    test "when judge alive, but no overrule action", context do
       players = context[:additional_player_map]
       {:ok, players, overrule_targets} = Action.resolve_overrule_action(players, 1)
       assert players["villager"].alive == true
       assert(length(overrule_targets)) == 0
+    end
+  end
+
+  describe "resolve_defend_action/2" do
+    setup [:additional_player_map]
+
+    test "when lawyer alive, successfully defends player", context do
+      players = context[:additional_player_map]
+      {:ok, player} = Player.add_action(players["lawyer"], 1, Action.new(:defend, "villager"))
+      players = put_in(players["lawyer"], player)
+
+      {:ok, defend_targets} = Action.resolve_defend_action(players, 1)
+      assert defend_targets == ["villager"]
+    end
+
+    test "when lawyer alive, but no defend action", context do
+      players = context[:additional_player_map]
+      {:ok, defend_targets} = Action.resolve_defend_action(players, 1)
+      assert defend_targets == []
+    end
+
+    test "when defend action, but wrong item", context do
+      players = context[:additional_player_map]
+      {:ok, player} = Player.add_action(players["detective"], 1, Action.new(:defend, "villager"))
+      players = put_in(players["detective"], player)
+
+      {:ok, defend_targets} = Action.resolve_defend_action(players, 1)
+      assert defend_targets == []
     end
   end
 end

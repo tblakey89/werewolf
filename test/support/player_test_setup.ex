@@ -151,6 +151,13 @@ defmodule Werewolf.Support.PlayerTestSetup do
           actions: %{},
           role: :judge,
           items: [Item.new(:scales_of_justice)]
+        },
+        "lawyer" => %Player{
+          id: "lawyer",
+          host: false,
+          actions: %{},
+          role: :lawyer,
+          items: [Item.new(:defence_case)]
         }
       }
     ]

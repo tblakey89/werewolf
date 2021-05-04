@@ -301,6 +301,17 @@ defmodule Werewolf.Action do
     end
   end
 
+  def resolve_defend_action(players, phase_number) do
+    with {:ok, players_with_item} <-
+           find_players_for_items(Map.values(players), [:defence_case]),
+         {:ok, player_and_actions} <-
+           find_actions_for_phase(players_with_item, players, phase_number, :defend) do
+      {:ok, Enum.map(player_and_actions, fn {_player, action} -> action.target end)}
+    else
+      nil -> {:ok, []}
+    end
+  end
+
   defp find_players_for_items(players, item_types) do
     {:ok,
      Enum.filter(players, fn player ->
