@@ -117,17 +117,15 @@ defmodule Werewolf.Game do
   end
 
   def end_phase(game, rules) do
-    with {:ok, votes, target} <- Votes.count_from_actions(phase_actions(game)),
-         {:ok, players} <- Action.Sabotage.resolve(game.players, game.phases),
+    with {:ok, players} <- Action.Sabotage.resolve(game.players, game.phases),
          {:ok, players, overrule_targets} <- Action.Overrule.resolve(game.players, game.phases),
          {:ok, defend_targets} <- Action.Defend.resolve(game.players, game.phases),
          {:ok, heal_targets} <- Action.Heal.resolve(players, game.phases),
          {:ok, players} <- Action.Inspect.resolve(players, game.phases),
          {:ok, players, win_status, targets} <-
-           Player.kill_player(
+           Action.Vote.resolve(
              game.players,
              game.phases,
-             target,
              heal_targets,
              defend_targets,
              overrule_targets
@@ -233,7 +231,7 @@ defmodule Werewolf.Game do
   end
 
   def current_vote_count(game) do
-    {:ok, votes, target} = Votes.count_from_actions(phase_actions(game))
+    {:ok, votes, target} = Action.Vote.count_from_actions(game.players, game.phases)
 
     vote_tuples =
       Enum.map(votes, fn {key, value} -> {key, value} end)
@@ -241,12 +239,6 @@ defmodule Werewolf.Game do
       |> Enum.reverse()
 
     {vote_tuples, target}
-  end
-
-  defp phase_actions(game) do
-    Enum.map(game.players, fn {_, player} -> player.actions end)
-    |> Enum.map(fn actions -> actions[game.phases] end)
-    |> Enum.reject(fn action -> is_nil(action) end)
   end
 
   defp check_phase_limit(players, phases, :no_win) when map_size(players) * 2 <= phases do

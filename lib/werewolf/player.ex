@@ -1,5 +1,4 @@
 defmodule Werewolf.Player do
-  import Guard, only: [is_even: 1]
   alias Werewolf.Player
   alias Werewolf.KillTarget
   alias Werewolf.Item
@@ -159,50 +158,6 @@ defmodule Werewolf.Player do
 
   def relevant_player?(player, type) do
     player.role == type && player.alive
-  end
-
-  def kill_player(
-        players,
-        phase_number,
-        target,
-        heal_targets \\ [],
-        defend_targets \\ [],
-        overrule_targets \\ []
-      )
-
-  def kill_player(players, _, :none, _, _, _), do: {:ok, players, nil, []}
-
-  def kill_player(players, phase_number, target, _, defend_targets, [])
-      when is_even(phase_number) do
-    case Enum.member?(defend_targets, target) do
-      true ->
-        {:ok, players, nil, [KillTarget.new(:defend, target)]}
-
-      false ->
-        players = put_in(players[target].alive, false)
-
-        case players[target].role do
-          :fool -> {:ok, players, :fool_win, [KillTarget.new(:vote, target)]}
-          _ -> {:ok, players, nil, [KillTarget.new(:vote, target)]}
-        end
-    end
-  end
-
-  def kill_player(players, phase_number, target, _, _, overrule_targets)
-      when is_even(phase_number) do
-    {:ok, players, nil, overrule_targets}
-  end
-
-  def kill_player(players, phase_number, target, heal_targets, _, _) do
-    case Enum.member?(heal_targets, target) do
-      true ->
-        {:ok, players, nil, []}
-
-      false ->
-        players = put_in(players[target].alive, false)
-
-        {:ok, players, nil, [KillTarget.new(:werewolf, target)]}
-    end
   end
 
   def win_check_by_remaining_players(:fool_win, _players), do: {:ok, :fool_win}
