@@ -160,30 +160,9 @@ defmodule Werewolf.Player do
     player.role == type && player.alive
   end
 
-  def win_check_by_remaining_players(:fool_win, _players), do: {:ok, :fool_win}
-
-  def win_check_by_remaining_players(_existing_win_status, players) do
-    team_count = by_team(players)
-
-    {:ok,
-     cond do
-       team_count[:werewolf] == 0 && team_count[:villager] == 0 -> :tie
-       team_count[:werewolf] == 0 -> :village_win
-       team_count[:werewolf] >= team_count[:villager] -> :werewolf_win
-       true -> :no_win
-     end}
-  end
-
   defp items_for_role(role) do
     Enum.map(@items_by_role[role], fn item_type ->
       Item.new(item_type)
-    end)
-  end
-
-  defp by_team(players) do
-    Enum.filter(players, fn {_, player} -> player.alive end)
-    |> Enum.reduce(%{villager: 0, werewolf: 0}, fn {_key, %{role: role}}, acc ->
-      Map.update!(acc, player_team(role), &(&1 + 1))
     end)
   end
 

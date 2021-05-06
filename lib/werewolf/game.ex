@@ -1,5 +1,16 @@
 defmodule Werewolf.Game do
-  alias Werewolf.{Game, Player, PlayerRules, Rules, ActionRules, Action, Votes, Phase, KillTarget}
+  alias Werewolf.{
+    Game,
+    Player,
+    PlayerRules,
+    Rules,
+    ActionRules,
+    Action,
+    Votes,
+    Phase,
+    KillTarget,
+    WinCheck
+  }
 
   @enforce_keys [:id, :players, :phase_length]
   @derive Jason.Encoder
@@ -158,7 +169,7 @@ defmodule Werewolf.Game do
          {:ok, players} <- Player.use_items(players, game.phases),
          {:ok, players} <- Action.Disentomb.resolve(players, game.phases),
          {:ok, players} <- Action.Steal.resolve(players, game.phases),
-         {:ok, win_status} <- Player.win_check_by_remaining_players(win_status, players),
+         {:ok, win_status} <- WinCheck.by_remaining_players(win_status, players),
          {:ok, win_status} <- check_phase_limit(players, game.phases, win_status),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status}) do
       phase_targets = targets ++ resurrect_targets
