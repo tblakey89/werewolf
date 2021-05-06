@@ -118,11 +118,11 @@ defmodule Werewolf.Game do
 
   def end_phase(game, rules) do
     with {:ok, votes, target} <- Votes.count_from_actions(phase_actions(game)),
-         {:ok, players} <- Action.resolve_sabotage_action(game.players, game.phases),
-         {:ok, players, overrule_targets} <-
-           Action.resolve_overrule_action(game.players, game.phases),
-         {:ok, defend_targets} <- Action.resolve_defend_action(game.players, game.phases),
-         {:ok, heal_targets} <- Action.resolve_heal_action(players, game.phases),
+         {:ok, players} <- Action.Sabotage.resolve(game.players, game.phases),
+         {:ok, players, overrule_targets} <- Action.Overrule.resolve(game.players, game.phases),
+         {:ok, defend_targets} <- Action.Defend.resolve(game.players, game.phases),
+         {:ok, heal_targets} <- Action.Heal.resolve(players, game.phases),
+         {:ok, players} <- Action.Inspect.resolve(players, game.phases),
          {:ok, players, win_status, targets} <-
            Player.kill_player(
              game.players,
@@ -133,33 +133,33 @@ defmodule Werewolf.Game do
              overrule_targets
            ),
          {:ok, players, targets} <-
-           Action.resolve_poison_action(players, game.phases, targets, heal_targets),
-         {:ok, players} <- Action.resolve_inspect_action(players, game.phases),
+           Action.Poison.resolve(players, game.phases, targets, heal_targets),
          {:ok, players, targets} <-
-           Action.resolve_assassinate_action(
+           Action.Assassinate.resolve(
              players,
              game.phases,
              targets,
              heal_targets
            ),
          {:ok, players, targets} <-
-           Action.resolve_hunt_action(
+           Action.Hunt.resolve(
              players,
              game.phases,
              targets,
              heal_targets
            ),
          {:ok, players, targets} <-
-           Action.resolve_curse_action(
+           Action.Curse.resolve(
              players,
              game.phases,
              targets,
              heal_targets
            ),
          {:ok, players, resurrect_targets} <-
-           Action.resolve_resurrect_action(players, game.phases),
+           Action.Resurrect.resolve(players, game.phases),
          {:ok, players} <- Player.use_items(players, game.phases),
-         {:ok, players} <- Action.resolve_steal_action(players, game.phases),
+         {:ok, players} <- Action.Disentomb.resolve(players, game.phases),
+         {:ok, players} <- Action.Steal.resolve(players, game.phases),
          {:ok, win_status} <- Player.win_check_by_remaining_players(win_status, players),
          {:ok, win_status} <- check_phase_limit(players, game.phases, win_status),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status}) do
