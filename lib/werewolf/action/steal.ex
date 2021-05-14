@@ -11,7 +11,7 @@ defmodule Werewolf.Action.Steal do
        Enum.reduce(player_and_valid_actions, players, fn {player, action}, acc_players ->
          target_player = acc_players[action.target]
          {stolen_item, left_items} = ItemsHelper.steal_item(target_player.items)
-         theft_action = ItemsHelper.generate_item_result_action(:theft, stolen_item)
+         theft_action = ItemsHelper.generate_item_result_action(:theft, stolen_item, action.target)
 
          {:ok, target_player} =
            Player.update_items(target_player, left_items)

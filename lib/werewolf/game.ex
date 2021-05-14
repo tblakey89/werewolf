@@ -129,13 +129,13 @@ defmodule Werewolf.Game do
 
   def end_phase(game, rules) do
     with {:ok, players} <- Action.Sabotage.resolve(game.players, game.phases),
-         {:ok, players, overrule_targets} <- Action.Overrule.resolve(game.players, game.phases),
-         {:ok, defend_targets} <- Action.Defend.resolve(game.players, game.phases),
+         {:ok, players, overrule_targets} <- Action.Overrule.resolve(players, game.phases),
+         {:ok, defend_targets} <- Action.Defend.resolve(players, game.phases),
          {:ok, heal_targets} <- Action.Heal.resolve(players, game.phases),
          {:ok, players} <- Action.Inspect.resolve(players, game.phases),
          {:ok, players, win_status, targets} <-
            Action.Vote.resolve(
-             game.players,
+             players,
              game.phases,
              heal_targets,
              defend_targets,

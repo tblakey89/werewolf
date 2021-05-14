@@ -8,9 +8,9 @@ defmodule Werewolf.Action.Helpers.ItemsHelper do
     {stolen_item, remaining_items}
   end
 
-  def generate_item_result_action(_type, nil), do: nil
+  def generate_item_result_action(_type, nil, _target), do: nil
 
-  def generate_item_result_action(type, item) do
-    %Action{type: type, result: item.type, target: 0}
+  def generate_item_result_action(type, item, target) do
+    %Action{type: type, result: item.type, target: target}
   end
 end

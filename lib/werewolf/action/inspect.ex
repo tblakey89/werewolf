@@ -18,7 +18,6 @@ defmodule Werewolf.Action.Inspect do
        Enum.reduce(player_and_actions, players, fn {player, action}, acc_players ->
          put_in(
            acc_players[player.id].actions[phase_number][:inspect].result,
-           # this should be item not role
            inspect_answer(player.role, acc_players[action.target], phase_number, players)
          )
        end)
