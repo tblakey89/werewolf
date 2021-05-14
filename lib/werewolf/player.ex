@@ -156,8 +156,12 @@ defmodule Werewolf.Player do
     !player.alive || has_item?(player, [:crystal_ball])
   end
 
-  def relevant_player?(player, type) do
-    player.role == type && player.alive
+  def relevant_player?(player, :mason) do
+    player.role == :mason && player.alive
+  end
+
+  def relevant_player?(player, :werewolf) do
+    (player.role == :werewolf && player.alive) || (player.team == :werewolf && player.alive)
   end
 
   defp items_for_role(role) do

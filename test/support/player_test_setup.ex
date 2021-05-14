@@ -15,21 +15,35 @@ defmodule Werewolf.Support.PlayerTestSetup do
   def player_map(_context),
     do: [
       player_map: %{
-        "villager" => %Player{id: "villager", host: false, actions: %{}, role: :villager},
-        "werewolf" => %Player{id: "werewolf", host: false, actions: %{}, role: :werewolf},
+        "villager" => %Player{
+          id: "villager",
+          host: false,
+          actions: %{},
+          role: :villager,
+          team: :villager
+        },
+        "werewolf" => %Player{
+          id: "werewolf",
+          host: false,
+          actions: %{},
+          role: :werewolf,
+          team: :werewolf
+        },
         "doctor" => %Player{
           id: "doctor",
           host: false,
           actions: %{},
           role: :doctor,
-          items: [Item.new(:first_aid_kit)]
+          items: [Item.new(:first_aid_kit)],
+          team: :villager
         },
         "detective" => %Player{
           id: "detective",
           host: false,
           actions: %{},
           role: :detective,
-          items: [Item.new(:magnifying_glass)]
+          items: [Item.new(:magnifying_glass)],
+          team: :villager
         }
       }
     ]
@@ -37,49 +51,75 @@ defmodule Werewolf.Support.PlayerTestSetup do
   def additional_player_map(_context),
     do: [
       additional_player_map: %{
-        "villager" => %Player{id: "villager", host: false, actions: %{}, role: :villager},
-        "werewolf" => %Player{id: "werewolf", host: false, actions: %{}, role: :werewolf},
+        "villager" => %Player{
+          id: "villager",
+          host: false,
+          actions: %{},
+          role: :villager,
+          team: :villager
+        },
+        "werewolf" => %Player{
+          id: "werewolf",
+          host: false,
+          actions: %{},
+          role: :werewolf,
+          team: :werewolf
+        },
         "doctor" => %Player{
           id: "doctor",
           host: false,
           actions: %{},
           role: :doctor,
-          items: [Item.new(:first_aid_kit)]
+          items: [Item.new(:first_aid_kit)],
+          team: :villager
         },
         "detective" => %Player{
           id: "detective",
           host: false,
           actions: %{},
           role: :detective,
-          items: [Item.new(:magnifying_glass)]
+          items: [Item.new(:magnifying_glass)],
+          team: :villager
         },
         "little_girl" => %Player{
           id: "little_girl",
           host: false,
           actions: %{},
           role: :little_girl,
-          items: [Item.new(:binoculars)]
+          items: [Item.new(:binoculars)],
+          team: :villager
         },
         "devil" => %Player{
           id: "devil",
           host: false,
           actions: %{},
           role: :devil,
-          items: [Item.new(:magnifying_glass)]
+          items: [Item.new(:magnifying_glass)],
+          team: :villager
         },
         "hunter" => %Player{
           id: "hunter",
           host: false,
           actions: %{},
           role: :hunter,
-          items: [Item.new(:dead_man_switch)]
+          items: [Item.new(:dead_man_switch)],
+          team: :villager
+        },
+        "mason" => %Player{
+          id: "mason",
+          host: false,
+          actions: %{},
+          role: :mason,
+          items: [],
+          team: :villager
         },
         "hunter_action" => %Player{
           id: "hunter_action",
           host: false,
           actions: %{1 => %{hunt: %Action{type: :hunt, target: "detective"}}},
           role: :hunter,
-          items: [Item.new(:dead_man_switch)]
+          items: [Item.new(:dead_man_switch)],
+          team: :villager
         },
         "fool" => %Player{id: "fool", host: false, actions: %{}, role: :fool},
         "witch" => %Player{
@@ -87,77 +127,88 @@ defmodule Werewolf.Support.PlayerTestSetup do
           host: false,
           actions: %{},
           role: :witch,
-          items: [Item.new(:resurrection_scroll), Item.new(:poison)]
+          items: [Item.new(:resurrection_scroll), Item.new(:poison)],
+          team: :villager
         },
         "medium" => %Player{
           id: "medium",
           host: false,
           actions: %{},
           role: :medium,
-          items: [Item.new(:crystal_ball)]
+          items: [Item.new(:crystal_ball)],
+          team: :villager
         },
         "ninja" => %Player{
           id: "ninja",
           host: false,
           actions: %{},
           role: :ninja,
-          items: [Item.new(:sword)]
+          items: [Item.new(:sword)],
+          team: :villager
         },
         "werewolf_thief" => %Player{
           id: "werewolf_thief",
           host: false,
           actions: %{},
           role: :werewolf_thief,
-          items: [Item.new(:lock_pick)]
+          items: [Item.new(:lock_pick)],
+          team: :werewolf
         },
         "werewolf_detective" => %Player{
           id: "werewolf_detective",
           host: false,
           actions: %{},
           role: :werewolf_detective,
-          items: [Item.new(:magnifying_glass)]
+          items: [Item.new(:magnifying_glass)],
+          team: :werewolf
         },
         "werewolf_saboteur" => %Player{
           id: "werewolf_saboteur",
           host: false,
           actions: %{},
           role: :werewolf_saboteur,
-          items: [Item.new(:hammer)]
+          items: [Item.new(:hammer)],
+          team: :werewolf
         },
         "werewolf_collector" => %Player{
           id: "werewolf_collector",
           host: false,
           actions: %{},
           role: :werewolf_collector,
-          items: [Item.new(:cursed_relic)]
+          items: [Item.new(:cursed_relic)],
+          team: :werewolf
         },
         "werewolf_mage" => %Player{
           id: "werewolf_mage",
           host: false,
           actions: %{},
           role: :werewolf_mage,
-          items: [Item.new(:transformation_scroll)]
+          items: [Item.new(:transformation_scroll)],
+          team: :werewolf
         },
         "gravedigger" => %Player{
           id: "gravedigger",
           host: false,
           actions: %{},
           role: :gravedigger,
-          items: [Item.new(:pick)]
+          items: [Item.new(:pick)],
+          team: :villager
         },
         "judge" => %Player{
           id: "judge",
           host: false,
           actions: %{},
           role: :judge,
-          items: [Item.new(:scales_of_justice)]
+          items: [Item.new(:scales_of_justice)],
+          team: :villager
         },
         "lawyer" => %Player{
           id: "lawyer",
           host: false,
           actions: %{},
           role: :lawyer,
-          items: [Item.new(:defence_case)]
+          items: [Item.new(:defence_case)],
+          team: :villager
         }
       }
     ]

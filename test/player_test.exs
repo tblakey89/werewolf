@@ -304,7 +304,12 @@ defmodule Werewolf.PlayerTest do
     end
 
     test "returns true for player when matches role", context do
-      assert Player.relevant_player?(context[:player_map]["werewolf"], :werewolf) == true
+      assert Player.relevant_player?(context[:additional_player_map]["mason"], :mason) == true
+    end
+
+    test "returns true for player when matches team", context do
+      assert Player.relevant_player?(context[:additional_player_map]["werewolf_thief"], :werewolf) ==
+               true
     end
 
     test "returns false for player when matches role but dead", context do

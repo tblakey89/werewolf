@@ -306,6 +306,7 @@ defmodule Werewolf.GameTest do
             alive: true,
             host: true,
             role: :villager,
+            team: :villager,
             actions: %{
               1 => %{
                 vote: %Action{
@@ -320,6 +321,7 @@ defmodule Werewolf.GameTest do
             alive: true,
             host: false,
             role: :werewolf,
+            team: :werewolf,
             actions: %{
               1 => %{
                 vote: %Action{
@@ -334,6 +336,7 @@ defmodule Werewolf.GameTest do
             alive: true,
             host: false,
             role: :villager,
+            team: :villager,
             actions: %{
               1 => %{
                 vote: %Action{
@@ -348,6 +351,7 @@ defmodule Werewolf.GameTest do
             alive: true,
             host: false,
             role: :villager,
+            team: :villager,
             actions: %{
               1 => %{
                 vote: %Action{
