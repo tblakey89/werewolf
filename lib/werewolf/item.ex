@@ -71,6 +71,7 @@ defmodule Werewolf.Item do
   end
 
   defp calculate_remaining_uses(_, %Item{remaining_uses: :infinite}), do: :infinite
+  defp calculate_remaining_uses(_, %Item{remaining_uses: 0}), do: 0
 
   defp calculate_remaining_uses(item_type, %Item{type: item_type} = item) do
     item.remaining_uses - 1

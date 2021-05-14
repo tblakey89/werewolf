@@ -166,9 +166,9 @@ defmodule Werewolf.Game do
            ),
          {:ok, players, resurrect_targets} <-
            Action.Resurrect.resolve(players, game.phases),
-         {:ok, players} <- Player.use_items(players, game.phases),
          {:ok, players} <- Action.Disentomb.resolve(players, game.phases),
          {:ok, players} <- Action.Steal.resolve(players, game.phases),
+         {:ok, players} <- Player.use_items(players, game.phases),
          {:ok, win_status} <- WinCheck.by_remaining_players(win_status, players),
          {:ok, win_status} <- check_phase_limit(players, game.phases, win_status),
          {:ok, rules} <- Rules.check(rules, {:end_phase, win_status}) do

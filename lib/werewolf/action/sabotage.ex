@@ -16,7 +16,9 @@ defmodule Werewolf.Action.Sabotage do
        Enum.reduce(player_and_valid_actions, players, fn {player, action}, acc_players ->
          target_player = acc_players[action.target]
          {destroyed_item, left_items} = ItemsHelper.steal_item(target_player.items)
-         sabotage_action = ItemsHelper.generate_item_result_action(:destroyed, destroyed_item, action.target)
+
+         sabotage_action =
+           ItemsHelper.generate_item_result_action(:destroyed, destroyed_item, action.target)
 
          {:ok, target_player} =
            Player.update_items(target_player, left_items)
