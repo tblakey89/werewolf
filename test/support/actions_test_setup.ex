@@ -206,6 +206,7 @@ defmodule Werewolf.Support.ActionsTestSetup do
         alive: true,
         id: "test",
         role: :werewolf_thief,
+        team: :werewolf,
         items: [Item.new(:lock_pick)]
       }
     ]
@@ -217,6 +218,7 @@ defmodule Werewolf.Support.ActionsTestSetup do
         alive: false,
         id: "test",
         role: :werewolf_thief,
+        team: :werewolf,
         items: [Item.new(:lock_pick)]
       }
     ]

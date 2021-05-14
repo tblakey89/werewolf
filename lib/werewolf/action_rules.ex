@@ -42,6 +42,15 @@ defmodule Werewolf.ActionRules do
 
   def valid(
         %Rules{state: :night_phase},
+        %Player{alive: true, team: :werewolf},
+        %Action{type: :vote} = action,
+        players
+      ) do
+    response(action, players)
+  end
+
+  def valid(
+        %Rules{state: :night_phase},
         %Player{alive: true, items: items},
         %Action{type: action_type} = action,
         players

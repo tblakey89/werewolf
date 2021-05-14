@@ -605,6 +605,7 @@ defmodule Werewolf.ActionRulesTest do
   describe "valid/3 werewolf_thief" do
     setup [
       :steal_action,
+      :vote_action,
       :player,
       :werewolf_thief,
       :dead_werewolf_thief,
@@ -614,6 +615,18 @@ defmodule Werewolf.ActionRulesTest do
       :players,
       :dead_players
     ]
+
+    test "when able to vote, returns ok tuple", context do
+      action = context[:vote_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_thief],
+                 action,
+                 context[:players]
+               )
+    end
 
     test "when able to steal, returns ok tuple", context do
       action = context[:steal_action]
