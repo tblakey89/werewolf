@@ -50,7 +50,7 @@ defmodule Werewolf.Action.Helpers.FilterHelper do
      end)}
   end
 
-  defp find_action(actions, phase_number, type) do
+  def find_action(actions, phase_number, type) do
     case actions[phase_number][type] do
       nil -> :error
       action -> {:ok, action}

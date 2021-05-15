@@ -6,7 +6,7 @@ defmodule Werewolf.Action.Steal do
     with {:ok, players_with_item} <-
            FilterHelper.find_players_for_items(Map.values(players), [:lock_pick]),
          {:ok, player_and_valid_actions} <-
-           FilterHelper.find_actions_for_phase(players_with_item, players, phase_number, :steal) do
+           find_actions_for_phase(players_with_item, players, phase_number, :steal) do
       {:ok,
        Enum.reduce(player_and_valid_actions, players, fn {player, action}, acc_players ->
          target_player = acc_players[action.target]
@@ -49,5 +49,17 @@ defmodule Werewolf.Action.Steal do
     else
       nil -> {:ok, players}
     end
+  end
+
+  defp find_actions_for_phase(players_with_item, players, phase_number, type) do
+    {:ok,
+     Enum.reduce(players_with_item, [], fn player, player_and_actions ->
+       with {:ok, action} <- FilterHelper.find_action(player.actions, phase_number, type) do
+         [{player, action} | player_and_actions]
+       else
+         :error -> player_and_actions
+         false -> player_and_actions
+       end
+     end)}
   end
 end
