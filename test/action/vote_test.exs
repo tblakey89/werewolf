@@ -46,6 +46,12 @@ defmodule Werewolf.Action.VoteTest do
       assert win == nil
     end
 
+    test "sets target as none when no votes", context do
+      players = add_vote(context[:player_map], 1, "werewolf", "villager")
+      {:ok, players, win, targets} = Action.Vote.resolve(context[:player_map], 1)
+      assert targets == []
+    end
+
     test "overrules and kills another player during day", context do
       players = add_vote(context[:player_map], 2, "werewolf", "villager")
 
@@ -57,6 +63,32 @@ defmodule Werewolf.Action.VoteTest do
       assert players["villager"].alive == true
       assert length(targets) == 1
       assert Enum.at(targets, 0).target == "detective"
+    end
+
+    test "overrules and kills another player during day when no vote target", context do
+      {:ok, players, win, targets} =
+        Action.Vote.resolve(context[:player_map], 2, [], [], [
+          KillTarget.new(:overrule, "detective")
+        ])
+
+      assert players["villager"].alive == true
+      assert length(targets) == 1
+      assert Enum.at(targets, 0).target == "detective"
+      assert win == nil
+    end
+
+    test "overrules and kills fool during day", context do
+      players = add_vote(context[:additional_player_map], 2, "werewolf", "villager")
+
+      {:ok, players, win, targets} =
+        Action.Vote.resolve(players, 2, [], [], [
+          KillTarget.new(:overrule, "fool")
+        ])
+
+      assert players["villager"].alive == true
+      assert length(targets) == 1
+      assert Enum.at(targets, 0).target == "fool"
+      assert win == :fool_win
     end
 
     test "overrules and kills another player, ignores defence during day", context do

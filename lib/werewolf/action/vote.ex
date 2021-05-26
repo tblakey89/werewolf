@@ -21,6 +21,18 @@ defmodule Werewolf.Action.Vote do
     kill_player(players, phase_number, target, heal_targets, defend_targets, overrule_targets)
   end
 
+  defp kill_player(players, phase_number, target, _, _, overrule_targets)
+       when is_even(phase_number) and length(overrule_targets) > 0 do
+    {:ok, players, nil, overrule_targets}
+
+    case Enum.any?(overrule_targets, fn kill_target ->
+           players[kill_target.target].role == :fool
+         end) do
+      true -> {:ok, players, :fool_win, overrule_targets}
+      _ -> {:ok, players, nil, overrule_targets}
+    end
+  end
+
   defp kill_player(players, _, :none, _, _, _), do: {:ok, players, nil, []}
 
   defp kill_player(players, phase_number, target, _, defend_targets, [])
@@ -37,11 +49,6 @@ defmodule Werewolf.Action.Vote do
           _ -> {:ok, players, nil, [KillTarget.new(:vote, target)]}
         end
     end
-  end
-
-  defp kill_player(players, phase_number, target, _, _, overrule_targets)
-       when is_even(phase_number) do
-    {:ok, players, nil, overrule_targets}
   end
 
   defp kill_player(players, phase_number, target, heal_targets, _, _) do
