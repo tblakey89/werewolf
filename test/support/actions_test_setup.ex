@@ -40,10 +40,20 @@ defmodule Werewolf.Support.ActionsTestSetup do
   def dead_player(_context), do: [dead_player: %Player{host: false, alive: false, id: "test"}]
 
   def werewolf(_context),
-    do: [werewolf: %Player{host: false, alive: true, id: "test", role: :werewolf}]
+    do: [
+      werewolf: %Player{host: false, alive: true, id: "test", role: :werewolf, team: :werewolf}
+    ]
 
   def dead_werewolf(_context),
-    do: [dead_werewolf: %Player{host: false, alive: false, id: "test", role: :werewolf}]
+    do: [
+      dead_werewolf: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :werewolf,
+        team: :werewolf
+      }
+    ]
 
   def doctor(_context),
     do: [

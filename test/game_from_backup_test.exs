@@ -48,6 +48,7 @@ defmodule Werewolf.GameFromBackupTest do
               "host" => true,
               "id" => 1,
               "role" => "none",
+              "team" => "werewolf",
               "items" => [
                 %{
                   "type" => "magnifying_glass",
@@ -99,6 +100,7 @@ defmodule Werewolf.GameFromBackupTest do
               host: true,
               id: 1,
               role: :none,
+              team: :werewolf,
               items: [
                 %Werewolf.Item{
                   type: :magnifying_glass,

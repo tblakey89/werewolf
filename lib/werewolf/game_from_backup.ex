@@ -35,6 +35,7 @@ defmodule Werewolf.GameFromBackup do
     player = struct(Werewolf.Player, map_keys_to_atoms(player_as_map))
 
     Map.put(player, :role, convert_string(player.role))
+    |> Map.put(:team, convert_string(player.team))
     |> Map.put(:actions, convert_phase_actions_from_map(player.actions))
     |> Map.put(:items, convert_items_from_list(player.items))
   end
