@@ -1,18 +1,20 @@
 defmodule Werewolf.GameTest do
   use ExUnit.Case
-  alias Werewolf.{Game, Player, Rules, Action}
+  alias Werewolf.{Game, Player, Rules, Action, Options}
 
   describe "new/2" do
     setup [:user]
 
     test "returns a game struct when no user, but valid phase length", context do
-      {:ok, game} = Game.new(nil, context[:user].id, :day, [])
+      {:ok, game} = Game.new(nil, context[:user].id, :day, [], %Options{})
       assert length(Map.keys(game.players)) == 0
       assert game.phase_length == :day
     end
 
     test "returns a game struct when given user, valid phase length, allowed_roles", context do
-      {:ok, game} = Game.new(context[:user], context[:user].id, :day, [:doctor, :detective])
+      {:ok, game} =
+        Game.new(context[:user], context[:user].id, :day, [:doctor, :detective], %Options{})
+
       assert game.players[context[:user].id].id == context[:user].id
       assert game.phase_length == :day
       assert game.allowed_roles == [:doctor, :detective]
@@ -20,7 +22,7 @@ defmodule Werewolf.GameTest do
 
     test "returns an error when given an invalid phase length", context do
       assert {:error, :invalid_phase_length} ==
-               Game.new(context[:user], context[:user], :year, [])
+               Game.new(context[:user], context[:user], :year, [], %Options{})
     end
   end
 
@@ -406,7 +408,7 @@ defmodule Werewolf.GameTest do
   end
 
   defp create_game(user, phase_length) do
-    {:ok, game} = Game.new(user, user.id, phase_length, [])
+    {:ok, game} = Game.new(user, user.id, phase_length, [], %Options{})
     game
   end
 

@@ -1,6 +1,6 @@
 defmodule Werewolf.GameSupervisorTest do
   use ExUnit.Case
-  alias Werewolf.{GameSupervisor, GameServer}
+  alias Werewolf.{GameSupervisor, GameServer, Options}
 
   describe "ensure supervisor restarts GameServer" do
     setup [:host]
@@ -15,7 +15,8 @@ defmodule Werewolf.GameSupervisorTest do
           fn _a, _b ->
             nil
           end,
-          []
+          [],
+          %Options{}
         )
 
       Werewolf.GameServer.add_player(game, %{id: 2})

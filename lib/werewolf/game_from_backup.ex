@@ -23,6 +23,7 @@ defmodule Werewolf.GameFromBackup do
         convert_string(role)
       end)
     )
+    |> Map.put(:options, convert_options_from_map(game.options))
   end
 
   defp convert_players_from_map(players_as_map) do
@@ -38,6 +39,15 @@ defmodule Werewolf.GameFromBackup do
     |> Map.put(:team, convert_string(player.team))
     |> Map.put(:actions, convert_phase_actions_from_map(player.actions))
     |> Map.put(:items, convert_items_from_list(player.items))
+  end
+
+  # only needed for first reboot after options introduced
+  defp convert_options_from_map(%Werewolf.Options{} = options) do
+    options
+  end
+
+  defp convert_options_from_map(options_as_map) do
+    struct(Werewolf.Options, map_keys_to_atoms(options_as_map))
   end
 
   defp convert_phase_kill_targets_from_map(phase_kill_targets_as_map) do

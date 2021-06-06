@@ -4,17 +4,21 @@ defmodule Werewolf.GameServer do
 
   @timeout 1000 * 60 * 60 * 24
 
-  def start_link(user, name, phase_length, state, broadcast_func, allowed_roles) do
+  def start_link(user, name, phase_length, state, broadcast_func, allowed_roles, options) do
     GenServer.start_link(
       __MODULE__,
-      {user, name, phase_length, state, broadcast_func, allowed_roles},
+      {user, name, phase_length, state, broadcast_func, allowed_roles, options},
       name: via_tuple(name)
     )
   end
 
-  def init({user, name, phase_length, state, broadcast_func, allowed_roles}) do
-    send(self(), {:set_state, user, name, phase_length, state, broadcast_func, allowed_roles})
-    {:ok, state || new_state(user, name, phase_length, allowed_roles)}
+  def init({user, name, phase_length, state, broadcast_func, allowed_roles, options}) do
+    send(
+      self(),
+      {:set_state, user, name, phase_length, state, broadcast_func, allowed_roles, options}
+    )
+
+    {:ok, state || new_state(user, name, phase_length, allowed_roles, options)}
   end
 
   def get_state(game) do
@@ -168,14 +172,14 @@ defmodule Werewolf.GameServer do
   end
 
   def handle_info(
-        {:set_state, user, name, phase_length, state, broadcast_func, allowed_roles},
+        {:set_state, user, name, phase_length, state, broadcast_func, allowed_roles, options},
         _state_data
       ) do
     state_data =
       case :ets.lookup(:game_state, name) do
         [] ->
           (Werewolf.GameFromBackup.convert(state) ||
-             new_state(user, name, phase_length, allowed_roles))
+             new_state(user, name, phase_length, allowed_roles, options))
           |> Map.put(:broadcast_func, broadcast_func)
           |> set_timer()
 
@@ -231,9 +235,9 @@ defmodule Werewolf.GameServer do
   defp cancel_phase_countdown(nil), do: nil
   defp cancel_phase_countdown(timer), do: Process.cancel_timer(timer)
 
-  defp new_state(user, name, phase_length, allowed_roles) do
+  defp new_state(user, name, phase_length, allowed_roles, options) do
     # need to think how we can handle an invalid phase length properly
-    with {:ok, game} <- Game.new(user, name, phase_length, allowed_roles) do
+    with {:ok, game} <- Game.new(user, name, phase_length, allowed_roles, options) do
       %{game: game, rules: Rules.new()}
     else
       {:error, reason} -> {:error, reason}

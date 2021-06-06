@@ -9,7 +9,8 @@ defmodule Werewolf.Game do
     Votes,
     Phase,
     KillTarget,
-    WinCheck
+    WinCheck,
+    Options
   }
 
   @enforce_keys [:id, :players, :phase_length]
@@ -22,21 +23,28 @@ defmodule Werewolf.Game do
     win_status: :no_win,
     phases: 0,
     targets: %{},
-    allowed_roles: []
+    allowed_roles: [],
+    options: %Options{}
   ]
 
-  def new(nil, name, phase_length, allowed_roles) do
+  def new(nil, name, phase_length, allowed_roles, options) do
     case Enum.member?(phase_lengths(), phase_length) do
       true ->
         {:ok,
-         %Game{id: name, allowed_roles: allowed_roles, players: %{}, phase_length: phase_length}}
+         %Game{
+           id: name,
+           allowed_roles: allowed_roles,
+           players: %{},
+           phase_length: phase_length,
+           options: options
+         }}
 
       false ->
         {:error, :invalid_phase_length}
     end
   end
 
-  def new(user, name, phase_length, allowed_roles) do
+  def new(user, name, phase_length, allowed_roles, options) do
     {:ok, host_player} = Player.new(:host, user)
 
     case Enum.member?(phase_lengths(), phase_length) do
@@ -46,7 +54,8 @@ defmodule Werewolf.Game do
            id: name,
            allowed_roles: allowed_roles,
            players: %{user.id => host_player},
-           phase_length: phase_length
+           phase_length: phase_length,
+           options: options
          }}
 
       false ->

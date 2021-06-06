@@ -1,6 +1,7 @@
 defmodule Werewolf.GameServerTest do
   use ExUnit.Case
   alias Werewolf.GameServer
+  alias Werewolf.Options
 
   describe "max players are added, assigns roles, launches game, village win" do
     test "successfully goes through game" do
@@ -58,7 +59,10 @@ defmodule Werewolf.GameServerTest do
     test "maintains state after shutdown" do
       {game, players} = setup_game(:day, 8)
       GameServer.stop(game)
-      {:ok, game} = GameServer.start_link(host(), name(), :day, nil, fn _a, _b -> nil end, [])
+
+      {:ok, game} =
+        GameServer.start_link(host(), name(), :day, nil, fn _a, _b -> nil end, [], %Options{})
+
       assert {:no_win, %{}, 2, _} = GameServer.end_phase(game)
       clear_ets()
     end
@@ -140,7 +144,15 @@ defmodule Werewolf.GameServerTest do
     clear_ets()
 
     {:ok, game} =
-      GameServer.start_link(host(), name(), phase_length, nil, fn _a, _b -> nil end, [])
+      GameServer.start_link(
+        host(),
+        name(),
+        phase_length,
+        nil,
+        fn _a, _b -> nil end,
+        [],
+        %Options{}
+      )
 
     assert_able_to_add_users(game, player_count)
     assert {:ok, :launch_game, state} = GameServer.launch_game(game, host)
@@ -150,7 +162,10 @@ defmodule Werewolf.GameServerTest do
 
   defp setup_hostless_game(phase_length, player_count) do
     clear_ets()
-    {:ok, game} = GameServer.start_link(nil, name(), phase_length, nil, fn _a, _b -> nil end, [])
+
+    {:ok, game} =
+      GameServer.start_link(nil, name(), phase_length, nil, fn _a, _b -> nil end, [], %Options{})
+
     GameServer.add_player(game, %{username: "test1", id: "test1"})
     assert_able_to_add_users(game, player_count)
     assert {:ok, :launch_game, state} = GameServer.launch_game(game)

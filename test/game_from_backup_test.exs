@@ -60,6 +60,12 @@ defmodule Werewolf.GameFromBackupTest do
                 }
               ]
             }
+          },
+          "options" => %{
+            "reveal_role" => true,
+            "reveal_type_of_death" => true,
+            "allow_action_changes" => true,
+            "allow_no_kill_vote" => false
           }
         },
         "rules" => %{"state" => "initialized"}
@@ -112,6 +118,12 @@ defmodule Werewolf.GameFromBackupTest do
                 }
               ]
             }
+          },
+          options: %Werewolf.Options{
+            reveal_role: true,
+            reveal_type_of_death: true,
+            allow_action_changes: true,
+            allow_no_kill_vote: false
           }
         },
         rules: %Werewolf.Rules{state: :initialized}
