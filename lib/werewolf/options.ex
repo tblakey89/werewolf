@@ -7,8 +7,5 @@ defmodule Werewolf.Options do
             reveal_type_of_death: true,
             allow_action_changes: true,
             allow_no_kill_vote: false
-
-  def new(reveal_role \\ true, reveal_type_of_death \\ true) do
-    %Options{reveal_role: reveal_role, reveal_type_of_death: reveal_type_of_death}
-  end
+  use ExConstructor
 end

@@ -22,7 +22,8 @@ defmodule Werewolf.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:jason, "~> 1.1"}
+      {:jason, "~> 1.1"},
+      {:exconstructor, "~> 1.2.3"}
     ]
   end
 end
