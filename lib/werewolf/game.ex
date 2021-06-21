@@ -136,8 +136,10 @@ defmodule Werewolf.Game do
     end
   end
 
-  def end_phase(game, rules) do
-    with {:ok, players} <- Action.Sabotage.resolve(game.players, game.phases),
+  def end_phase(game, user, rules) do
+    with :ok <- PlayerRules.host_check(game.players, user),
+         :ok <- Options.check(game.options, :end_phase, user),
+         {:ok, players} <- Action.Sabotage.resolve(game.players, game.phases),
          {:ok, players, overrule_targets} <- Action.Overrule.resolve(players, game.phases),
          {:ok, defend_targets} <- Action.Defend.resolve(players, game.phases),
          {:ok, heal_targets} <- Action.Heal.resolve(players, game.phases),

@@ -6,7 +6,7 @@ defmodule Werewolf.GameServerTest do
   describe "max players are added, assigns roles, launches game, village win" do
     test "successfully goes through game" do
       {game, players} = setup_game(:day, 18)
-      assert_village_win_when_werewolves_killed(game, players)
+      assert_village_win_when_werewolves_killed(game, players, host())
       clear_ets()
     end
   end
@@ -14,7 +14,7 @@ defmodule Werewolf.GameServerTest do
   describe "max players are added, assigns roles, launches game, werewolf win" do
     test "successfully goes through game" do
       {game, players} = setup_game(:day, 18)
-      assert_werewolf_win_when_villagers_killed(game, players)
+      assert_werewolf_win_when_villagers_killed(game, players, host())
       clear_ets()
     end
   end
@@ -22,7 +22,7 @@ defmodule Werewolf.GameServerTest do
   describe "min players are added, no host, assigns roles, launches game, village win" do
     test "successfully goes through game" do
       {game, players} = setup_hostless_game(:day, 8)
-      assert_village_win_when_werewolves_killed(game, players)
+      assert_village_win_when_werewolves_killed(game, players, :automated)
       clear_ets()
     end
   end
@@ -30,7 +30,7 @@ defmodule Werewolf.GameServerTest do
   describe "min players are added, no host, assigns roles, launches game, too many phases" do
     test "successfully goes through game" do
       {game, players} = setup_hostless_game(:day, 8)
-      assert_too_many_phases(game, players)
+      assert_too_many_phases(game, players, :automated)
       clear_ets()
     end
   end
@@ -49,7 +49,7 @@ defmodule Werewolf.GameServerTest do
     test "successfully transitions phase" do
       {game, players} = setup_game(:millisecond, 8)
       :timer.sleep(1)
-      {_, _, phase_number, _} = GameServer.end_phase(game)
+      {_, _, phase_number, _} = GameServer.end_phase(game, host())
       assert(phase_number > 2)
       clear_ets()
     end
@@ -63,7 +63,7 @@ defmodule Werewolf.GameServerTest do
       {:ok, game} =
         GameServer.start_link(host(), name(), :day, nil, fn _a, _b -> nil end, [], %Options{})
 
-      assert {:no_win, %{}, 2, _} = GameServer.end_phase(game)
+      assert {:no_win, %{}, 2, _} = GameServer.end_phase(game, host())
       clear_ets()
     end
   end
@@ -81,29 +81,29 @@ defmodule Werewolf.GameServerTest do
     end)
   end
 
-  defp assert_village_win_when_werewolves_killed(game, players) do
+  defp assert_village_win_when_werewolves_killed(game, players, host) do
     players_by_team(players, :werewolf)
     |> Enum.map(fn {_, werewolf} ->
       # switch to day phase
-      GameServer.end_phase(game)
-      vote_for_target_and_end_phase(game, players, werewolf)
+      GameServer.end_phase(game, host)
+      vote_for_target_and_end_phase(game, players, werewolf, host)
     end)
     |> assert_correct_win(:village_win)
   end
 
-  defp assert_werewolf_win_when_villagers_killed(game, players) do
+  defp assert_werewolf_win_when_villagers_killed(game, players, host) do
     players_by_team(players, :villager)
     |> Enum.reduce_while([], fn {_, villager}, acc ->
-      win_status = vote_for_target_and_end_phase(game, players, villager)
+      win_status = vote_for_target_and_end_phase(game, players, villager, host)
       acc = acc ++ [win_status]
       if win_status != :werewolf_win, do: {:cont, acc}, else: {:halt, acc}
     end)
     |> assert_correct_win(:werewolf_win)
   end
 
-  defp assert_too_many_phases(game, players) do
+  defp assert_too_many_phases(game, players, host) do
     Enum.reduce_while(1..16, [], fn _, acc ->
-      {win_status, _, _, _} = GameServer.end_phase(game)
+      {win_status, _, _, _} = GameServer.end_phase(game, host)
       acc = acc ++ [win_status]
       if win_status != :too_many_phases, do: {:cont, acc}, else: {:halt, acc}
     end)
@@ -151,7 +151,7 @@ defmodule Werewolf.GameServerTest do
         nil,
         fn _a, _b -> nil end,
         [],
-        %Options{}
+        %Options{allow_host_end_phase: true}
       )
 
     assert_able_to_add_users(game, player_count)
@@ -179,12 +179,12 @@ defmodule Werewolf.GameServerTest do
     end)
   end
 
-  defp vote_for_target_and_end_phase(game, players, target) do
+  defp vote_for_target_and_end_phase(game, players, target, host) do
     Enum.each(players, fn {_, player} ->
       GameServer.action(game, user(player.id), target.id, :vote)
     end)
 
-    {win_status, targets, _, _} = GameServer.end_phase(game)
+    {win_status, targets, _, _} = GameServer.end_phase(game, host)
     assert target.id == (targets[:vote] || targets[:werewolf])
     win_status
   end

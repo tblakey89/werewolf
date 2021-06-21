@@ -57,8 +57,8 @@ defmodule Werewolf.GameServer do
     GenServer.call(game, {:action, user, target, action_type})
   end
 
-  def end_phase(game) do
-    GenServer.call(game, :end_phase)
+  def end_phase(game, user) do
+    GenServer.call(game, {:end_phase, user})
   end
 
   def end_game(game, user) do
@@ -147,9 +147,9 @@ defmodule Werewolf.GameServer do
     end
   end
 
-  def handle_call(:end_phase, _from, state_data) do
+  def handle_call({:end_phase, user}, _from, state_data) do
     cancel_phase_countdown(state_data.timer)
-    trigger_end_phase(state_data, &reply_success/2)
+    trigger_end_phase(state_data, user, &reply_success/2)
   end
 
   def handle_call({:end_game, user}, _from, state_data) do
@@ -168,7 +168,7 @@ defmodule Werewolf.GameServer do
   def handle_info(:end_phase, state_data) do
     # will have to broadcast to all users both in handle info, as no from
     # to pass messages back to the channel
-    trigger_end_phase(state_data, &noreply_success/2)
+    trigger_end_phase(state_data, :automated, &noreply_success/2)
   end
 
   def handle_info(
@@ -208,9 +208,9 @@ defmodule Werewolf.GameServer do
     GenServer.call(:registry, {:whereis_name, name})
   end
 
-  defp trigger_end_phase(state_data, success_fn) do
+  defp trigger_end_phase(state_data, user, success_fn) do
     with {:ok, game, rules, target, win_status} <-
-           Game.end_phase(state_data.game, state_data.rules) do
+           Game.end_phase(state_data.game, user, state_data.rules) do
       state_data
       |> update_game(game)
       |> update_rules(rules)

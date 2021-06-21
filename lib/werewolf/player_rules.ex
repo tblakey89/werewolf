@@ -13,6 +13,8 @@ defmodule Werewolf.PlayerRules do
     end
   end
 
+  def host_check(players, :automated), do: :ok
+
   def host_check(players, user) do
     case Map.has_key?(players, user.id) && is_host?(players[user.id]) do
       true -> :ok

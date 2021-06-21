@@ -175,11 +175,19 @@ defmodule Werewolf.GameTest do
   end
 
   describe "end_phase/2" do
-    setup [:night_rules, :day_rules, :finished_game, :too_many_phases_game, :rules]
+    setup [
+      :night_rules,
+      :day_rules,
+      :finished_game,
+      :too_many_phases_game,
+      :rules,
+      :user,
+      :other_user
+    ]
 
     test "when game won, sends win atom, and updates state", context do
       {:ok, game, rules, targets, win_status} =
-        Game.end_phase(context[:finished_game], context[:day_rules])
+        Game.end_phase(context[:finished_game], :automated, context[:day_rules])
 
       assert game.players["test2"].alive == false
       assert rules.state == :game_over
@@ -189,7 +197,7 @@ defmodule Werewolf.GameTest do
 
     test "when too many phases, ends game and updates state", context do
       {:ok, game, rules, target, win_status} =
-        Game.end_phase(context[:too_many_phases_game], context[:day_rules])
+        Game.end_phase(context[:too_many_phases_game], :automated, context[:day_rules])
 
       assert rules.state == :game_over
       assert win_status == :too_many_phases
@@ -199,7 +207,10 @@ defmodule Werewolf.GameTest do
       finished_game = context[:finished_game]
       finished_game = put_in(finished_game.players["test2"].actions[1].vote.target, "test1")
       finished_game = put_in(finished_game.players["test3"].actions[1], nil)
-      {:ok, game, rules, target, win_status} = Game.end_phase(finished_game, context[:day_rules])
+
+      {:ok, game, rules, target, win_status} =
+        Game.end_phase(finished_game, :automated, context[:day_rules])
+
       assert game.players["test2"].alive == true
       assert rules.state == :night_phase
       assert target == %{}
@@ -208,7 +219,34 @@ defmodule Werewolf.GameTest do
     end
 
     test "when wrong state, unable to end phase", context do
-      {:error, :invalid_action} = Game.end_phase(context[:finished_game], context[:rules])
+      {:error, :invalid_action} =
+        Game.end_phase(context[:finished_game], :automated, context[:rules])
+    end
+
+    test "when user host, sends win atom, and updates state", context do
+      {:ok, game, rules, targets, win_status} =
+        Game.end_phase(context[:finished_game], context[:user], context[:day_rules])
+
+      assert game.players["test2"].alive == false
+      assert rules.state == :game_over
+      assert targets == %{werewolf: "test2"}
+      assert win_status == :village_win
+    end
+
+    test "when allow_host_end_phase not enabled, returns error", context do
+      {:error, reason} =
+        Game.end_phase(context[:finished_game], context[:other_user], context[:day_rules])
+
+      assert reason == :unauthorized
+    end
+
+    test "when user not host, returns unauthorized", context do
+      game = context[:finished_game]
+      game = put_in(game.options.allow_host_end_phase, false)
+
+      {:error, reason} = Game.end_phase(game, context[:user], context[:day_rules])
+
+      assert reason == :allow_host_end_phase_not_enabled
     end
   end
 
@@ -302,6 +340,9 @@ defmodule Werewolf.GameTest do
         id: 1,
         phases: 1,
         phase_length: :day,
+        options: %Options{
+          allow_host_end_phase: true
+        },
         players: %{
           "test1" => %Player{
             id: "test1",

@@ -11,4 +11,13 @@ defmodule Werewolf.Options do
             allow_host_end_phase: false
 
   use ExConstructor
+
+  def check(options, :end_phase, :automated), do: :ok
+
+  def check(options, :end_phase, _) do
+    case options.allow_host_end_phase do
+      true -> :ok
+      false -> {:error, :allow_host_end_phase_not_enabled}
+    end
+  end
 end
