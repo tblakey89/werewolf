@@ -174,6 +174,35 @@ defmodule Werewolf.GameTest do
     end
   end
 
+  describe "claim_role/4" do
+    setup [:ready_game, :day_rules, :night_rules, :rules, :user, :vote_action]
+
+    test "successfully performs claim_role, and adds to player", context do
+      game = context[:ready_game]
+      game = put_in(game.options.allow_claim_role, true)
+
+      {:ok, game} =
+        Game.claim_role(
+          game,
+          context[:user],
+          context[:day_rules],
+          "detective"
+        )
+
+      assert game.players[context[:user].id].claim == "detective"
+    end
+
+    test "cannot claim role when not in right state", context do
+      {:error, :invalid_action} =
+        Game.claim_role(
+          context[:ready_game],
+          context[:user],
+          context[:rules],
+          "detective"
+        )
+    end
+  end
+
   describe "end_phase/2" do
     setup [
       :night_rules,

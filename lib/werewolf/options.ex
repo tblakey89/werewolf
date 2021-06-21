@@ -20,4 +20,11 @@ defmodule Werewolf.Options do
       false -> {:error, :allow_host_end_phase_not_enabled}
     end
   end
+
+  def check(options, :claim_role, _) do
+    case options.allow_claim_role do
+      true -> :ok
+      false -> {:error, :allow_claim_role_not_enabled}
+    end
+  end
 end

@@ -136,6 +136,17 @@ defmodule Werewolf.Game do
     end
   end
 
+  def claim_role(game, user, rules, claim) do
+    with {:ok, rules} <- Rules.check(rules, :claim_role),
+         :ok <- Options.check(game.options, :claim_role, user),
+         {:ok, player} <- PlayerRules.player_check(game.players, user),
+         {:ok, player} <- Player.claim_role(player, claim) do
+      {:ok, put_in(game.players[player.id], player)}
+    else
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
   def end_phase(game, user, rules) do
     with :ok <- PlayerRules.host_check(game.players, user),
          :ok <- Options.check(game.options, :end_phase, user),

@@ -222,5 +222,16 @@ defmodule Werewolf.Support.PlayerTestSetup do
       }
     ]
 
+  def dead_player(_context) do
+    [
+      dead_player: %Player{
+        id: "tester2",
+        host: false,
+        alive: false,
+        items: [%Item{type: :flower, remaining_uses: 1}]
+      }
+    ]
+  end
+
   def players(_context), do: [players: %{"test" => %Player{id: "test", host: false}}]
 end

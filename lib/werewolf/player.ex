@@ -5,7 +5,16 @@ defmodule Werewolf.Player do
 
   @enforce_keys [:id, :host]
   @derive Jason.Encoder
-  defstruct [:id, host: false, role: :none, team: :none, alive: true, actions: %{}, items: []]
+  defstruct [
+    :id,
+    host: false,
+    role: :none,
+    team: :none,
+    alive: true,
+    actions: %{},
+    items: [],
+    claim: :none
+  ]
 
   @villager_to_werewolf 6
 
@@ -115,6 +124,12 @@ defmodule Werewolf.Player do
       true ->
         {:ok, put_in(player.actions[phase_number], %{action.type => action})}
     end
+  end
+
+  def claim_role(%Player{alive: false}, _), do: {:error, :dead}
+
+  def claim_role(player, claim) do
+    {:ok, put_in(player.claim, claim)}
   end
 
   def use_items(players, phase_number) do

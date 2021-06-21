@@ -57,6 +57,10 @@ defmodule Werewolf.GameServer do
     GenServer.call(game, {:action, user, target, action_type})
   end
 
+  def claim_role(game, user, claim) do
+    GenServer.call(game, {:claim_role, user, claim})
+  end
+
   def end_phase(game, user) do
     GenServer.call(game, {:end_phase, user})
   end
@@ -142,6 +146,17 @@ defmodule Werewolf.GameServer do
       state_data
       |> update_game(game)
       |> reply_success({:ok, :action})
+    else
+      {:error, reason} -> reply_failure(state_data, reason)
+    end
+  end
+
+  def handle_call({:claim_role, user, claim}, _from, state_data) do
+    with {:ok, game} <-
+           Game.claim_role(state_data.game, user, state_data.rules, claim) do
+      state_data
+      |> update_game(game)
+      |> reply_success({:ok, :claim_role, user, claim})
     else
       {:error, reason} -> reply_failure(state_data, reason)
     end

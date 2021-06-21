@@ -60,6 +60,9 @@ defmodule Werewolf.Rules do
     {:ok, %Rules{rules | state: :game_over}}
   end
 
+  def check(%Rules{state: :day_phase} = rules, :claim_role), do: {:ok, rules}
+  def check(%Rules{state: :night_phase} = rules, :claim_role), do: {:ok, rules}
+
   def check(_state, _action), do: {:error, :invalid_action}
 
   def is_playing?(%Rules{state: :night_phase} = rules), do: true

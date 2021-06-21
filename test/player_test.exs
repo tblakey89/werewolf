@@ -268,6 +268,20 @@ defmodule Werewolf.PlayerTest do
     end
   end
 
+  describe "claim_role/2" do
+    setup [:regular_player, :dead_player]
+
+    test "when player dead", context do
+      {:error, reason} = Player.claim_role(context[:dead_player], "detective")
+      assert reason == :dead
+    end
+
+    test "when regular player claims role", context do
+      {:ok, player} = Player.claim_role(context[:regular_player], "detective")
+      assert player.claim == "detective"
+    end
+  end
+
   describe "use_items/2" do
     setup [:additional_player_map]
 

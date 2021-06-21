@@ -135,6 +135,22 @@ defmodule Werewolf.RulesTest do
     end
   end
 
+  describe "check/2 :claim_role when state is not playing" do
+    setup [:new_game, :initialized_rules]
+
+    test "returns :invalid_action", context do
+      assert {:error, :invalid_action} = Rules.check(context[:rules], :claim_role)
+    end
+  end
+
+  describe "check/2 :claim_role when state is playing" do
+    setup [:new_game, :day_rules]
+
+    test "returns :ok", context do
+      assert {:ok, rules} = Rules.check(context[:day_rules], :claim_role)
+    end
+  end
+
   describe "check/2 when :end_phase when state is :day_phase" do
     setup [:day_rules, :ready_rules]
 
