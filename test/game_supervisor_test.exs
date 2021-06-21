@@ -78,7 +78,8 @@ defmodule Werewolf.GameSupervisorTest do
             }
           }
         },
-        "rules" => %{"state" => "initialized"}
+        "rules" => %{"state" => "initialized"},
+        "options" => %{}
       }
     ]
   end
