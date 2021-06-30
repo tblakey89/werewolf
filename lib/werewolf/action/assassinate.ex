@@ -40,6 +40,8 @@ defmodule Werewolf.Action.Assassinate do
     end
   end
 
+  defp add_seppuku(players, %Player{alive: false}, _), do: players
+
   defp add_seppuku(players, player, phase_number) do
     {:ok, player_with_action} =
       Player.add_action(player, phase_number, Action.new(:seppuku, player.id))

@@ -61,6 +61,31 @@ defmodule Werewolf.Player do
       doctor: :villager,
       mason: :villager,
       little_girl: :villager,
+      devil: :werewolf_aux,
+      hunter: :villager,
+      fool: :fool,
+      witch: :villager,
+      medium: :villager,
+      ninja: :villager,
+      werewolf_thief: :werewolf,
+      werewolf_detective: :werewolf,
+      werewolf_saboteur: :werewolf,
+      werewolf_collector: :werewolf,
+      werewolf_mage: :werewolf,
+      gravedigger: :villager,
+      judge: :villager,
+      lawyer: :werewolf_aux
+    }
+  end
+
+  def roles_by_assign() do
+    %{
+      werewolf: :werewolf,
+      villager: :villager,
+      detective: :villager,
+      doctor: :villager,
+      mason: :villager,
+      little_girl: :villager,
       devil: :villager,
       hunter: :villager,
       fool: :villager,
@@ -216,7 +241,7 @@ defmodule Werewolf.Player do
 
     roles_by_team_map =
       Enum.reduce(allowed_roles, roles_by_team_map, fn role, roles_by_team ->
-        team = roles_by_team()[role]
+        team = roles_by_assign()[role]
         Map.put(roles_by_team, team, [role | roles_by_team[team]])
       end)
 
