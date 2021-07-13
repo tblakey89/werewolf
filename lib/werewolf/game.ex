@@ -63,14 +63,15 @@ defmodule Werewolf.Game do
     end
   end
 
-  def edit(game, rules, phase_length, allowed_roles) do
+  def edit(game, rules, phase_length, allowed_roles, options) do
     with {:ok, rules} <- Rules.check(rules, {:edit_game, game}),
          true <- Enum.member?(phase_lengths(), phase_length) do
       {:ok,
        %{
          game
          | allowed_roles: allowed_roles,
-           phase_length: phase_length
+           phase_length: phase_length,
+           options: options
        }}
     else
       {:error, reason} -> {:error, reason}
