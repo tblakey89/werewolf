@@ -28,6 +28,17 @@ defmodule Werewolf.Action.AssassinateTest do
       assert(length(targets)) == 0
     end
 
+    test "when ninja alive, assassinates player, but target dead", context do
+      players = context[:additional_player_map]
+      {:ok, player} = Player.add_action(players["ninja"], 1, Action.new(:assassinate, "villager"))
+      players = put_in(players["villager"].alive, false)
+      players = put_in(players["ninja"], player)
+
+      {:ok, players, targets} = Action.Assassinate.resolve(players, 1, [], ["villager"])
+      assert players["villager"].alive == false
+      assert(length(targets)) == 0
+    end
+
     test "when ninja alive, successfully assassinates player, but commits seppuku", context do
       players = context[:additional_player_map]
       {:ok, player} = Player.add_action(players["ninja"], 1, Action.new(:assassinate, "villager"))
