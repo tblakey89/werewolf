@@ -3,6 +3,9 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def vote_action(_context), do: [vote_action: %Action{type: :vote, target: "target"}]
 
+  def no_kill_vote_action(_context),
+    do: [no_kill_vote_action: %Action{type: :vote, target: "no_kill"}]
+
   def invalid_vote(_context), do: [invalid_vote: %Action{type: :vote, target: "target"}]
 
   def heal_action(_context), do: [heal_action: %Action{type: :heal, target: "target"}]

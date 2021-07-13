@@ -129,7 +129,7 @@ defmodule Werewolf.Game do
     # the action target must be a player struct
     # the target of the action, has to be a player struct
     with {:ok, player} <- PlayerRules.player_check(game.players, user),
-         {:ok, action} <- ActionRules.valid(rules, player, action, game.players),
+         {:ok, action} <- ActionRules.valid(rules, player, action, game.players, game.options),
          {:ok, player} <- Player.add_action(player, game.phases, action) do
       {:ok, put_in(game.players[player.id], player)}
     else

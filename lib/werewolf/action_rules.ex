@@ -1,20 +1,33 @@
 defmodule Werewolf.ActionRules do
-  alias Werewolf.{Rules, Player, Action, Item}
+  alias Werewolf.{Rules, Player, Action, Item, Options}
 
   def valid(
         %Rules{state: :day_phase},
         %Player{alive: true},
         %Action{type: :vote} = action,
-        players
-      ) do
+        players,
+        _
+      )
+      when action.target != "no_kill" do
     response(action, players)
+  end
+
+  def valid(
+        %Rules{state: :day_phase},
+        %Player{alive: true},
+        %Action{type: :vote, target: "no_kill"} = action,
+        players,
+        %Options{allow_no_kill_vote: true}
+      ) do
+    {:ok, action}
   end
 
   def valid(
         %Rules{state: :day_phase},
         %Player{alive: true, items: items},
         %Action{type: action_type} = action,
-        players
+        players,
+        _
       ) do
     cond do
       action_type == :curse && Item.usable?(:cursed_relic, items) ->
@@ -35,16 +48,29 @@ defmodule Werewolf.ActionRules do
         %Rules{state: :night_phase},
         %Player{alive: true, team: :werewolf},
         %Action{type: :vote} = action,
-        players
-      ) do
+        players,
+        _
+      )
+      when action.target != "no_kill" do
     response(action, players)
+  end
+
+  def valid(
+        %Rules{state: :night_phase},
+        %Player{alive: true, team: :werewolf},
+        %Action{type: :vote, target: "no_kill"} = action,
+        players,
+        %Options{allow_no_kill_vote: true}
+      ) do
+    {:ok, action}
   end
 
   def valid(
         %Rules{state: :night_phase},
         %Player{alive: true, items: items},
         %Action{type: action_type} = action,
-        players
+        players,
+        _
       ) do
     cond do
       action_type == :heal && Item.usable?(:first_aid_kit, items) ->
@@ -85,7 +111,7 @@ defmodule Werewolf.ActionRules do
     end
   end
 
-  def valid(_rules, _player, _action, _players) do
+  def valid(_rules, _player, _action, _players, _options) do
     {:error, :invalid_action}
   end
 

@@ -4,7 +4,7 @@ defmodule Werewolf.Action.VoteTest do
   import Werewolf.Support.PlayerTestSetup
 
   describe "count_from_actions/1" do
-    setup [:vote_player_map, :player_map]
+    setup [:vote_player_map, :player_map, :no_kill_player_map]
 
     test "counts votes correctly", context do
       {:ok, vote_count, winner} = Action.Vote.count_from_actions(context[:vote_player_map], 1)
@@ -22,6 +22,14 @@ defmodule Werewolf.Action.VoteTest do
       assert vote_count["werewolf"] == 1
       assert vote_count["villager"] == 1
       assert winner == :none
+    end
+
+    test "finds no_kill is winner", context do
+      players = context[:no_kill_player_map]
+
+      {:ok, vote_count, winner} = Action.Vote.count_from_actions(players, 1)
+      assert vote_count["no_kill"] == 1
+      assert winner == "no_kill"
     end
 
     test "no votes", context do
@@ -50,6 +58,12 @@ defmodule Werewolf.Action.VoteTest do
       players = add_vote(context[:player_map], 1, "werewolf", "villager")
       {:ok, players, win, targets} = Action.Vote.resolve(context[:player_map], 1)
       assert targets == []
+    end
+
+    test "sets target as 0 when voted for no kill", context do
+      players = add_vote(context[:player_map], 1, "werewolf", "no_kill")
+      {:ok, players, win, targets} = Action.Vote.resolve(players, 1)
+      assert Enum.at(targets, 0).target == 0
     end
 
     test "overrules and kills another player during day", context do
@@ -208,6 +222,22 @@ defmodule Werewolf.Action.VoteTest do
             }
           },
           role: :detective
+        }
+      }
+    ]
+
+  def no_kill_player_map(_context),
+    do: [
+      no_kill_player_map: %{
+        "villager" => %Player{
+          id: "villager",
+          host: false,
+          actions: %{
+            1 => %{
+              vote: %Action{type: :vote, target: "no_kill"}
+            }
+          },
+          role: :villager
         }
       }
     ]
