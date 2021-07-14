@@ -27,4 +27,11 @@ defmodule Werewolf.Options do
       false -> {:error, :allow_claim_role_not_enabled}
     end
   end
+
+  def check(options, :allow_action_changes, _) do
+    case options.allow_action_changes do
+      true -> :ok
+      false -> {:error, :allow_action_changes_not_enabled}
+    end
+  end
 end

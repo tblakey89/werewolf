@@ -2,6 +2,7 @@ defmodule Werewolf.Player do
   alias Werewolf.Player
   alias Werewolf.KillTarget
   alias Werewolf.Item
+  alias Werewolf.Options
 
   @enforce_keys [:id, :host]
   @derive Jason.Encoder
@@ -138,10 +139,23 @@ defmodule Werewolf.Player do
     player_team(player_one.role) == player_team(player_two.role)
   end
 
-  def add_action(player, _phase_number, nil), do: {:ok, player}
+  def add_action(player, phase_number, action, options \\ %Options{})
 
-  def add_action(player, phase_number, action) do
+  def add_action(player, _phase_number, nil, _), do: {:ok, player}
+
+  def add_action(player, phase_number, action, options) do
     cond do
+      Map.has_key?(player.actions, phase_number) &&
+          Map.has_key?(player.actions[phase_number], action.type) ->
+        case Options.check(options, :allow_action_changes, nil) do
+          :ok ->
+            actions = Map.merge(player.actions[phase_number], %{action.type => action})
+            {:ok, put_in(player.actions[phase_number], actions)}
+
+          {:error, error} ->
+            {:error, error}
+        end
+
       Map.has_key?(player.actions, phase_number) ->
         actions = Map.merge(player.actions[phase_number], %{action.type => action})
         {:ok, put_in(player.actions[phase_number], actions)}

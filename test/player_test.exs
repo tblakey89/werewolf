@@ -1,7 +1,7 @@
 defmodule Werewolf.PlayerTest do
   use ExUnit.Case
   import Werewolf.Support.PlayerTestSetup
-  alias Werewolf.{Player, Action, Item, KillTarget}
+  alias Werewolf.{Player, Action, Item, KillTarget, Options}
 
   describe "new/2" do
     setup [:user]
@@ -241,12 +241,12 @@ defmodule Werewolf.PlayerTest do
     end
   end
 
-  describe "add_action/3" do
+  describe "add_action/4" do
     setup [:regular_player]
 
     test "when phase number key does not exist", context do
       new_action = %Action{type: :vote, target: "user"}
-      {:ok, player} = Player.add_action(context[:regular_player], "1", new_action)
+      {:ok, player} = Player.add_action(context[:regular_player], "1", new_action, %Options{})
       assert player.actions["1"][:vote] == new_action
     end
 
@@ -254,7 +254,19 @@ defmodule Werewolf.PlayerTest do
       player = context[:regular_player]
       player = put_in(player.actions["1"], %{})
       new_action = %Action{type: :vote, target: "user"}
-      {:ok, player} = Player.add_action(player, "1", new_action)
+      {:ok, player} = Player.add_action(player, "1", new_action, %Options{})
+      assert player.actions["1"][:vote] == new_action
+    end
+
+    test "when phase number key exists, but action type does not, action change not allowed",
+         context do
+      player = context[:regular_player]
+      player = put_in(player.actions["1"], %{})
+      new_action = %Action{type: :vote, target: "user"}
+
+      {:ok, player} =
+        Player.add_action(player, "1", new_action, %Options{allow_action_changes: false})
+
       assert player.actions["1"][:vote] == new_action
     end
 
@@ -263,8 +275,21 @@ defmodule Werewolf.PlayerTest do
       player = put_in(player.actions["1"], %{vote: %{}})
       new_action = %Action{type: :vote, target: "user"}
       assert player.actions["1"][:vote] == %{}
-      {:ok, player} = Player.add_action(player, "1", new_action)
+      {:ok, player} = Player.add_action(player, "1", new_action, %Options{})
       assert player.actions["1"][:vote] == new_action
+    end
+
+    test "when phase number key exists, and action type exists, action change not allowed",
+         context do
+      player = context[:regular_player]
+      player = put_in(player.actions["1"], %{vote: %{}})
+      new_action = %Action{type: :vote, target: "user"}
+      assert player.actions["1"][:vote] == %{}
+
+      {:error, error} =
+        Player.add_action(player, "1", new_action, %Options{allow_action_changes: false})
+
+      assert error == :allow_action_changes_not_enabled
     end
   end
 
