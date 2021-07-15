@@ -137,6 +137,16 @@ defmodule Werewolf.Game do
     end
   end
 
+  def cancel_action(game, user, rules, action_type) do
+    with {:ok, player} <- PlayerRules.player_check(game.players, user),
+         :ok <- Options.check(game.options, :change_action, nil),
+         {:ok, player} <- Player.remove_action(player, game.phases, action_type) do
+      {:ok, put_in(game.players[player.id], player)}
+    else
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
   def claim_role(game, user, rules, claim) do
     with {:ok, rules} <- Rules.check(rules, :claim_role),
          :ok <- Options.check(game.options, :claim_role, user),

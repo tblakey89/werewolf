@@ -179,6 +179,45 @@ defmodule Werewolf.GameTest do
     end
   end
 
+  describe "cancel_action/4" do
+    setup [:ready_game, :day_rules, :night_rules, :rules, :user, :vote_action]
+
+    test "successfully cancels action", context do
+      game = put_in(context[:ready_game].phases, 1)
+
+      {:ok, game} =
+        Game.action(
+          context[:ready_game],
+          context[:user],
+          context[:day_rules],
+          context[:vote_action]
+        )
+
+      {:ok, game} =
+        Game.cancel_action(
+          game,
+          context[:user],
+          context[:day_rules],
+          :vote
+        )
+
+      assert game.players[context[:user].id].actions[game.phases][:vote] == nil
+    end
+
+    test "when not a valid action for the state", context do
+      game = context[:ready_game]
+      game = put_in(game.options, %Options{allow_action_changes: false})
+
+      {:error, :allow_action_changes_not_enabled} =
+        Game.cancel_action(
+          game,
+          context[:user],
+          context[:night_rules],
+          :vote
+        )
+    end
+  end
+
   describe "claim_role/4" do
     setup [:ready_game, :day_rules, :night_rules, :rules, :user, :vote_action]
 

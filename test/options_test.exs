@@ -35,5 +35,17 @@ defmodule Werewolf.OptionsTest do
       options = %Options{allow_claim_role: false}
       assert Options.check(options, :claim_role, %{}) == {:error, :allow_claim_role_not_enabled}
     end
+
+    test "change_action check, any user, allow_action_changes true" do
+      options = %Options{allow_action_changes: true}
+      assert Options.check(options, :change_action, %{}) == :ok
+    end
+
+    test "change_action, any user, allow_action_changes false" do
+      options = %Options{allow_action_changes: false}
+
+      assert Options.check(options, :change_action, %{}) ==
+               {:error, :allow_action_changes_not_enabled}
+    end
   end
 end

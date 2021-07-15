@@ -28,7 +28,7 @@ defmodule Werewolf.Options do
     end
   end
 
-  def check(options, :allow_action_changes, _) do
+  def check(options, :change_action, _) do
     case options.allow_action_changes do
       true -> :ok
       false -> {:error, :allow_action_changes_not_enabled}

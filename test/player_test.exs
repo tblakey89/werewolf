@@ -293,6 +293,32 @@ defmodule Werewolf.PlayerTest do
     end
   end
 
+  describe "remove_action/3" do
+    setup [:regular_player]
+
+    test "when phase number key does not exist", context do
+      new_action = %Action{type: :vote, target: "user"}
+
+      assert {:ok, context[:regular_player]} ==
+               Player.remove_action(context[:regular_player], "1", :vote)
+    end
+
+    test "when phase number key exists, but action type does not", context do
+      player = context[:regular_player]
+      player = put_in(player.actions["1"], %{})
+      {:ok, player} = Player.remove_action(player, "1", :vote)
+      assert player.actions["1"] == %{}
+    end
+
+    test "when phase number key exists, and action type exists", context do
+      player = context[:regular_player]
+      action = %Action{type: :vote, target: "user"}
+      {:ok, player} = Player.add_action(player, "1", action, %Options{})
+      {:ok, player} = Player.remove_action(context[:regular_player], "1", :vote)
+      assert player.actions["1"][:vote] == nil
+    end
+  end
+
   describe "claim_role/2" do
     setup [:regular_player, :dead_player]
 

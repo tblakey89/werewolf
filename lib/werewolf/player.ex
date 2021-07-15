@@ -147,7 +147,7 @@ defmodule Werewolf.Player do
     cond do
       Map.has_key?(player.actions, phase_number) &&
           Map.has_key?(player.actions[phase_number], action.type) ->
-        case Options.check(options, :allow_action_changes, nil) do
+        case Options.check(options, :change_action, nil) do
           :ok ->
             actions = Map.merge(player.actions[phase_number], %{action.type => action})
             {:ok, put_in(player.actions[phase_number], actions)}
@@ -162,6 +162,17 @@ defmodule Werewolf.Player do
 
       true ->
         {:ok, put_in(player.actions[phase_number], %{action.type => action})}
+    end
+  end
+
+  def remove_action(player, phase_number, action_type) do
+    cond do
+      Map.has_key?(player.actions, phase_number) ->
+        {_, actions} = Map.pop(player.actions[phase_number], action_type)
+        {:ok, put_in(player.actions[phase_number], actions)}
+
+      true ->
+        {:ok, player}
     end
   end
 
