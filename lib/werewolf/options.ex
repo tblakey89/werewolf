@@ -8,7 +8,8 @@ defmodule Werewolf.Options do
             allow_action_changes: true,
             allow_no_kill_vote: false,
             allow_claim_role: false,
-            allow_host_end_phase: false
+            allow_host_end_phase: false,
+            display_votes: true
 
   use ExConstructor
 
