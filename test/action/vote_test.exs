@@ -63,7 +63,7 @@ defmodule Werewolf.Action.VoteTest do
     test "sets target as 0 when voted for no kill", context do
       players = add_vote(context[:player_map], 1, "werewolf", "no_kill")
       {:ok, players, win, targets} = Action.Vote.resolve(players, 1)
-      assert Enum.at(targets, 0).target == 0
+      assert targets == []
     end
 
     test "overrules and kills another player during day", context do

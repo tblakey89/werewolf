@@ -36,7 +36,7 @@ defmodule Werewolf.Action.Vote do
   defp kill_player(players, _, :none, _, _, _), do: {:ok, players, nil, []}
 
   defp kill_player(players, _, "no_kill", _, _, _),
-    do: {:ok, players, nil, [KillTarget.new(:vote, 0)]}
+    do: {:ok, players, nil, []}
 
   defp kill_player(players, phase_number, target, _, defend_targets, [])
        when is_even(phase_number) do
