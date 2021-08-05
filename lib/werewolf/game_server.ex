@@ -161,7 +161,10 @@ defmodule Werewolf.GameServer do
            Game.cancel_action(state_data.game, user, state_data.rules, action_type) do
       state_data
       |> update_game(game)
-      |> reply_success({:ok, :cancel_action, state_data.rules.state, action_type, user, Game.current_vote_count(game), game.options.display_votes})
+      |> reply_success(
+        {:ok, :cancel_action, state_data.rules.state, action_type, user,
+         Game.current_vote_count(game), game.options.display_votes}
+      )
     else
       {:error, reason} -> reply_failure(state_data, reason)
     end

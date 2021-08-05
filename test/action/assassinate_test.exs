@@ -58,6 +58,22 @@ defmodule Werewolf.Action.AssassinateTest do
       assert Enum.at(targets, 2).target == "ninja"
     end
 
+    test "when ninja has died, successfully assassinates player, but does not commit seppuku",
+         context do
+      players = context[:additional_player_map]
+      {:ok, player} = Player.add_action(players["ninja"], 1, Action.new(:assassinate, "villager"))
+      player = put_in(player.alive, false)
+      players = put_in(players["ninja"], player)
+
+      {:ok, players, targets} = Action.Assassinate.resolve(players, 1, [], [])
+
+      assert players["villager"].alive == false
+      assert players["ninja"].alive == false
+      assert length(targets) == 1
+      assert Enum.at(targets, 0).type == :assassinate
+      assert Enum.at(targets, 0).target == "villager"
+    end
+
     test "when ninja alive, but no assassinate action", context do
       players = context[:additional_player_map]
       {:ok, players, targets} = Action.Assassinate.resolve(players, 1, [], [])

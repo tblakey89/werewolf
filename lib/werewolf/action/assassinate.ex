@@ -30,7 +30,7 @@ defmodule Werewolf.Action.Assassinate do
        Enum.reduce(player_and_valid_actions, targets, fn {player, action}, acc_targets ->
          targets = acc_targets ++ [KillTarget.new(:assassinate, action.target)]
 
-         case Player.match_team?(player, players[action.target]) do
+         case Player.match_team?(player, players[action.target]) && player.alive do
            true -> targets ++ [KillTarget.new(:seppuku, player.id)]
            false -> targets
          end
