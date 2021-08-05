@@ -211,7 +211,7 @@ defmodule Werewolf.Game do
         Map.put(
           game.targets,
           game.phases,
-          phase_targets
+          Enum.shuffle(phase_targets)
         )
 
       game = %{
