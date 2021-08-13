@@ -52,7 +52,7 @@ defmodule Werewolf.ActionRulesTest do
                  context[:player],
                  action,
                  context[:players],
-                 %Options{}
+                 %Options{allow_no_kill_vote: false}
                )
     end
 
@@ -145,7 +145,7 @@ defmodule Werewolf.ActionRulesTest do
                  context[:werewolf],
                  action,
                  context[:players],
-                 %Options{}
+                 %Options{allow_no_kill_vote: false}
                )
     end
 

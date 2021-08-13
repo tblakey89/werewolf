@@ -6,9 +6,9 @@ defmodule Werewolf.Options do
   defstruct reveal_role: true,
             reveal_type_of_death: true,
             allow_action_changes: true,
-            allow_no_kill_vote: false,
-            allow_claim_role: false,
-            allow_host_end_phase: false,
+            allow_no_kill_vote: true,
+            allow_claim_role: true,
+            allow_host_end_phase: true,
             display_votes: true
 
   use ExConstructor
