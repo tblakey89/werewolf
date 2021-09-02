@@ -197,9 +197,9 @@ defmodule Werewolf.Game do
              targets,
              heal_targets
            ),
+         {:ok, players} <- Action.Disentomb.resolve(players, game.phases),
          {:ok, players, resurrect_targets} <-
            Action.Resurrect.resolve(players, game.phases),
-         {:ok, players} <- Action.Disentomb.resolve(players, game.phases),
          {:ok, players} <- Action.Steal.resolve(players, game.phases),
          {:ok, players} <- Player.use_items(players, game.phases),
          {:ok, win_status} <- WinCheck.by_remaining_players(win_status, players),
