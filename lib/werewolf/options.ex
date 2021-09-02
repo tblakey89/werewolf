@@ -9,7 +9,8 @@ defmodule Werewolf.Options do
             allow_no_kill_vote: true,
             allow_claim_role: true,
             allow_host_end_phase: true,
-            display_votes: true
+            display_votes: true,
+            allow_host_end_game: true
 
   use ExConstructor
 
@@ -19,6 +20,13 @@ defmodule Werewolf.Options do
     case options.allow_host_end_phase do
       true -> :ok
       false -> {:error, :allow_host_end_phase_not_enabled}
+    end
+  end
+
+  def check(options, :end_game, _) do
+    case options.allow_host_end_game do
+      true -> :ok
+      false -> {:error, :allow_host_end_game_not_enabled}
     end
   end
 

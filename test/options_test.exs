@@ -26,6 +26,18 @@ defmodule Werewolf.OptionsTest do
                {:error, :allow_host_end_phase_not_enabled}
     end
 
+    test "end_game check, allow_host_end_game true" do
+      options = %Options{allow_host_end_game: true}
+      assert Options.check(options, :end_game, %{}) == :ok
+    end
+
+    test "end_game check, allow_host_end_game false" do
+      options = %Options{allow_host_end_game: false}
+
+      assert Options.check(options, :end_game, %{}) ==
+               {:error, :allow_host_end_game_not_enabled}
+    end
+
     test "claim_role check, any user, allow_claim_role true" do
       options = %Options{allow_claim_role: true}
       assert Options.check(options, :claim_role, %{}) == :ok

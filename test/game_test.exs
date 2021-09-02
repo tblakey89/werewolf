@@ -306,14 +306,14 @@ defmodule Werewolf.GameTest do
       assert win_status == :village_win
     end
 
-    test "when allow_host_end_phase not enabled, returns error", context do
+    test "when user not host, returns unauthorized", context do
       {:error, reason} =
         Game.end_phase(context[:finished_game], context[:other_user], context[:day_rules])
 
       assert reason == :unauthorized
     end
 
-    test "when user not host, returns unauthorized", context do
+    test "when allow_host_end_phase not enabled, returns error", context do
       game = context[:finished_game]
       game = put_in(game.options.allow_host_end_phase, false)
 
@@ -335,6 +335,15 @@ defmodule Werewolf.GameTest do
 
     test "when game is in the wrong state, cannot end game", context do
       {:error, :invalid_action} = Game.end_game(context[:game], context[:user], context[:rules])
+    end
+
+    test "when allow_host_end_game not enabled, returns error", context do
+      game = context[:game]
+      game = put_in(game.options.allow_host_end_game, false)
+
+      {:error, reason} = Game.end_game(game, context[:user], context[:night_rules])
+
+      assert reason == :allow_host_end_game_not_enabled
     end
 
     test "when not-host tries to end game", context do
@@ -414,7 +423,8 @@ defmodule Werewolf.GameTest do
         phases: 1,
         phase_length: :day,
         options: %Options{
-          allow_host_end_phase: true
+          allow_host_end_phase: true,
+          allow_host_end_game: true
         },
         players: %{
           "test1" => %Player{

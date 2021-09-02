@@ -231,6 +231,7 @@ defmodule Werewolf.Game do
 
   def end_game(game, user, rules) do
     with :ok <- PlayerRules.host_check(game.players, user),
+         :ok <- Options.check(game.options, :end_game, user),
          {:ok, rules} <- Rules.check(rules, {:end_phase, :host_end}) do
       {:ok,
        %{
