@@ -391,6 +391,25 @@ defmodule Werewolf.PlayerTest do
     end
   end
 
+  describe "alignment/2" do
+    setup [:additional_player_map]
+
+    test "when player is team village", context do
+      players = context[:additional_player_map]
+      assert :order == Player.alignment(players["witch"])
+    end
+
+    test "when player is team werewolf", context do
+      players = context[:additional_player_map]
+      assert :chaos == Player.alignment(players["werewolf_thief"])
+    end
+
+    test "when player is team fool", context do
+      players = context[:additional_player_map]
+      assert :chaos == Player.alignment(players["fool"])
+    end
+  end
+
   defp generate_players(player_number) do
     Enum.reduce(
       for(n <- 1..player_number, do: %Player{id: "test#{n}", host: false}),

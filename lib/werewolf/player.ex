@@ -229,6 +229,13 @@ defmodule Werewolf.Player do
     (player.role == :werewolf && player.alive) || (player.team == :werewolf && player.alive)
   end
 
+  def alignment(player) do
+    case roles_by_team()[player.role] do
+      :villager -> :order
+      _ -> :chaos
+    end
+  end
+
   defp items_for_role(role) do
     Enum.map(@items_by_role[role], fn item_type ->
       Item.new(item_type)

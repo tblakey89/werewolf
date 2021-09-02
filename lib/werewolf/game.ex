@@ -165,7 +165,7 @@ defmodule Werewolf.Game do
          {:ok, players, overrule_targets} <- Action.Overrule.resolve(players, game.phases),
          {:ok, defend_targets} <- Action.Defend.resolve(players, game.phases),
          {:ok, heal_targets} <- Action.Heal.resolve(players, game.phases),
-         {:ok, players} <- Action.Inspect.resolve(players, game.phases),
+         {:ok, players} <- Action.Inspect.resolve(players, game.phases, game.options),
          {:ok, players, win_status, targets} <-
            Action.Vote.resolve(
              players,

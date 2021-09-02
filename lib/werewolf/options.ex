@@ -10,7 +10,8 @@ defmodule Werewolf.Options do
             allow_claim_role: true,
             allow_host_end_phase: true,
             display_votes: true,
-            allow_host_end_game: true
+            allow_host_end_game: true,
+            reveal_role_on_inspect: true
 
   use ExConstructor
 
