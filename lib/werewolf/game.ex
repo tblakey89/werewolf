@@ -166,6 +166,7 @@ defmodule Werewolf.Game do
          {:ok, defend_targets} <- Action.Defend.resolve(players, game.phases),
          {:ok, heal_targets} <- Action.Heal.resolve(players, game.phases),
          {:ok, players} <- Action.Inspect.resolve(players, game.phases, game.options),
+         {:ok, players} <- Action.Watch.resolve(players, game.phases),
          {:ok, players, win_status, targets} <-
            Action.Vote.resolve(
              players,

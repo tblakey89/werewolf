@@ -79,7 +79,7 @@ defmodule Werewolf.ActionRules do
       action_type == :inspect && Item.usable?(:magnifying_glass, items) ->
         response(action, players)
 
-      action_type == :inspect && Item.usable?(:binoculars, items) ->
+      action_type == :watch && Item.usable?(:binoculars, items) ->
         response(action, players)
 
       action_type == :hunt && Item.usable?(:dead_man_switch, items) ->

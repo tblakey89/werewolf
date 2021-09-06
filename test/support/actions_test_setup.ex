@@ -12,6 +12,8 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def inspect_action(_context), do: [inspect_action: %Action{type: :inspect, target: "target"}]
 
+  def watch_action(_context), do: [watch_action: %Action{type: :watch, target: "target"}]
+
   def hunt_action(_context), do: [hunt_action: %Action{type: :hunt, target: "target"}]
 
   def assassinate_action(_context),

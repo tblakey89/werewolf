@@ -320,7 +320,7 @@ defmodule Werewolf.ActionRulesTest do
 
   describe "valid/3 little_girl" do
     setup [
-      :inspect_action,
+      :watch_action,
       :player,
       :little_girl,
       :dead_little_girl,
@@ -330,8 +330,8 @@ defmodule Werewolf.ActionRulesTest do
       :dead_players
     ]
 
-    test "when able to inspect, returns ok tuple", context do
-      action = context[:inspect_action]
+    test "when able to watch, returns ok tuple", context do
+      action = context[:watch_action]
 
       assert {:ok, action} ==
                ActionRules.valid(
@@ -343,34 +343,34 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
 
-    test "unable to inspect for dead player", context do
+    test "unable to watch for dead player", context do
       assert {:error, :invalid_target} ==
                ActionRules.valid(
                  context[:night_state],
                  context[:little_girl],
-                 context[:inspect_action],
+                 context[:watch_action],
                  context[:dead_players],
                  %Options{}
                )
     end
 
-    test "unable to inspect when little_girl is dead", context do
+    test "unable to watch when little_girl is dead", context do
       assert {:error, :invalid_action} ==
                ActionRules.valid(
                  context[:night_state],
                  context[:dead_little_girl],
-                 context[:inspect_action],
+                 context[:watch_action],
                  context[:players],
                  %Options{}
                )
     end
 
-    test "unable to inspect in day phase", context do
+    test "unable to watch in day phase", context do
       assert {:error, :invalid_action} ==
                ActionRules.valid(
                  context[:day_state],
                  context[:little_girl],
-                 context[:inspect_action],
+                 context[:watch_action],
                  context[:players],
                  %Options{}
                )
