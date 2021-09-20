@@ -50,6 +50,7 @@ defmodule Werewolf.GameFromBackupTest do
               "id" => 1,
               "role" => "none",
               "team" => "werewolf",
+              "win_condition" => "werewolf",
               "items" => [
                 %{
                   "type" => "magnifying_glass",
@@ -109,6 +110,7 @@ defmodule Werewolf.GameFromBackupTest do
               id: 1,
               role: :none,
               team: :werewolf,
+              win_condition: :werewolf,
               items: [
                 %Werewolf.Item{
                   type: :magnifying_glass,

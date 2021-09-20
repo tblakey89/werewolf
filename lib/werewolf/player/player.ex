@@ -14,7 +14,8 @@ defmodule Werewolf.Player do
     alive: true,
     actions: %{},
     items: [],
-    claim: :none
+    claim: :none,
+    win_condition: :none
   ]
 
   @villager_to_werewolf 6
@@ -212,7 +213,8 @@ defmodule Werewolf.Player do
         player
         | role: role,
           items: items_for_role(role),
-          team: roles_by_team()[role]
+          team: roles_by_team()[role],
+          win_condition: Player.WinCondition.by_team()[roles_by_team()[role]]
       })
     end)
   end

@@ -39,6 +39,7 @@ defmodule Werewolf.GameFromBackup do
     |> Map.put(:team, convert_string(player.team))
     |> Map.put(:actions, convert_phase_actions_from_map(player.actions))
     |> Map.put(:items, convert_items_from_list(player.items))
+    |> Map.put(:win_condition, convert_string(player.win_condition))
   end
 
   defp convert_options_from_map(options_as_map) do
