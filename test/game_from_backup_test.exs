@@ -84,6 +84,7 @@ defmodule Werewolf.GameFromBackupTest do
           phase_length: :day,
           phases: 0,
           win_status: :werewolf_win,
+          wins: [:werewolf_win],
           allowed_roles: [:doctor, :detective],
           targets: %{
             1 => [

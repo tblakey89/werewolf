@@ -155,17 +155,18 @@ defmodule Werewolf.RulesTest do
     setup [:day_rules, :ready_rules]
 
     test "returns :ok, and night phase when not a win", context do
-      assert {:ok, rules} = Rules.check(context[:day_rules], {:end_phase, :no_win})
+      assert {:ok, rules} = Rules.check(context[:day_rules], {:end_phase, []})
       assert rules.state == :night_phase
     end
 
     test "returns :ok, and game_over when is a win", context do
-      assert {:ok, rules} = Rules.check(context[:day_rules], {:end_phase, :village_win})
+      assert {:ok, rules} = Rules.check(context[:day_rules], {:end_phase, [:village_win]})
       assert rules.state == :game_over
     end
 
     test "receives :error when state is not a day_phase/night_phase", context do
-      assert {:error, :invalid_action} = Rules.check(context[:rules], {:end_phase, :village_win})
+      assert {:error, :invalid_action} =
+               Rules.check(context[:rules], {:end_phase, [:village_win]})
     end
   end
 
@@ -173,7 +174,7 @@ defmodule Werewolf.RulesTest do
     setup [:night_rules]
 
     test "returns :ok, and day phase when not a win", context do
-      assert {:ok, rules} = Rules.check(context[:night_rules], {:end_phase, :no_win})
+      assert {:ok, rules} = Rules.check(context[:night_rules], {:end_phase, []})
       assert rules.state == :day_phase
     end
 

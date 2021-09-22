@@ -243,13 +243,13 @@ defmodule Werewolf.GameServer do
   end
 
   defp trigger_end_phase(state_data, user, success_fn) do
-    with {:ok, game, rules, target, win_status} <-
+    with {:ok, game, rules, target, win_status, wins} <-
            Game.end_phase(state_data.game, user, state_data.rules) do
       state_data
       |> update_game(game)
       |> update_rules(rules)
       |> update_timer(start_phase_countdown(game, rules))
-      |> success_fn.({win_status, target, game.phases})
+      |> success_fn.({win_status, wins, target, game.phases})
     else
       {:error, reason} -> reply_failure(state_data, reason)
     end

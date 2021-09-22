@@ -259,21 +259,23 @@ defmodule Werewolf.GameTest do
     ]
 
     test "when game won, sends win atom, and updates state", context do
-      {:ok, game, rules, targets, win_status} =
+      {:ok, game, rules, targets, win_status, wins} =
         Game.end_phase(context[:finished_game], :automated, context[:day_rules])
 
       assert game.players["test2"].alive == false
       assert rules.state == :game_over
       assert targets == %{werewolf: "test2"}
       assert win_status == :village_win
+      assert wins == [:village_win]
     end
 
     test "when too many phases, ends game and updates state", context do
-      {:ok, game, rules, target, win_status} =
+      {:ok, game, rules, target, win_status, wins} =
         Game.end_phase(context[:too_many_phases_game], :automated, context[:day_rules])
 
       assert rules.state == :game_over
       assert win_status == :too_many_phases
+      assert wins == [:too_many_phases]
     end
 
     test "when votes tie, sends no_win atom, and updates state", context do
@@ -281,13 +283,14 @@ defmodule Werewolf.GameTest do
       finished_game = put_in(finished_game.players["test2"].actions[1].vote.target, "test1")
       finished_game = put_in(finished_game.players["test3"].actions[1], nil)
 
-      {:ok, game, rules, target, win_status} =
+      {:ok, game, rules, target, win_status, wins} =
         Game.end_phase(finished_game, :automated, context[:day_rules])
 
       assert game.players["test2"].alive == true
       assert rules.state == :night_phase
       assert target == %{}
       assert win_status == :no_win
+      assert wins == []
       assert game.phases == 2
     end
 
@@ -297,13 +300,14 @@ defmodule Werewolf.GameTest do
     end
 
     test "when user host, sends win atom, and updates state", context do
-      {:ok, game, rules, targets, win_status} =
+      {:ok, game, rules, targets, win_status, wins} =
         Game.end_phase(context[:finished_game], context[:user], context[:day_rules])
 
       assert game.players["test2"].alive == false
       assert rules.state == :game_over
       assert targets == %{werewolf: "test2"}
       assert win_status == :village_win
+      assert wins == [:village_win]
     end
 
     test "when user not host, returns unauthorized", context do

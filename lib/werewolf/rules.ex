@@ -47,11 +47,11 @@ defmodule Werewolf.Rules do
     {:ok, %Rules{rules | state: :night_phase}}
   end
 
-  def check(%Rules{state: :night_phase} = rules, {:end_phase, :no_win}) do
+  def check(%Rules{state: :night_phase} = rules, {:end_phase, []}) do
     {:ok, %Rules{rules | state: :day_phase}}
   end
 
-  def check(%Rules{state: :day_phase} = rules, {:end_phase, :no_win}) do
+  def check(%Rules{state: :day_phase} = rules, {:end_phase, []}) do
     {:ok, %Rules{rules | state: :night_phase}}
   end
 

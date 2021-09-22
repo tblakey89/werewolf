@@ -21,6 +21,7 @@ defmodule Werewolf.Game do
     :phase_length,
     :end_phase_unix_time,
     win_status: :no_win,
+    wins: [],
     phases: 0,
     targets: %{},
     allowed_roles: [],
@@ -203,10 +204,11 @@ defmodule Werewolf.Game do
            Action.Resurrect.resolve(players, game.phases),
          {:ok, players} <- Action.Steal.resolve(players, game.phases),
          {:ok, players} <- Player.use_items(players, game.phases),
-         {:ok, win_status} <- WinCheck.by_remaining_players(win_status, players),
-         {:ok, win_status} <- check_phase_limit(players, game.phases, win_status),
-         {:ok, rules} <- Rules.check(rules, {:end_phase, win_status}) do
+         {:ok, wins} <- WinCheck.check_for_wins(win_status, players),
+         {:ok, wins} <- check_phase_limit(players, game.phases, wins),
+         {:ok, rules} <- Rules.check(rules, {:end_phase, wins}) do
       phase_targets = targets ++ resurrect_targets
+      win_status = Enum.at(wins, 0) || :no_win
 
       game_targets =
         Map.put(
@@ -220,11 +222,12 @@ defmodule Werewolf.Game do
         | phases: game.phases + 1,
           players: players,
           win_status: win_status,
+          wins: wins,
           targets: game_targets,
           end_phase_unix_time: Phase.calculate_end_of_phase_unix(game.phase_length)
       }
 
-      {:ok, game, rules, KillTarget.to_map(phase_targets), win_status}
+      {:ok, game, rules, KillTarget.to_map(phase_targets), win_status, wins}
     else
       {:error, reason} -> {:error, reason}
     end
@@ -287,8 +290,8 @@ defmodule Werewolf.Game do
     {vote_tuples, target}
   end
 
-  defp check_phase_limit(players, phases, :no_win) when map_size(players) * 2 <= phases do
-    {:ok, :too_many_phases}
+  defp check_phase_limit(players, phases, []) when map_size(players) * 2 <= phases do
+    {:ok, [:too_many_phases]}
   end
 
   defp check_phase_limit(_, _, win_status), do: {:ok, win_status}

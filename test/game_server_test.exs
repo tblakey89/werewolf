@@ -49,7 +49,7 @@ defmodule Werewolf.GameServerTest do
     test "successfully transitions phase" do
       {game, players} = setup_game(:millisecond, 8)
       :timer.sleep(1)
-      {_, _, phase_number, _} = GameServer.end_phase(game, host())
+      {_, _, _, phase_number, _} = GameServer.end_phase(game, host())
       assert(phase_number > 2)
       clear_ets()
     end
@@ -63,7 +63,7 @@ defmodule Werewolf.GameServerTest do
       {:ok, game} =
         GameServer.start_link(host(), name(), :day, nil, fn _a, _b -> nil end, [], %Options{})
 
-      assert {:no_win, %{}, 2, _} = GameServer.end_phase(game, host())
+      assert {:no_win, [], %{}, 2, _} = GameServer.end_phase(game, host())
       clear_ets()
     end
   end
@@ -103,7 +103,7 @@ defmodule Werewolf.GameServerTest do
 
   defp assert_too_many_phases(game, players, host) do
     Enum.reduce_while(1..16, [], fn _, acc ->
-      {win_status, _, _, _} = GameServer.end_phase(game, host)
+      {win_status, _wins, _, _, _} = GameServer.end_phase(game, host)
       acc = acc ++ [win_status]
       if win_status != :too_many_phases, do: {:cont, acc}, else: {:halt, acc}
     end)
@@ -184,7 +184,7 @@ defmodule Werewolf.GameServerTest do
       GameServer.action(game, user(player.id), target.id, :vote)
     end)
 
-    {win_status, targets, _, _} = GameServer.end_phase(game, host)
+    {win_status, wins, targets, _, _} = GameServer.end_phase(game, host)
     assert target.id == (targets[:vote] || targets[:werewolf])
     win_status
   end
