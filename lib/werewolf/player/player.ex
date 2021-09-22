@@ -15,7 +15,8 @@ defmodule Werewolf.Player do
     actions: %{},
     items: [],
     claim: :none,
-    win_condition: :none
+    win_condition: :none,
+    statuses: []
   ]
 
   @villager_to_werewolf 6
