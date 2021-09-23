@@ -60,7 +60,10 @@ defmodule Werewolf.GameFromBackupTest do
                   "type" => "gun",
                   "remaining_uses" => 1
                 }
-              ]
+              ],
+              "statuses" => ["imprisoned"],
+              "lover" => false,
+              "lycan_curse" => true
             }
           },
           "options" => %{
@@ -121,7 +124,10 @@ defmodule Werewolf.GameFromBackupTest do
                   type: :gun,
                   remaining_uses: 1
                 }
-              ]
+              ],
+              statuses: [:imprisoned],
+              lover: false,
+              lycan_curse: true
             }
           },
           options: %Werewolf.Options{
