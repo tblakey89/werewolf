@@ -16,7 +16,9 @@ defmodule Werewolf.Player do
     items: [],
     claim: :none,
     win_condition: :none,
-    statuses: []
+    statuses: [],
+    lover: false,
+    lycan_curse: false
   ]
 
   @villager_to_werewolf 6
