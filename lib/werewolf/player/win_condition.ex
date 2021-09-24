@@ -3,10 +3,10 @@ defmodule Werewolf.Player.WinCondition do
 
   def by_team do
     %{
-      werewolf: :werewolf,
-      villager: :villager,
-      werewolf_aux: :werewolf,
-      fool: :fool
+      werewolf: :werewolf_win,
+      villager: :village_win,
+      werewolf_aux: :werewolf_win,
+      fool: :fool_win
     }
   end
 end
