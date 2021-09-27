@@ -54,6 +54,41 @@ defmodule Werewolf.Action.VoteTest do
       assert win == nil
     end
 
+    test "sets player to werewolf if lycan_curse", context do
+      players = add_vote(context[:player_map], 1, "werewolf", "villager")
+      players = put_in(players["villager"].lycan_curse, true)
+      {:ok, players, win, targets} = Action.Vote.resolve(players, 1)
+      assert players["villager"].alive == true
+      assert players["villager"].role == :werewolf
+      assert players["villager"].team == :werewolf
+      assert players["villager"].win_condition == :werewolf_win
+      assert targets == []
+      assert win == nil
+    end
+
+    test "sets player to werewolf if lycan_curse and lover", context do
+      players = add_vote(context[:player_map], 1, "werewolf", "villager")
+      players = put_in(players["villager"].lycan_curse, true)
+      players = put_in(players["villager"].lover, true)
+      players = put_in(players["villager"].win_condition, :lover_win)
+      {:ok, players, win, targets} = Action.Vote.resolve(players, 1)
+      assert players["villager"].alive == true
+      assert players["villager"].role == :werewolf
+      assert players["villager"].team == :werewolf
+      assert players["villager"].win_condition == :lover_win
+      assert targets == []
+      assert win == nil
+    end
+
+    test "kills player with lycan_curse in day phase", context do
+      players = add_vote(context[:player_map], 2, "werewolf", "villager")
+      players = put_in(players["villager"].lycan_curse, true)
+      {:ok, players, win, targets} = Action.Vote.resolve(players, 2)
+      assert players["villager"].alive == false
+      assert Enum.at(targets, 0).target == "villager"
+      assert win == nil
+    end
+
     test "sets target as none when no votes", context do
       players = add_vote(context[:player_map], 1, "werewolf", "villager")
       {:ok, players, win, targets} = Action.Vote.resolve(context[:player_map], 1)

@@ -114,6 +114,7 @@ defmodule Werewolf.Game do
       players =
         Player.assign_roles(game.players, game.allowed_roles)
         |> Player.Lovers.assign(game.options)
+        |> Player.LycanCurse.assign(game.options)
 
       {:ok,
        %{

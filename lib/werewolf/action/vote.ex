@@ -1,6 +1,6 @@
 defmodule Werewolf.Action.Vote do
   import Guard, only: [is_even: 1]
-  alias Werewolf.{Action, KillTarget}
+  alias Werewolf.{Action, KillTarget, Player}
 
   def count_from_actions(players, phase_number) do
     phase_actions(players, phase_number)
@@ -60,9 +60,17 @@ defmodule Werewolf.Action.Vote do
         {:ok, players, nil, []}
 
       false ->
-        players = put_in(players[target].alive, false)
+        player = players[target]
 
-        {:ok, players, nil, [KillTarget.new(:werewolf, target)]}
+        case player.lycan_curse do
+          true ->
+            {:ok, add_lycan_curse_action(players, player, phase_number), nil, []}
+
+          false ->
+            players = put_in(players[target].alive, false)
+
+            {:ok, players, nil, [KillTarget.new(:werewolf, target)]}
+        end
     end
   end
 
@@ -102,5 +110,20 @@ defmodule Werewolf.Action.Vote do
   defp winner(votes) do
     Enum.max_by(votes, fn {_, value} -> value end, fn -> {:none, 0} end)
     |> tie_check(votes)
+  end
+
+  defp add_lycan_curse_action(players, player, phase_number) do
+    {:ok, player_with_action} =
+      Player.add_action(player, phase_number, Action.new(:lycan_curse, player.id))
+
+    put_in(
+      players[player.id],
+      %{
+        player_with_action
+        | role: :werewolf,
+          team: :werewolf,
+          win_condition: Player.WinCondition.win_condition_from_lycan_curse(player_with_action)
+      }
+    )
   end
 end
