@@ -135,6 +135,10 @@ defmodule Werewolf.Player do
     roles_by_team()[role]
   end
 
+  def role_default_win_condition(role) do
+    Player.WinCondition.by_team()[roles_by_team()[role]]
+  end
+
   def alive?(players, key) do
     players[key].alive
   end
@@ -217,7 +221,7 @@ defmodule Werewolf.Player do
         | role: role,
           items: items_for_role(role),
           team: roles_by_team()[role],
-          win_condition: Player.WinCondition.by_team()[roles_by_team()[role]]
+          win_condition: role_default_win_condition(role)
       })
     end)
   end

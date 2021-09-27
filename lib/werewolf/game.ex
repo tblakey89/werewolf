@@ -111,12 +111,16 @@ defmodule Werewolf.Game do
   def launch_game(game, user, rules) do
     with :ok <- PlayerRules.host_check(game.players, user),
          {:ok, rules} <- Rules.check(rules, :launch) do
+      players =
+        Player.assign_roles(game.players, game.allowed_roles)
+        |> Player.Lovers.assign(game.options)
+
       {:ok,
        %{
          game
          | phases: 1,
            end_phase_unix_time: Phase.calculate_end_of_phase_unix(game.phase_length),
-           players: Player.assign_roles(game.players, game.allowed_roles)
+           players: players
        }, rules}
     else
       {:error, reason} -> {:error, reason}
@@ -203,6 +207,7 @@ defmodule Werewolf.Game do
          {:ok, players, resurrect_targets} <-
            Action.Resurrect.resolve(players, game.phases),
          {:ok, players} <- Action.Steal.resolve(players, game.phases),
+         {:ok, players, targets} <- Action.Suicide.resolve(players, targets),
          {:ok, players} <- Player.use_items(players, game.phases),
          {:ok, wins} <- WinCheck.check_for_wins(win_status, players),
          {:ok, wins} <- check_phase_limit(players, game.phases, wins),

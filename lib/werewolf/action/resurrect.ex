@@ -1,6 +1,7 @@
 defmodule Werewolf.Action.Resurrect do
   alias Werewolf.Action.Helpers.FilterHelper
   alias Werewolf.KillTarget
+  alias Werewolf.Player
 
   def resolve(players, phase_number) do
     with {:ok, players_with_item} <-
@@ -14,10 +15,12 @@ defmodule Werewolf.Action.Resurrect do
            ) do
       {:ok,
        Enum.reduce(player_and_actions, players, fn {_player, action}, acc_players ->
-         put_in(
-           acc_players[action.target].alive,
-           true
-         )
+         Map.put(players, action.target, %{
+           acc_players[action.target]
+           | alive: true,
+             lover: false,
+             win_condition: Player.role_default_win_condition(acc_players[action.target].role)
+         })
        end),
        Enum.map(player_and_actions, fn {_player, action} ->
          KillTarget.new(:resurrect, action.target)

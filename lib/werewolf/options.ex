@@ -11,7 +11,8 @@ defmodule Werewolf.Options do
             allow_host_end_phase: true,
             display_votes: true,
             allow_host_end_game: true,
-            reveal_role_on_inspect: true
+            reveal_role_on_inspect: true,
+            allow_lovers: false
 
   use ExConstructor
 
