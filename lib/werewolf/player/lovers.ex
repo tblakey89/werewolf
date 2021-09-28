@@ -30,12 +30,7 @@ defmodule Werewolf.Player.Lovers do
   end
 
   defp allowed_combination(first_player, second_player) do
-    first_team = Player.player_team(first_player.role)
-    second_team = Player.player_team(second_player.role)
-
-    teams = [first_team, second_team]
-
-    Enum.any?(teams, fn team -> team == :villager end) &&
-      length(teams -- [:villager, :werewolf]) == 0
+    teams = [first_player.team, second_player.team]
+    length(teams -- [:villager, :villager, :werewolf]) == 0
   end
 end

@@ -23,22 +23,26 @@ defmodule Werewolf.Player.LoversTest do
         "villager" => %Player{
           id: "villager",
           host: false,
-          role: :villager
+          role: :villager,
+          team: :villager
         },
         "werewolf" => %Player{
           id: "werewolf",
           host: false,
-          role: :werewolf
+          role: :werewolf,
+          team: :werewolf
         },
         "devil" => %Player{
           id: "devil",
           host: false,
-          role: :devil
+          role: :devil,
+          team: :werewolf_aux
         },
         "fool" => %Player{
           id: "fool",
           host: false,
-          role: :fool
+          role: :fool,
+          team: :fool
         }
       }
 
@@ -47,6 +51,27 @@ defmodule Werewolf.Player.LoversTest do
       assert players["werewolf"].lover
       assert !players["devil"].lover
       assert !players["fool"].lover
+    end
+
+    test "returns the same villager and detective as lovers" do
+      players = %{
+        "villager" => %Player{
+          id: "villager",
+          host: false,
+          role: :villager,
+          team: :villager
+        },
+        "detective" => %Player{
+          id: "detective",
+          host: false,
+          role: :detective,
+          team: :villager
+        }
+      }
+
+      players = Lovers.assign(players, %Options{allow_lovers: true})
+      assert players["villager"].lover
+      assert players["detective"].lover
     end
   end
 end
