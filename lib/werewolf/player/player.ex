@@ -238,6 +238,10 @@ defmodule Werewolf.Player do
     (player.role == :werewolf && player.alive) || (player.team == :werewolf && player.alive)
   end
 
+  def relevant_player?(player, :lover) do
+    (player.lover && player.alive)
+  end
+
   def alignment(player) do
     case roles_by_team()[player.role] do
       :villager -> :order

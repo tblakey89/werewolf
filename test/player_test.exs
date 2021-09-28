@@ -377,6 +377,16 @@ defmodule Werewolf.PlayerTest do
                true
     end
 
+    test "returns true for player when lover", context do
+      players = context[:additional_player_map]
+      players = put_in(players["mason"].lover, true)
+      assert Player.relevant_player?(players["mason"], :lover) == true
+    end
+
+    test "returns false for player when not lover", context do
+      assert Player.relevant_player?(context[:additional_player_map]["mason"], :lover) == false
+    end
+
     test "returns false for player when matches role but dead", context do
       player = %{
         context[:player_map]["werewolf"]
