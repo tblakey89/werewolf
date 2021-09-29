@@ -190,6 +190,7 @@ defmodule Werewolf.Game do
              targets,
              heal_targets
            ),
+         {:ok, players, targets} <- Action.Suicide.resolve(players, targets),
          {:ok, players, targets} <-
            Action.Hunt.resolve(
              players,
@@ -208,6 +209,9 @@ defmodule Werewolf.Game do
          {:ok, players, resurrect_targets} <-
            Action.Resurrect.resolve(players, game.phases),
          {:ok, players} <- Action.Steal.resolve(players, game.phases),
+         # suicide action can be called twice, as will not add game event twice
+         # this is to ensure it also triggers both the hunt action, and the hunt
+         # target is affected by the result
          {:ok, players, targets} <- Action.Suicide.resolve(players, targets),
          {:ok, players} <- Player.use_items(players, game.phases),
          {:ok, wins} <- WinCheck.check_for_wins(win_status, players),
