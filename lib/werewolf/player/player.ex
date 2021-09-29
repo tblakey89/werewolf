@@ -239,7 +239,7 @@ defmodule Werewolf.Player do
   end
 
   def relevant_player?(player, :lover) do
-    (player.lover && player.alive)
+    player.lover && player.alive
   end
 
   def alignment(player) do

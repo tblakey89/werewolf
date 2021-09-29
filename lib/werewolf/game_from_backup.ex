@@ -16,7 +16,7 @@ defmodule Werewolf.GameFromBackup do
     Map.put(game, :players, convert_players_from_map(game.players))
     |> Map.put(:targets, convert_phase_kill_targets_from_map(game.targets))
     |> Map.put(:win_status, convert_string(game.win_status))
-    |> Map.put(:wins, from_win_status(convert_string(game.win_status)))
+    |> Map.put(:wins, Enum.map(game.wins, &convert_string(&1)))
     |> Map.put(:phase_length, convert_string(game.phase_length))
     |> Map.put(
       :allowed_roles,
