@@ -209,6 +209,14 @@ defmodule Werewolf.Support.PlayerTestSetup do
           role: :lawyer,
           items: [Item.new(:defence_case)],
           team: :villager
+        },
+        "summoner" => %Player{
+          id: "summoner",
+          host: false,
+          actions: %{},
+          role: :summoner,
+          items: [Item.new(:summoning_scroll)],
+          team: :villager
         }
       }
     ]

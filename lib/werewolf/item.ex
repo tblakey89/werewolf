@@ -20,7 +20,8 @@ defmodule Werewolf.Item do
     transformation_scroll: :infinite,
     pick: 1,
     scales_of_justice: 1,
-    defence_case: 1
+    defence_case: 1,
+    summoning_scroll: 1
   }
 
   @items_to_actions %{

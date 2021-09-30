@@ -208,6 +208,7 @@ defmodule Werewolf.Game do
          {:ok, players} <- Action.Disentomb.resolve(players, game.phases),
          {:ok, players, resurrect_targets} <-
            Action.Resurrect.resolve(players, game.phases),
+         {:ok, players} <- Action.Summon.resolve(players, game.phases),
          {:ok, players} <- Action.Steal.resolve(players, game.phases),
          # suicide action can be called twice, as will not add game event twice
          # this is to ensure it also triggers both the hunt action, and the hunt

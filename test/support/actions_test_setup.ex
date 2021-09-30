@@ -40,6 +40,8 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def defend_action(_context), do: [defend_action: %Action{type: :defend, target: "target"}]
 
+  def summon_action(_context), do: [summon_action: %Action{type: :summon, target: "target"}]
+
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
   def dead_player(_context), do: [dead_player: %Player{host: false, alive: false, id: "test"}]
@@ -389,6 +391,28 @@ defmodule Werewolf.Support.ActionsTestSetup do
         id: "test",
         role: :lawyer,
         items: [Item.new(:defence_case)]
+      }
+    ]
+
+  def summoner(_context),
+    do: [
+      summoner: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :summoner,
+        items: [Item.new(:summoning_scroll)]
+      }
+    ]
+
+  def dead_summoner(_context),
+    do: [
+      dead_summoner: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :summoner,
+        items: [Item.new(:summoning_scroll)]
       }
     ]
 

@@ -106,6 +106,9 @@ defmodule Werewolf.ActionRules do
       action_type == :disentomb && Item.usable?(:pick, items) ->
         dead_target_response(action, players)
 
+      action_type == :summon && Item.usable?(:summoning_scroll, items) ->
+        dead_target_response(action, players)
+
       true ->
         {:error, :invalid_action}
     end
