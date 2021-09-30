@@ -26,6 +26,12 @@ defmodule Werewolf.Player.LoversTest do
           role: :villager,
           team: :villager
         },
+        "villager2" => %Player{
+          id: "villager2",
+          host: false,
+          role: :villager,
+          team: :villager
+        },
         "werewolf" => %Player{
           id: "werewolf",
           host: false,
@@ -47,31 +53,14 @@ defmodule Werewolf.Player.LoversTest do
       }
 
       players = Lovers.assign(players, %Options{allow_lovers: true})
-      assert players["villager"].lover
-      assert players["werewolf"].lover
+
+      assert Enum.count(
+               [players["villager"].lover, players["villager2"].lover, players["werewolf"].lover],
+               & &1
+             ) == 2
+
       assert !players["devil"].lover
       assert !players["fool"].lover
-    end
-
-    test "returns the same villager and detective as lovers" do
-      players = %{
-        "villager" => %Player{
-          id: "villager",
-          host: false,
-          role: :villager,
-          team: :villager
-        },
-        "detective" => %Player{
-          id: "detective",
-          host: false,
-          role: :detective,
-          team: :villager
-        }
-      }
-
-      players = Lovers.assign(players, %Options{allow_lovers: true})
-      assert players["villager"].lover
-      assert players["detective"].lover
     end
   end
 end
