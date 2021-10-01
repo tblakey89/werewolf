@@ -425,4 +425,9 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def dead_players(_context),
     do: [dead_players: %{"target" => %Player{id: "target", host: false, alive: false}}]
+
+  def ghost_players(_context),
+    do: [
+      ghost_players: %{"target" => %Player{id: "target", host: false, alive: false, role: :ghost}}
+    ]
 end

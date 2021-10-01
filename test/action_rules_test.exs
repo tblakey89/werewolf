@@ -518,7 +518,8 @@ defmodule Werewolf.ActionRulesTest do
       :day_state,
       :night_state,
       :players,
-      :dead_players
+      :dead_players,
+      :ghost_players
     ]
 
     test "when able to resurrect, returns ok tuple", context do
@@ -541,6 +542,17 @@ defmodule Werewolf.ActionRulesTest do
                  context[:witch],
                  context[:resurrect_action],
                  context[:players],
+                 %Options{}
+               )
+    end
+
+    test "unable to resurrect for ghost player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:witch],
+                 context[:resurrect_action],
+                 context[:ghost_players],
                  %Options{}
                )
     end

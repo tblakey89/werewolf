@@ -130,7 +130,7 @@ defmodule Werewolf.ActionRules do
   end
 
   defp dead_target_response(action, players) do
-    case !Player.alive?(players, action.target) do
+    case !Player.alive?(players, action.target) && !Player.ghost?(players, action.target) do
       true -> {:ok, action}
       false -> {:error, :invalid_target}
     end

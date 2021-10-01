@@ -267,7 +267,7 @@ defmodule Werewolf.Game do
       true ->
         Map.values(game.players)
         |> Enum.filter(fn player ->
-          Player.relevant_player?(player, type)
+          Player.relevant_player?(rules.state, player, type)
         end)
         |> Enum.map(fn player -> player.id end)
 

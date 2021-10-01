@@ -147,6 +147,10 @@ defmodule Werewolf.Player do
     players[key].alive
   end
 
+  def ghost?(players, key) do
+    players[key].role == :ghost
+  end
+
   def match_team?(player_one, player_two) do
     player_team(player_one.role) == player_team(player_two.role)
   end
@@ -230,19 +234,23 @@ defmodule Werewolf.Player do
     end)
   end
 
-  def relevant_player?(player, :dead) do
+  def relevant_player?(:day_phase, %Player{role: :ghost}, :dead), do: true
+
+  def relevant_player?(:night_phase, %Player{role: :ghost}, :dead), do: false
+
+  def relevant_player?(_, player, :dead) do
     !player.alive || has_item?(player, [:crystal_ball])
   end
 
-  def relevant_player?(player, :mason) do
+  def relevant_player?(_, player, :mason) do
     player.role == :mason && player.alive
   end
 
-  def relevant_player?(player, :werewolf) do
+  def relevant_player?(_, player, :werewolf) do
     (player.role == :werewolf && player.alive) || (player.team == :werewolf && player.alive)
   end
 
-  def relevant_player?(player, :lover) do
+  def relevant_player?(_, player, :lover) do
     player.lover && player.alive
   end
 

@@ -217,6 +217,14 @@ defmodule Werewolf.Support.PlayerTestSetup do
           role: :summoner,
           items: [Item.new(:summoning_scroll)],
           team: :villager
+        },
+        "ghost" => %Player{
+          id: "ghost",
+          host: false,
+          alive: false,
+          role: :ghost,
+          items: [],
+          team: :villager
         }
       }
     ]
