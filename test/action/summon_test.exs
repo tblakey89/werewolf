@@ -16,6 +16,7 @@ defmodule Werewolf.Action.SummonTest do
       assert players["villager"].alive == false
       assert players["villager"].role == :ghost
       assert players["villager"].actions[1][:summoned].target == "villager"
+      assert players["summoner"].actions[1][:summon].result == "villager"
     end
 
     test "when summoner alive, but no summon action", context do

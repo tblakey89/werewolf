@@ -13,13 +13,16 @@ defmodule Werewolf.Action.Summon do
              :summon
            ) do
       {:ok,
-       Enum.reduce(player_and_actions, players, fn {_player, action}, acc_players ->
-         {:ok, player} =
+       Enum.reduce(player_and_actions, players, fn {player, action}, acc_players ->
+         {:ok, summoned_player} =
            acc_players[action.target]
            |> Player.add_action(phase_number, generate_summoned_action(action.target))
 
-         Map.put(players, action.target, %{
-           player
+        put_in(
+          acc_players[player.id].actions[phase_number][:summon].result, action.target
+        )
+         |> Map.put(action.target, %{
+           summoned_player
            | role: :ghost,
              lover: false,
              items: [],
