@@ -50,6 +50,21 @@ defmodule Werewolf.Player.LycanCurseTest do
       assert !players["werewolf"].lycan_curse
     end
 
+    test "lovers cant have lycan_curse" do
+      players = %{
+        "villager" => %Player{
+          id: "villager",
+          host: false,
+          role: :villager,
+          team: :villager,
+          lover: true
+        }
+      }
+
+      players = LycanCurse.assign(players, %Options{allow_lycan_curse: true})
+      assert !players["villager"].lycan_curse
+    end
+
     test "villagers can't have lycan_curse when option disabled" do
       players = %{
         "werewolf" => %Player{

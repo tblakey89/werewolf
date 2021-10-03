@@ -62,21 +62,9 @@ defmodule Werewolf.Action.VoteTest do
       assert players["villager"].role == :werewolf
       assert players["villager"].team == :werewolf
       assert players["villager"].win_condition == :werewolf_win
-      assert targets == []
-      assert win == nil
-    end
-
-    test "sets player to werewolf if lycan_curse and lover", context do
-      players = add_vote(context[:player_map], 1, "werewolf", "villager")
-      players = put_in(players["villager"].lycan_curse, true)
-      players = put_in(players["villager"].lover, true)
-      players = put_in(players["villager"].win_condition, :lover_win)
-      {:ok, players, win, targets} = Action.Vote.resolve(players, 1)
-      assert players["villager"].alive == true
-      assert players["villager"].role == :werewolf
-      assert players["villager"].team == :werewolf
-      assert players["villager"].win_condition == :lover_win
-      assert targets == []
+      assert players["werewolf"].actions[1][:new_werewolf].result == "villager"
+      assert Enum.at(targets, 0).target == "villager"
+      assert Enum.at(targets, 0).type == :new_werewolf
       assert win == nil
     end
 

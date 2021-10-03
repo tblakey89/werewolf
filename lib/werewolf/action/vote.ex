@@ -64,7 +64,8 @@ defmodule Werewolf.Action.Vote do
 
         case player.lycan_curse do
           true ->
-            {:ok, add_lycan_curse_action(players, player, phase_number), nil, []}
+            {:ok, add_lycan_curse_action(players, player, phase_number), nil,
+             [KillTarget.new(:new_werewolf, target)]}
 
           false ->
             players = put_in(players[target].alive, false)
@@ -115,6 +116,24 @@ defmodule Werewolf.Action.Vote do
   defp add_lycan_curse_action(players, player, phase_number) do
     {:ok, player_with_action} =
       Player.add_action(player, phase_number, Action.new(:lycan_curse, player.id))
+
+    players =
+      Enum.reduce(players, players, fn {id, current_player}, acc_players ->
+        case current_player.team do
+          :werewolf ->
+            {:ok, action} =
+              Player.add_action(
+                current_player,
+                phase_number,
+                Action.new(:new_werewolf, player.id, player.id)
+              )
+
+            put_in(players[id], action)
+
+          _ ->
+            acc_players
+        end
+      end)
 
     put_in(
       players[player.id],

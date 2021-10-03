@@ -5,7 +5,7 @@ defmodule Werewolf.Action do
   @derive Jason.Encoder
   defstruct [:type, :target, :result, :seen, option: :none]
 
-  def new(type, target) do
-    %Action{type: type, target: target}
+  def new(type, target, result \\ nil) do
+    %Action{type: type, target: target, result: result}
   end
 end
