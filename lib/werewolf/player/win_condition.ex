@@ -6,7 +6,8 @@ defmodule Werewolf.Player.WinCondition do
       werewolf: :werewolf_win,
       villager: :village_win,
       werewolf_aux: :werewolf_win,
-      fool: :fool_win
+      fool: :fool_win,
+      serial_killer: :serial_killer_win
     }
   end
 

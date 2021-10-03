@@ -44,7 +44,8 @@ defmodule Werewolf.Player do
     gravedigger: [:pick],
     judge: [:scales_of_justice],
     lawyer: [:defence_case],
-    summoner: [:summoning_scroll]
+    summoner: [:summoning_scroll],
+    serial_killer: []
   }
 
   def new(type, user) do
@@ -81,7 +82,8 @@ defmodule Werewolf.Player do
       gravedigger: :villager,
       judge: :villager,
       lawyer: :werewolf_aux,
-      summoner: :villager
+      summoner: :villager,
+      serial_killer: :serial_killer
     }
   end
 
@@ -107,7 +109,8 @@ defmodule Werewolf.Player do
       gravedigger: :villager,
       judge: :villager,
       lawyer: :villager,
-      summoner: :villager
+      summoner: :villager,
+      serial_killer: :villager
     }
   end
 
@@ -131,7 +134,8 @@ defmodule Werewolf.Player do
       gravedigger: 1,
       judge: 1,
       lawyer: 1,
-      summoner: 1
+      summoner: 1,
+      serial_killer: 1
     }
   end
 
