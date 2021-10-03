@@ -18,9 +18,10 @@ defmodule Werewolf.Action.Summon do
            acc_players[action.target]
            |> Player.add_action(phase_number, generate_summoned_action(action.target))
 
-        put_in(
-          acc_players[player.id].actions[phase_number][:summon].result, action.target
-        )
+         put_in(
+           acc_players[player.id].actions[phase_number][:summon].result,
+           action.target
+         )
          |> Map.put(action.target, %{
            summoned_player
            | role: :ghost,
