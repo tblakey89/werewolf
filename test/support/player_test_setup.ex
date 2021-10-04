@@ -110,7 +110,7 @@ defmodule Werewolf.Support.PlayerTestSetup do
           host: false,
           actions: %{},
           role: :mason,
-          items: [],
+          items: [Item.new(:phone)],
           team: :villager
         },
         "hunter_action" => %Player{

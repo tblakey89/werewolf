@@ -28,7 +28,7 @@ defmodule Werewolf.Player do
     villager: [],
     detective: [:magnifying_glass],
     doctor: [:first_aid_kit],
-    mason: [],
+    mason: [:phone],
     little_girl: [:binoculars],
     devil: [:magnifying_glass],
     hunter: [:dead_man_switch],
@@ -247,7 +247,7 @@ defmodule Werewolf.Player do
   end
 
   def relevant_player?(_, player, :mason) do
-    player.role == :mason && player.alive
+    has_item?(player, [:phone]) && player.alive
   end
 
   def relevant_player?(_, player, :werewolf) do

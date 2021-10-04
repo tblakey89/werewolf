@@ -160,7 +160,9 @@ defmodule Werewolf.PlayerTest do
                Item.new(:first_aid_kit)
              ]
 
-      assert Enum.find(assigned_players, fn player -> player.role == :mason end).items == []
+      assert Enum.find(assigned_players, fn player -> player.role == :mason end).items == [
+               Item.new(:phone)
+             ]
 
       assert Enum.find(assigned_players, fn player -> player.role == :little_girl end).items == [
                Item.new(:binoculars)

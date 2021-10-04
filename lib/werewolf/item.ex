@@ -21,7 +21,8 @@ defmodule Werewolf.Item do
     pick: 1,
     scales_of_justice: 1,
     defence_case: 1,
-    summoning_scroll: 1
+    summoning_scroll: 1,
+    phone: :infinite
   }
 
   @items_to_actions %{
