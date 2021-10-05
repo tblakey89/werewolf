@@ -41,7 +41,8 @@ defmodule Werewolf.Action.Helpers.FilterHelper do
     {:ok,
      Enum.reduce(players_with_item, [], fn player, player_and_actions ->
        with {:ok, action} <- find_action(player.actions, phase_number, type),
-            false <- players[action.target].alive do
+            false <- players[action.target].alive,
+            false <- players[action.target].role == :ghost do
          [{player, action} | player_and_actions]
        else
          :error -> player_and_actions

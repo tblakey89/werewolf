@@ -121,14 +121,14 @@ defmodule Werewolf.Action.Vote do
       Enum.reduce(players, players, fn {id, current_player}, acc_players ->
         case current_player.team do
           :werewolf ->
-            {:ok, action} =
+            {:ok, werewolf_with_action} =
               Player.add_action(
                 current_player,
                 phase_number,
                 Action.new(:new_werewolf, player.id, player.id)
               )
 
-            put_in(players[id], action)
+            put_in(players[id], werewolf_with_action)
 
           _ ->
             acc_players
