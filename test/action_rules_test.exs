@@ -1359,4 +1359,75 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
   end
+
+  describe "valid/3 serial_killer" do
+    setup [
+      :strangle_action,
+      :player,
+      :serial_killer,
+      :dead_serial_killer,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to strangle, returns ok tuple", context do
+      action = context[:strangle_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:serial_killer],
+                 action,
+                 context[:players],
+                 %Options{}
+               )
+    end
+
+    test "unable to strangle for dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:serial_killer],
+                 context[:strangle_action],
+                 context[:dead_players],
+                 %Options{}
+               )
+    end
+
+    test "unable to strangle when serial_killer is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_serial_killer],
+                 context[:strangle_action],
+                 context[:players],
+                 %Options{}
+               )
+    end
+
+    test "unable to strangle in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:serial_killer],
+                 context[:strangle_action],
+                 context[:players],
+                 %Options{}
+               )
+    end
+
+    test "unable to strangle when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf],
+                 context[:summon_action],
+                 context[:players],
+                 %Options{}
+               )
+    end
+  end
 end

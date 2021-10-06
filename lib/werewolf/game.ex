@@ -182,6 +182,8 @@ defmodule Werewolf.Game do
              overrule_targets
            ),
          {:ok, players, targets} <-
+           Action.Strangle.resolve(players, game.phases, targets, heal_targets),
+         {:ok, players, targets} <-
            Action.Poison.resolve(players, game.phases, targets, heal_targets),
          {:ok, players, targets} <-
            Action.Assassinate.resolve(

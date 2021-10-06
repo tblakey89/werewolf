@@ -225,6 +225,14 @@ defmodule Werewolf.Support.PlayerTestSetup do
           role: :ghost,
           items: [],
           team: :villager
+        },
+        "serial_killer" => %Player{
+          id: "serial_killer",
+          host: false,
+          alive: false,
+          role: :serial_killer,
+          items: [],
+          team: :serial_killer
         }
       }
     ]

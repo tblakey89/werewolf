@@ -5,7 +5,8 @@ defmodule Werewolf.WinCheck do
     werewolf_aux: :villager,
     werewolf: :werewolf,
     fool: :villager,
-    villager: :villager
+    villager: :villager,
+    serial_killer: :serial_killer
   }
 
   def check_for_wins(:fool_win, _players), do: {:ok, [:fool_win]}
@@ -27,15 +28,20 @@ defmodule Werewolf.WinCheck do
 
   defp by_remaining_players(wins, players) do
     team_count = by_team(players)
+    player_count = alive_players_count(players)
 
     cond do
-      team_count[:werewolf] == 0 && team_count[:villager] == 0 ->
+      player_count == 0 ->
         [:tie | wins]
 
-      team_count[:werewolf] == 0 ->
+      team_count[:serial_killer] == 1 && player_count == 1 ->
+        [:serial_killer_win | wins]
+
+      team_count[:werewolf] == 0 && team_count[:serial_killer] == 0 ->
         [:village_win | wins]
 
-      team_count[:werewolf] >= team_count[:villager] && !lover_win?(wins) ->
+      team_count[:werewolf] >= team_count[:villager] + team_count[:serial_killer] &&
+          !lover_win?(wins) ->
         [:werewolf_win | wins]
 
       true ->
@@ -54,7 +60,7 @@ defmodule Werewolf.WinCheck do
 
   defp by_team(players) do
     Enum.filter(players, fn {_, player} -> player.alive end)
-    |> Enum.reduce(%{villager: 0, werewolf: 0}, fn {_key, %{role: role}}, acc ->
+    |> Enum.reduce(%{villager: 0, werewolf: 0, serial_killer: 0}, fn {_key, %{role: role}}, acc ->
       Map.update!(acc, @team_conversion[Player.player_team(role)], &(&1 + 1))
     end)
   end

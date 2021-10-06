@@ -4,7 +4,7 @@ defmodule Werewolf.WinCheckTest do
   alias Werewolf.WinCheck
 
   describe "check_for_wins/2" do
-    setup [:player_map]
+    setup [:player_map, :additional_player_map]
 
     test "calculates a villager win when no more werewolves", context do
       players = context[:player_map]
@@ -31,6 +31,24 @@ defmodule Werewolf.WinCheckTest do
       players = put_in(players["detective"].alive, false)
       {:ok, wins} = WinCheck.check_for_wins(nil, players)
       assert wins == [:werewolf_win]
+    end
+
+    test "calculates serial_killer win, when serial_killer is last one standing", context do
+      players = context[:additional_player_map]
+
+      players =
+        Enum.reduce(players, %{}, fn {id, player}, acc_players ->
+          case player.role do
+            :serial_killer ->
+              Map.put(acc_players, id, %{player | alive: true})
+
+            _ ->
+              Map.put(acc_players, id, %{player | alive: false})
+          end
+        end)
+
+      {:ok, wins} = WinCheck.check_for_wins(nil, players)
+      assert wins == [:serial_killer_win]
     end
 
     test "calculates villager and lovers win when villager lovers survive", context do

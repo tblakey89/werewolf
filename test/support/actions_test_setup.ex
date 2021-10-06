@@ -42,6 +42,8 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def summon_action(_context), do: [summon_action: %Action{type: :summon, target: "target"}]
 
+  def strangle_action(_context), do: [strangle_action: %Action{type: :strangle, target: "target"}]
+
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
   def dead_player(_context), do: [dead_player: %Player{host: false, alive: false, id: "test"}]
@@ -413,6 +415,30 @@ defmodule Werewolf.Support.ActionsTestSetup do
         id: "test",
         role: :summoner,
         items: [Item.new(:summoning_scroll)]
+      }
+    ]
+
+  def serial_killer(_context),
+    do: [
+      serial_killer: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :serial_killer,
+        team: :serial_killer,
+        items: []
+      }
+    ]
+
+  def dead_serial_killer(_context),
+    do: [
+      dead_serial_killer: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :serial_killer,
+        team: :serial_killer,
+        items: []
       }
     ]
 
