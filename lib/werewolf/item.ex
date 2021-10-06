@@ -22,7 +22,8 @@ defmodule Werewolf.Item do
     scales_of_justice: 1,
     defence_case: 1,
     summoning_scroll: 1,
-    phone: :infinite
+    phone: :infinite,
+    lycans_tooth: 1
   }
 
   @items_to_actions %{
@@ -40,7 +41,8 @@ defmodule Werewolf.Item do
     transformation_scroll: :transform,
     pick: :disentomb,
     scales_of_justice: :overrule,
-    defence_case: :defend
+    defence_case: :defend,
+    lycans_tooth: :bite
   }
 
   def new(type) do

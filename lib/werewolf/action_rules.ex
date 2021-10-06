@@ -113,6 +113,9 @@ defmodule Werewolf.ActionRules do
       action_type == :transform && Item.usable?(:transformation_scroll, items) ->
         response(action, players)
 
+      action_type == :bite && Item.usable?(:lycans_tooth, items) ->
+        response(action, players)
+
       action_type == :disentomb && Item.usable?(:pick, items) ->
         dead_target_response(action, players)
 

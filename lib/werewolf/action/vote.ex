@@ -117,23 +117,23 @@ defmodule Werewolf.Action.Vote do
     {:ok, player_with_action} =
       Player.add_action(player, phase_number, Action.new(:lycan_curse, player.id))
 
-    players =
-      Enum.reduce(players, players, fn {id, current_player}, acc_players ->
-        case current_player.team do
-          :werewolf ->
-            {:ok, werewolf_with_action} =
-              Player.add_action(
-                current_player,
-                phase_number,
-                Action.new(:new_werewolf, player.id, player.id)
-              )
-
-            put_in(players[id], werewolf_with_action)
-
-          _ ->
-            acc_players
-        end
-      end)
+    # players =
+    #   Enum.reduce(players, players, fn {id, current_player}, acc_players ->
+    #     case current_player.team do
+    #       :werewolf ->
+    #         {:ok, werewolf_with_action} =
+    #           Player.add_action(
+    #             current_player,
+    #             phase_number,
+    #             Action.new(:new_werewolf, player.id, player.id)
+    #           )
+    #
+    #         put_in(players[id], werewolf_with_action)
+    #
+    #       _ ->
+    #         acc_players
+    #     end
+    #   end)
 
     put_in(
       players[player.id],

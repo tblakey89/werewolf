@@ -233,13 +233,15 @@ defmodule Werewolf.PlayerTest do
           Player.assign_roles(generate_players(18), [
             :werewolf_mage,
             :summoner,
-            :serial_killer
+            :serial_killer,
+            :werewolf_alpha
           ])
         )
 
-      assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 3
+      assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 2
       assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 12
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf_mage end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :werewolf_alpha end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :summoner end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :serial_killer end) == 1
       assert Enum.find(assigned_players, fn player -> player.role == :villager end).items == []
@@ -257,6 +259,11 @@ defmodule Werewolf.PlayerTest do
 
       assert Enum.find(assigned_players, fn player -> player.role == :serial_killer end).items ==
                []
+
+      assert Enum.find(assigned_players, fn player -> player.role == :werewolf_alpha end).items ==
+               [
+                 Item.new(:lycans_tooth)
+               ]
     end
   end
 

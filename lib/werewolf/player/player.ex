@@ -45,7 +45,8 @@ defmodule Werewolf.Player do
     judge: [:scales_of_justice],
     lawyer: [:defence_case],
     summoner: [:summoning_scroll],
-    serial_killer: []
+    serial_killer: [],
+    werewolf_alpha: [:lycans_tooth]
   }
 
   def new(type, user) do
@@ -83,7 +84,8 @@ defmodule Werewolf.Player do
       judge: :villager,
       lawyer: :werewolf_aux,
       summoner: :villager,
-      serial_killer: :serial_killer
+      serial_killer: :serial_killer,
+      werewolf_alpha: :werewolf
     }
   end
 
@@ -110,7 +112,8 @@ defmodule Werewolf.Player do
       judge: :villager,
       lawyer: :villager,
       summoner: :villager,
-      serial_killer: :villager
+      serial_killer: :villager,
+      werewolf_alpha: :werewolf
     }
   end
 
@@ -135,7 +138,8 @@ defmodule Werewolf.Player do
       judge: 1,
       lawyer: 1,
       summoner: 1,
-      serial_killer: 1
+      serial_killer: 1,
+      werewolf_alpha: 1
     }
   end
 

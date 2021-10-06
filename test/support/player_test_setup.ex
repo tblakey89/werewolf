@@ -121,7 +121,14 @@ defmodule Werewolf.Support.PlayerTestSetup do
           items: [Item.new(:dead_man_switch)],
           team: :villager
         },
-        "fool" => %Player{id: "fool", host: false, actions: %{}, role: :fool},
+        "fool" => %Player{
+          id: "fool",
+          host: false,
+          actions: %{},
+          role: :fool,
+          team: :fool,
+          win_condition: :fool_win
+        },
         "witch" => %Player{
           id: "witch",
           host: false,
@@ -233,6 +240,14 @@ defmodule Werewolf.Support.PlayerTestSetup do
           role: :serial_killer,
           items: [],
           team: :serial_killer
+        },
+        "werewolf_alpha" => %Player{
+          id: "werewolf_alpha",
+          host: false,
+          actions: %{},
+          role: :werewolf_alpha,
+          items: [Item.new(:lycans_tooth)],
+          team: :werewolf
         }
       }
     ]

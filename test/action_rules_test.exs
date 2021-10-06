@@ -1430,4 +1430,75 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
   end
+
+  describe "valid/3 werewolf_alpha" do
+    setup [
+      :bite_action,
+      :player,
+      :werewolf_alpha,
+      :dead_werewolf_alpha,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to bite, returns ok tuple", context do
+      action = context[:bite_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_alpha],
+                 action,
+                 context[:players],
+                 %Options{}
+               )
+    end
+
+    test "unable to bite from dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_alpha],
+                 context[:bite_action],
+                 context[:dead_players],
+                 %Options{}
+               )
+    end
+
+    test "unable to bite when werewolf_alpha is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_werewolf_alpha],
+                 context[:bite_action],
+                 context[:players],
+                 %Options{}
+               )
+    end
+
+    test "unable to bite in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:werewolf_alpha],
+                 context[:bite_action],
+                 context[:players],
+                 %Options{}
+               )
+    end
+
+    test "unable to bite when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf],
+                 context[:bite_action],
+                 context[:players],
+                 %Options{}
+               )
+    end
+  end
 end

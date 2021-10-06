@@ -44,6 +44,8 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def strangle_action(_context), do: [strangle_action: %Action{type: :strangle, target: "target"}]
 
+  def bite_action(_context), do: [bite_action: %Action{type: :bite, target: "target"}]
+
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
   def dead_player(_context), do: [dead_player: %Player{host: false, alive: false, id: "test"}]
@@ -439,6 +441,28 @@ defmodule Werewolf.Support.ActionsTestSetup do
         role: :serial_killer,
         team: :serial_killer,
         items: []
+      }
+    ]
+
+  def werewolf_alpha(_context),
+    do: [
+      werewolf_alpha: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :werewolf_alpha,
+        items: [Item.new(:lycans_tooth)]
+      }
+    ]
+
+  def dead_werewolf_alpha(_context),
+    do: [
+      dead_werewolf_alpha: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :werewolf_alpha,
+        items: [Item.new(:lycans_tooth)]
       }
     ]
 

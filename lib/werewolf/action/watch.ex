@@ -31,7 +31,7 @@ defmodule Werewolf.Action.Watch do
   defp watch_answer(target_player, phase_number, players) do
     target_action =
       Map.values(target_player.actions[phase_number] || %{})
-      |> Enum.shuffle
+      |> Enum.shuffle()
       |> Enum.at(0)
 
     case target_action do

@@ -207,6 +207,8 @@ defmodule Werewolf.Game do
              targets,
              heal_targets
            ),
+         {:ok, players, targets} <-
+           Action.Bite.resolve(players, game.phases, targets, heal_targets),
          {:ok, players} <- Action.Disentomb.resolve(players, game.phases),
          {:ok, players, resurrect_targets} <-
            Action.Resurrect.resolve(players, game.phases),
