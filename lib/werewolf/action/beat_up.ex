@@ -19,9 +19,9 @@ defmodule Werewolf.Action.BeatUp do
          player = players[action.target]
 
          {:ok, player_with_action} =
-           Player.add_action(player, phase_number, Action.new(:silenced, player.id))
+           Player.add_action(player, phase_number, Action.new(:beaten_up, player.id))
 
-         {:ok, player_with_status} = Player.add_status(player_with_action, :beaten_up)
+         {:ok, player_with_status} = Player.add_status(player_with_action, :silenced)
 
          put_in(acc_players[player.id], player_with_status)
        end)}

@@ -15,8 +15,8 @@ defmodule Werewolf.Action.BeatUpTest do
       players = put_in(players["werewolf_thug"], player)
 
       {:ok, players} = Action.BeatUp.resolve(players, 1, [])
-      assert players["villager"].statuses == [:beaten_up]
-      assert players["villager"].actions[1][:silenced].target == "villager"
+      assert players["villager"].statuses == [:silenced]
+      assert players["villager"].actions[1][:beaten_up].target == "villager"
     end
 
     test "when werewolf_thug alive, but target healed fails to beat up player", context do
