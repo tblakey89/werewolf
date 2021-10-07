@@ -46,6 +46,8 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def bite_action(_context), do: [bite_action: %Action{type: :bite, target: "target"}]
 
+  def imprison_action(_context), do: [imprison_action: %Action{type: :imprison, target: "target"}]
+
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
   def dead_player(_context), do: [dead_player: %Player{host: false, alive: false, id: "test"}]
@@ -463,6 +465,28 @@ defmodule Werewolf.Support.ActionsTestSetup do
         id: "test",
         role: :werewolf_alpha,
         items: [Item.new(:lycans_tooth)]
+      }
+    ]
+
+  def guard(_context),
+    do: [
+      guard: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :guard,
+        items: [Item.new(:lock)]
+      }
+    ]
+
+  def dead_guard(_context),
+    do: [
+      dead_guard: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :guard,
+        items: [Item.new(:lock)]
       }
     ]
 

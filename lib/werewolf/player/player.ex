@@ -46,7 +46,8 @@ defmodule Werewolf.Player do
     lawyer: [:defence_case],
     summoner: [:summoning_scroll],
     serial_killer: [],
-    werewolf_alpha: [:lycans_tooth]
+    werewolf_alpha: [:lycans_tooth],
+    guard: [:lock]
   }
 
   def new(type, user) do
@@ -85,7 +86,8 @@ defmodule Werewolf.Player do
       lawyer: :werewolf_aux,
       summoner: :villager,
       serial_killer: :serial_killer,
-      werewolf_alpha: :werewolf
+      werewolf_alpha: :werewolf,
+      guard: :villager
     }
   end
 
@@ -113,7 +115,8 @@ defmodule Werewolf.Player do
       lawyer: :villager,
       summoner: :villager,
       serial_killer: :villager,
-      werewolf_alpha: :werewolf
+      werewolf_alpha: :werewolf,
+      guard: :villager
     }
   end
 
@@ -139,7 +142,8 @@ defmodule Werewolf.Player do
       lawyer: 1,
       summoner: 1,
       serial_killer: 1,
-      werewolf_alpha: 1
+      werewolf_alpha: 1,
+      guard: 1
     }
   end
 
@@ -187,6 +191,14 @@ defmodule Werewolf.Player do
       true ->
         {:ok, put_in(player.actions[phase_number], %{action.type => action})}
     end
+  end
+
+  def add_status(player, status) do
+    {:ok, Map.put(player, :statuses, [status | player.statuses])}
+  end
+
+  def clear_player_statuses(player, status) do
+    {:ok, Map.put(player, :statuses, [])}
   end
 
   def remove_action(player, phase_number, action_type) do

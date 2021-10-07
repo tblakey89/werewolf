@@ -1501,4 +1501,75 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
   end
+
+  describe "valid/3 guard" do
+    setup [
+      :imprison_action,
+      :player,
+      :guard,
+      :dead_guard,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to imprison, returns ok tuple", context do
+      action = context[:imprison_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:guard],
+                 action,
+                 context[:players],
+                 %Options{}
+               )
+    end
+
+    test "unable to imprison from dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:guard],
+                 context[:imprison_action],
+                 context[:dead_players],
+                 %Options{}
+               )
+    end
+
+    test "unable to imprison when guard is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:dead_guard],
+                 context[:imprison_action],
+                 context[:players],
+                 %Options{}
+               )
+    end
+
+    test "unable to imprison in night phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:guard],
+                 context[:imprison_action],
+                 context[:players],
+                 %Options{}
+               )
+    end
+
+    test "unable to imprison when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:werewolf],
+                 context[:imprison_action],
+                 context[:players],
+                 %Options{}
+               )
+    end
+  end
 end

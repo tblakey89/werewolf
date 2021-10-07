@@ -234,16 +234,18 @@ defmodule Werewolf.PlayerTest do
             :werewolf_mage,
             :summoner,
             :serial_killer,
-            :werewolf_alpha
+            :werewolf_alpha,
+            :guard
           ])
         )
 
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 2
-      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 12
+      assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 11
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf_mage end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf_alpha end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :summoner end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :serial_killer end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :guard end) == 1
       assert Enum.find(assigned_players, fn player -> player.role == :villager end).items == []
       assert Enum.find(assigned_players, fn player -> player.role == :werewolf end).items == []
 
@@ -264,6 +266,28 @@ defmodule Werewolf.PlayerTest do
                [
                  Item.new(:lycans_tooth)
                ]
+
+     assert Enum.find(assigned_players, fn player -> player.role == :guard end).items ==
+              [
+                Item.new(:lock)
+              ]
+    end
+  end
+
+  describe "add_status/2" do
+    setup [:regular_player]
+
+    test "when status already present", context do
+      player = context[:regular_player]
+      player = put_in(player.statuses, [:silenced])
+      {:ok, player} = Player.add_status(player, :imprisoned)
+      assert player.statuses == [:imprisoned, :silenced]
+    end
+
+    test "when no statuses", context do
+      player = context[:regular_player]
+      {:ok, player} = Player.add_status(player, :imprisoned)
+      assert player.statuses == [:imprisoned]
     end
   end
 

@@ -236,7 +236,6 @@ defmodule Werewolf.Support.PlayerTestSetup do
         "serial_killer" => %Player{
           id: "serial_killer",
           host: false,
-          alive: false,
           role: :serial_killer,
           items: [],
           team: :serial_killer
@@ -248,7 +247,15 @@ defmodule Werewolf.Support.PlayerTestSetup do
           role: :werewolf_alpha,
           items: [Item.new(:lycans_tooth)],
           team: :werewolf
-        }
+        },
+        "guard" => %Player{
+          id: "guard",
+          host: false,
+          actions: %{},
+          role: :guard,
+          items: [Item.new(:lock)],
+          team: :villager
+        },
       }
     ]
 

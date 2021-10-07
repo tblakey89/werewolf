@@ -39,6 +39,9 @@ defmodule Werewolf.ActionRules do
       action_type == :defend && Item.usable?(:defence_case, items) ->
         response(action, players)
 
+      action_type == :imprison && Item.usable?(:lock, items) ->
+        response(action, players)
+
       true ->
         {:error, :invalid_action}
     end
