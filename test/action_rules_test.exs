@@ -30,6 +30,21 @@ defmodule Werewolf.ActionRulesTest do
                )
     end
 
+    test "when unable to vote, as silenced", context do
+      action = context[:vote_action]
+      player = context[:player]
+      player = put_in(player.statuses, [:silenced])
+
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 player,
+                 action,
+                 context[:players],
+                 %Options{}
+               )
+    end
+
     test "able to vote for no_kill when option enabled", context do
       action = context[:no_kill_vote_action]
 
@@ -117,6 +132,21 @@ defmodule Werewolf.ActionRulesTest do
                ActionRules.valid(
                  context[:night_state],
                  context[:werewolf],
+                 action,
+                 context[:players],
+                 %Options{}
+               )
+    end
+
+    test "when unable to vote, as imprisoned", context do
+      action = context[:vote_action]
+      player = context[:werewolf]
+      player = put_in(player.statuses, [:imprisoned])
+
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 player,
                  action,
                  context[:players],
                  %Options{}
@@ -1567,6 +1597,77 @@ defmodule Werewolf.ActionRulesTest do
                  context[:day_state],
                  context[:werewolf],
                  context[:imprison_action],
+                 context[:players],
+                 %Options{}
+               )
+    end
+  end
+
+  describe "valid/3 werewolf_thug" do
+    setup [
+      :beat_up_action,
+      :player,
+      :werewolf_thug,
+      :dead_werewolf_thug,
+      :werewolf,
+      :day_state,
+      :night_state,
+      :players,
+      :dead_players
+    ]
+
+    test "when able to bite, returns ok tuple", context do
+      action = context[:beat_up_action]
+
+      assert {:ok, action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_thug],
+                 action,
+                 context[:players],
+                 %Options{}
+               )
+    end
+
+    test "unable to bite from dead player", context do
+      assert {:error, :invalid_target} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf_thug],
+                 context[:beat_up_action],
+                 context[:dead_players],
+                 %Options{}
+               )
+    end
+
+    test "unable to bite when werewolf_thug is dead", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:dead_werewolf_thug],
+                 context[:beat_up_action],
+                 context[:players],
+                 %Options{}
+               )
+    end
+
+    test "unable to bite in day phase", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:day_state],
+                 context[:werewolf_thug],
+                 context[:beat_up_action],
+                 context[:players],
+                 %Options{}
+               )
+    end
+
+    test "unable to bite when have wrong items", context do
+      assert {:error, :invalid_action} ==
+               ActionRules.valid(
+                 context[:night_state],
+                 context[:werewolf],
+                 context[:beat_up_action],
                  context[:players],
                  %Options{}
                )

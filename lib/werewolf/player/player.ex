@@ -48,7 +48,8 @@ defmodule Werewolf.Player do
     summoner: [:summoning_scroll],
     serial_killer: [],
     werewolf_alpha: [:lycans_tooth],
-    guard: [:lock]
+    guard: [:lock],
+    werewolf_thug: [:bat]
   }
 
   def new(type, user) do
@@ -88,7 +89,8 @@ defmodule Werewolf.Player do
       summoner: :villager,
       serial_killer: :serial_killer,
       werewolf_alpha: :werewolf,
-      guard: :villager
+      guard: :villager,
+      werewolf_thug: :werewolf
     }
   end
 
@@ -117,7 +119,8 @@ defmodule Werewolf.Player do
       summoner: :villager,
       serial_killer: :villager,
       werewolf_alpha: :werewolf,
-      guard: :villager
+      guard: :villager,
+      werewolf_thug: :werewolf
     }
   end
 
@@ -144,7 +147,8 @@ defmodule Werewolf.Player do
       summoner: 1,
       serial_killer: 1,
       werewolf_alpha: 1,
-      guard: 1
+      guard: 1,
+      werewolf_thug: 1
     }
   end
 
@@ -195,7 +199,7 @@ defmodule Werewolf.Player do
   end
 
   def blocking_status?(player) do
-    Enum.any?([:imprisoned], fn status ->
+    Enum.any?([:imprisoned, :silenced], fn status ->
       Enum.member?(player.statuses, status)
     end)
   end

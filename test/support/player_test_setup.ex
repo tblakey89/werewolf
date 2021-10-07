@@ -255,6 +255,14 @@ defmodule Werewolf.Support.PlayerTestSetup do
           role: :guard,
           items: [Item.new(:lock)],
           team: :villager
+        },
+        "werewolf_thug" => %Player{
+          id: "werewolf_thug",
+          host: false,
+          actions: %{},
+          role: :werewolf_thug,
+          items: [Item.new(:bat)],
+          team: :werewolf
         }
       }
     ]

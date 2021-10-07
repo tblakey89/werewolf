@@ -125,6 +125,9 @@ defmodule Werewolf.ActionRules do
       action_type == :summon && Item.usable?(:summoning_scroll, items) ->
         dead_target_response(player, action, players)
 
+      action_type == :beat_up && Item.usable?(:bat, items) ->
+        response(player, action, players)
+
       true ->
         {:error, :invalid_action}
     end

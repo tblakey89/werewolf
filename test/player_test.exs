@@ -235,17 +235,19 @@ defmodule Werewolf.PlayerTest do
             :summoner,
             :serial_killer,
             :werewolf_alpha,
-            :guard
+            :guard,
+            :werewolf_thug
           ])
         )
 
-      assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 2
+      assert Enum.count(assigned_players, fn player -> player.role == :werewolf end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :villager end) == 11
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf_mage end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :werewolf_alpha end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :summoner end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :serial_killer end) == 1
       assert Enum.count(assigned_players, fn player -> player.role == :guard end) == 1
+      assert Enum.count(assigned_players, fn player -> player.role == :werewolf_thug end) == 1
       assert Enum.find(assigned_players, fn player -> player.role == :villager end).items == []
       assert Enum.find(assigned_players, fn player -> player.role == :werewolf end).items == []
 
@@ -270,6 +272,11 @@ defmodule Werewolf.PlayerTest do
       assert Enum.find(assigned_players, fn player -> player.role == :guard end).items ==
                [
                  Item.new(:lock)
+               ]
+
+      assert Enum.find(assigned_players, fn player -> player.role == :werewolf_thug end).items ==
+               [
+                 Item.new(:bat)
                ]
     end
   end

@@ -48,6 +48,8 @@ defmodule Werewolf.Support.ActionsTestSetup do
 
   def imprison_action(_context), do: [imprison_action: %Action{type: :imprison, target: "target"}]
 
+  def beat_up_action(_context), do: [beat_up_action: %Action{type: :beat_up, target: "target"}]
+
   def player(_context), do: [player: %Player{host: false, alive: true, id: "test"}]
 
   def dead_player(_context), do: [dead_player: %Player{host: false, alive: false, id: "test"}]
@@ -487,6 +489,28 @@ defmodule Werewolf.Support.ActionsTestSetup do
         id: "test",
         role: :guard,
         items: [Item.new(:lock)]
+      }
+    ]
+
+  def werewolf_thug(_context),
+    do: [
+      werewolf_thug: %Player{
+        host: false,
+        alive: true,
+        id: "test",
+        role: :werewolf_thug,
+        items: [Item.new(:bat)]
+      }
+    ]
+
+  def dead_werewolf_thug(_context),
+    do: [
+      dead_werewolf_thug: %Player{
+        host: false,
+        alive: false,
+        id: "test",
+        role: :werewolf_thug,
+        items: [Item.new(:bat)]
       }
     ]
 
