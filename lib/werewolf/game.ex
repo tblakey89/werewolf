@@ -219,6 +219,8 @@ defmodule Werewolf.Game do
          # this is to ensure it also triggers both the hunt action, and the hunt
          # target is affected by the result
          {:ok, players, targets} <- Action.Suicide.resolve(players, targets),
+         {:ok, players} <-
+           Player.clear_players_statuses(players, Player.remove_phase_statuses(game.phases)),
          {:ok, players} <- Player.use_items(players, game.phases),
          {:ok, wins} <- WinCheck.check_for_wins(win_status, players),
          {:ok, wins} <- check_phase_limit(players, game.phases, wins),

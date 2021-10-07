@@ -267,10 +267,10 @@ defmodule Werewolf.PlayerTest do
                  Item.new(:lycans_tooth)
                ]
 
-     assert Enum.find(assigned_players, fn player -> player.role == :guard end).items ==
-              [
-                Item.new(:lock)
-              ]
+      assert Enum.find(assigned_players, fn player -> player.role == :guard end).items ==
+               [
+                 Item.new(:lock)
+               ]
     end
   end
 
@@ -288,6 +288,59 @@ defmodule Werewolf.PlayerTest do
       player = context[:regular_player]
       {:ok, player} = Player.add_status(player, :imprisoned)
       assert player.statuses == [:imprisoned]
+    end
+  end
+
+  describe "blocking_status?/1" do
+    setup [:regular_player]
+
+    test "when is imprisoned", context do
+      player = context[:regular_player]
+      player = put_in(player.statuses, [:imprisoned])
+      assert Player.blocking_status?(player)
+    end
+
+    test "when is not imprisoned", context do
+      player = context[:regular_player]
+      assert !Player.blocking_status?(player)
+    end
+  end
+
+  describe "clear_player_statuses/2" do
+    setup [:regular_player]
+
+    test "when status already present", context do
+      player = context[:regular_player]
+      player = put_in(player.statuses, [:silenced, :imprisoned])
+      {:ok, player} = Player.clear_player_statuses(player, [:silenced])
+      assert player.statuses == [:imprisoned]
+    end
+
+    test "when no statuses", context do
+      player = context[:regular_player]
+      {:ok, player} = Player.clear_player_statuses(player, [:silenced, :imprisoned])
+      assert player.statuses == []
+    end
+  end
+
+  describe "clear_players_statuses/2" do
+    setup [:player_map]
+
+    test "when status already present", context do
+      players = context[:player_map]
+      players = put_in(players["villager"].statuses, [:silenced])
+      {:ok, players} = Player.clear_players_statuses(players, [:silenced])
+      assert Enum.all?(players, fn {id, player} -> player.statuses == [] end)
+    end
+  end
+
+  describe "remove_phase_statuses/1" do
+    test "when night phase" do
+      assert Player.remove_phase_statuses(1) == [:imprisoned]
+    end
+
+    test "when day phase" do
+      assert Player.remove_phase_statuses(2) == [:silenced]
     end
   end
 

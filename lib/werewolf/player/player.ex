@@ -1,4 +1,5 @@
 defmodule Werewolf.Player do
+  import Guard, only: [is_even: 1]
   alias Werewolf.Player
   alias Werewolf.KillTarget
   alias Werewolf.Item
@@ -193,12 +194,35 @@ defmodule Werewolf.Player do
     end
   end
 
+  def blocking_status?(player) do
+    Enum.any?([:imprisoned], fn status ->
+      Enum.member?(player.statuses, status)
+    end)
+  end
+
   def add_status(player, status) do
     {:ok, Map.put(player, :statuses, [status | player.statuses])}
   end
 
-  def clear_player_statuses(player, status) do
-    {:ok, Map.put(player, :statuses, [])}
+  def remove_phase_statuses(phase_number) when is_even(phase_number) do
+    [:silenced]
+  end
+
+  def remove_phase_statuses(phase_number) do
+    [:imprisoned]
+  end
+
+  def clear_players_statuses(players, statuses) do
+    {:ok,
+     Enum.reduce(players, %{}, fn {id, player}, acc_players ->
+       {:ok, cleared_player} = Player.clear_player_statuses(player, statuses)
+
+       Map.put(acc_players, id, cleared_player)
+     end)}
+  end
+
+  def clear_player_statuses(player, statuses) do
+    {:ok, Map.put(player, :statuses, player.statuses -- statuses)}
   end
 
   def remove_action(player, phase_number, action_type) do

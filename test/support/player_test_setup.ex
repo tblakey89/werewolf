@@ -255,7 +255,7 @@ defmodule Werewolf.Support.PlayerTestSetup do
           role: :guard,
           items: [Item.new(:lock)],
           team: :villager
-        },
+        }
       }
     ]
 
