@@ -15,13 +15,19 @@ defmodule Werewolf.Action.BeatUp do
          {:ok, player_and_valid_actions} <-
            FilterHelper.remove_healed_actions(player_and_actions, heal_targets) do
       {:ok,
-       Enum.reduce(player_and_valid_actions, players, fn {_player, action}, acc_players ->
+       Enum.reduce(player_and_valid_actions, players, fn {beat_up_player, action}, acc_players ->
          player = players[action.target]
 
          {:ok, player_with_action} =
            Player.add_action(player, phase_number, Action.new(:beaten_up, player.id))
 
          {:ok, player_with_status} = Player.add_status(player_with_action, :silenced)
+
+         acc_players =
+           put_in(
+             acc_players[beat_up_player.id].actions[phase_number][:beat_up].result,
+             action.target
+           )
 
          put_in(acc_players[player.id], player_with_status)
        end)}

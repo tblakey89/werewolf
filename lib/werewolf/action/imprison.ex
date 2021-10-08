@@ -13,13 +13,19 @@ defmodule Werewolf.Action.Imprison do
              :imprison
            ) do
       {:ok,
-       Enum.reduce(player_and_valid_actions, players, fn {_player, action}, acc_players ->
+       Enum.reduce(player_and_valid_actions, players, fn {lock_player, action}, acc_players ->
          player = players[action.target]
 
          {:ok, player_with_action} =
            Player.add_action(player, phase_number, Action.new(:imprisoned, player.id))
 
          {:ok, player_with_status} = Player.add_status(player_with_action, :imprisoned)
+
+         acc_players =
+           put_in(
+             acc_players[lock_player.id].actions[phase_number][:imprison].result,
+             action.target
+           )
 
          put_in(acc_players[player.id], player_with_status)
        end)}
