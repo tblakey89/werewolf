@@ -62,15 +62,21 @@ defmodule Werewolf.Action.Vote do
       false ->
         player = players[target]
 
-        case player.lycan_curse do
+        case Player.blocking_status?(player) do
           true ->
-            {:ok, add_lycan_curse_action(players, player, phase_number), nil,
-             [KillTarget.new(:new_werewolf, target)]}
+            {:ok, players, nil, []}
 
           false ->
-            players = put_in(players[target].alive, false)
+            case player.lycan_curse do
+              true ->
+                {:ok, add_lycan_curse_action(players, player, phase_number), nil,
+                 [KillTarget.new(:new_werewolf, target)]}
 
-            {:ok, players, nil, [KillTarget.new(:werewolf, target)]}
+              false ->
+                players = put_in(players[target].alive, false)
+
+                {:ok, players, nil, [KillTarget.new(:werewolf, target)]}
+            end
         end
     end
   end

@@ -156,6 +156,15 @@ defmodule Werewolf.Action.VoteTest do
       assert players == context[:player_map]
     end
 
+    test "not update players when target is imprisoned", context do
+      players = add_vote(context[:player_map], 1, "werewolf", "villager")
+      players = put_in(players["villager"].statuses, [:imprisoned])
+      {:ok, players, _, targets} = Action.Vote.resolve(players, 1, [])
+
+      assert targets == []
+      assert players["villager"].alive == true
+    end
+
     test "not update players when target equals heal target", context do
       players = add_vote(context[:player_map], 1, "werewolf", "villager")
       {:ok, players, _, targets} = Action.Vote.resolve(players, 1, ["villager"])
